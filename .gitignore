@@ -24,6 +24,9 @@ nbproject/private/
 nbbuild/
 nbdist/
 
+# NetBeans lock files
+.LCK*
+
 # ===== OS =====
 .DS_Store
 Thumbs.db
