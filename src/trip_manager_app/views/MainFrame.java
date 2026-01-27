@@ -19,10 +19,10 @@ public class MainFrame extends JFrame{
     public MainFrame(){
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
-        
         add(contentPanel);
         setTitle("Java-Swing Trip Management App");
-        setSize(1500, 845);
+        setSize(1512, 982);
+        setMinimumSize(new Dimension(1150, 750));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
