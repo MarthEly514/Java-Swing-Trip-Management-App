@@ -6,6 +6,7 @@ package trip_manager_app.controllers;
 
 import trip_manager_app.views.LoginView;
 import trip_manager_app.views.MainFrame;
+import trip_manager_app.views.user.UserHomepageView;
 
 /**
  *
@@ -13,12 +14,14 @@ import trip_manager_app.views.MainFrame;
  */
 public class LoginController {
     private MainFrame frame;
-    public LoginController(MainFrame frame, LoginView loginView){
+    public LoginController(MainFrame frame, LoginView loginView, UserHomepageView userHomepageView){
         
         this.frame = frame;
         frame.addView(loginView, "loginView");
+        frame.addView(userHomepageView, "userHomepageView");
         
-        loginView.addSignupButtonListener(e -> frame.showView("signupView"));
+        loginView.addSignupRedirectButtonListener(e -> frame.showView("signupView"));
+        loginView.addLoginButtonListener(e -> frame.showView("userHomepageView"));
 
     }
 }

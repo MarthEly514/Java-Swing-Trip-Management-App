@@ -7,8 +7,9 @@ package trip_manager_app;
 import trip_manager_app.controllers.LoginController;
 import trip_manager_app.controllers.SignupController;
 import trip_manager_app.views.LoginView;
-import trip_manager_app.views.MainFrame;
-import trip_manager_app.views.SignupView;
+import trip_manager_app.views.*;
+import trip_manager_app.views.user.*;
+import trip_manager_app.views.admin.*;
 
 /**
  *
@@ -25,11 +26,14 @@ public class Trip_Manager_App_Main {
             MainFrame frame = new MainFrame();
             LoginView loginView = new LoginView();
             SignupView signupView = new SignupView();
-            new LoginController(frame, loginView);
-            new SignupController(frame, signupView);
+            UserHomepageView userHomepageView = new UserHomepageView();
+            new LoginController(frame, loginView, userHomepageView);
+            new SignupController(frame, signupView, userHomepageView);
 
-            frame.showView("Login");
-            frame.setVisible(true);
+            // default view frame.showView("Login");
+            frame.addView(userHomepageView, "userHomepageView");
+            frame.showView("userHomepageView");
+            frame.setVisible(true); 
         });
     }
     

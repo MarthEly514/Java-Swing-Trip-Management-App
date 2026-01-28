@@ -77,8 +77,10 @@ public class RoundedButton extends JButton
        setContentAreaFilled(false);
        setBorderPainted(true);
        setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
-   } 
    
+
+   } 
+     
    @Override
    protected void paintComponent(Graphics g){
        int w = getWidth();
