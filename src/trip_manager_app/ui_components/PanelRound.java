@@ -208,44 +208,7 @@ public class PanelRound extends JPanel{
 
         super.paintComponent(grphcs);
     }
-
-    /*@Override
-    protected void paintBorder(Graphics g) {
-        if (borderWidth < 1 || borderColor == null || borderColor.getAlpha() == 0) {
-            return;
-        }
-
-        Graphics2D g2 = (Graphics2D) g.create();
-        try {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            float thickness = borderWidth;
-            float offset     = thickness / 2f;
-
-            g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2.setColor(borderColor);
-
-            Area area = new Area(createRoundTopLeft());
-            if (roundTopRight   > 0) area.intersect(new Area(createRoundTopRight()));
-            if (roundBottomLeft > 0) area.intersect(new Area(createRoundBottomLeft()));
-            if (roundBottomRight > 0) area.intersect(new Area(createRoundBottomRight()));
-
-            area.subtract(new Area(
-                new RoundRectangle2D.Double(
-                    offset, offset,
-                    getWidth()  + thickness,
-                    getHeight() + thickness,
-                    0, 0
-                )
-            ));
-
-            g2.draw(area);
-
-        } finally {
-            g2.dispose();
-        }
-    }*/
-    
+  
     private Shape createRoundTopLeft(){
         int width = getWidth();
         int height = getHeight();

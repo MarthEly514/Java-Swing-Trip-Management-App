@@ -129,7 +129,7 @@ public class UserDestinationsView extends JPanel{
                 userProfileButton,
                 "  Mon Profil",
                 "/trip_manager_app/ressources/icons/account_circle_light.svg", 
-                new Color(108, 99, 255), 
+                new Color(108, 99, 255, 125), 
                 Color.white
                 
         );   

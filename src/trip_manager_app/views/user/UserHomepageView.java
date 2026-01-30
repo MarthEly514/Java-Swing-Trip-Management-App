@@ -31,6 +31,8 @@ public class UserHomepageView extends JPanel{
         add(createRightPanel(), BorderLayout.CENTER);
     }
     
+//    LEFT PANEL
+    
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -113,7 +115,7 @@ public class UserHomepageView extends JPanel{
                 userProfileButton,
                 "  Mon Profil",
                 "/trip_manager_app/ressources/icons/account_circle_light.svg", 
-                new Color(108, 99, 255), 
+                new Color(108, 99, 255, 125), 
                 Color.white
                 
         );        
@@ -179,6 +181,8 @@ public class UserHomepageView extends JPanel{
 
         return panel;
     }
+    
+//    RIGHT PANEL
     
     private JPanel createRightPanel(){
         JPanel wrapper = new JPanel();
@@ -274,6 +278,18 @@ public class UserHomepageView extends JPanel{
         destinationsWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         destinationsWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         
+//        for(int i =0; i<3; i++){
+//            DestinationCard card = new DestinationCard("Paris", "/logan/sen/lyla.mpeg", "4,5");
+//            destinationsWrapper.add(card);
+//        }
+        
+//        DestinationCard card = new DestinationCard("Paris", "/logan/sen/lyla.mpeg", "4,5");
+        JPanel card = new JPanel();
+        card.setPreferredSize(new Dimension(300, 200));
+        card.setMaximumSize(new Dimension(300, 200));
+        card.setMinimumSize(new Dimension(300, 200));
+        card.setBackground(Color.PINK);
+        destinationsWrapper.add(card);
                 
         SubtitleLabel subtitle1 = new SubtitleLabel("Destinations en vedette");
 
@@ -289,6 +305,8 @@ public class UserHomepageView extends JPanel{
 //        bottomWrapper.add(title);
         bottomWrapper.add(subtitle1);
         bottomWrapper.add(Box.createVerticalStrut(20));
+//        bottomWrapper.add(card);
+//        bottomWrapper.add(Box.createVerticalStrut(20));
         bottomWrapper.add(destinationsWrapper);
         bottomWrapper.add(Box.createVerticalStrut(20));
         bottomWrapper.add(subtitle2);
