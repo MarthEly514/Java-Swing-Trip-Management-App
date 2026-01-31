@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import trip_manager_app.ui_components.RoundedButton;
 import trip_manager_app.ui_components.RoundedPasswordField;
 import trip_manager_app.ui_components.RoundedTextField;
+import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.utils.SvgUtils;
 import trip_manager_app.views.LoginView;
 
@@ -36,10 +37,10 @@ import trip_manager_app.views.LoginView;
  * @author ely
  */
 public class UserDestinationsView extends JPanel{
-    private RoundedButton homeButton;
-    private RoundedButton destinationButton;
-    private RoundedButton reservationButton;
-    private RoundedButton userProfileButton;
+    private UIButton homeButton;
+    private UIButton destinationButton;
+    private UIButton reservationButton;
+    private UIButton userProfileButton;
     
     public UserDestinationsView(){
         setLayout(new BorderLayout());
@@ -81,9 +82,7 @@ public class UserDestinationsView extends JPanel{
         navigationPanel.setOpaque(false);
         
         //home button
-        homeButton = new RoundedButton();
-        styleButton(
-                homeButton,
+        homeButton = new UIButton(
                 " Accueil",
                 "/trip_manager_app/ressources/icons/home.svg", 
                 new Color(0, 0, 0, 0), 
@@ -92,9 +91,7 @@ public class UserDestinationsView extends JPanel{
         );
                 
         //destination button 
-        destinationButton = new RoundedButton();
-        styleButton(
-                destinationButton,
+        destinationButton = new UIButton(
                 " Destinations",
                 "/trip_manager_app/ressources/icons/travel_light.svg", 
                 new Color(108, 99, 255), 
@@ -103,9 +100,7 @@ public class UserDestinationsView extends JPanel{
         );
         
         //reservation button
-        reservationButton = new RoundedButton(" Réservations");
-        styleButton(
-                reservationButton,
+        reservationButton = new UIButton(
                 " Réservations",
                 "/trip_manager_app/ressources/icons/date_range.svg", 
                 new Color(0, 0, 0, 0), 
@@ -124,9 +119,7 @@ public class UserDestinationsView extends JPanel{
         profileButtonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         profileButtonContainer.setOpaque(false);
         
-        userProfileButton = new RoundedButton();
-        styleButton(
-                userProfileButton,
+        userProfileButton = new UIButton(
                 "  Mon Profil",
                 "/trip_manager_app/ressources/icons/account_circle_light.svg", 
                 new Color(108, 99, 255, 125), 

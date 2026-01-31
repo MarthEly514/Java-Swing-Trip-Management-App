@@ -24,7 +24,7 @@ public class MainFrame extends JFrame{
         add(contentPanel);
         setTitle("Java-Swing Trip Management App");
         setSize(1512, 982);
-        setMinimumSize(new Dimension(1150, 750));
+        setMinimumSize(new Dimension(1508, 940));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         

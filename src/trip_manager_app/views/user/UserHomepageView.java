@@ -6,9 +6,13 @@ package trip_manager_app.views.user;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -21,11 +25,15 @@ import trip_manager_app.views.LoginView;
  * @author ely
  */
 public class UserHomepageView extends JPanel{
-    private RoundedButton homeButton;
-    private RoundedButton destinationButton;
-    private RoundedButton reservationButton;
-    private RoundedButton userProfileButton;
-    public UserHomepageView(){
+//    private List<JPanel> cards = new ArrayList<>();
+    private UIButton homeButton;
+    private UIButton destinationButton;
+    private UIButton reservationButton;
+    private UIButton userProfileButton;
+    private UIButton seeMoreDestinationsButton;
+    private UIButton seeMoreReservationsButton;
+
+    public UserHomepageView(){    
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -67,9 +75,7 @@ public class UserHomepageView extends JPanel{
         navigationPanel.setOpaque(false);
         
         //home button
-        homeButton = new RoundedButton();
-        styleButton(
-                homeButton,
+        homeButton = new UIButton(
                 " Accueil",
                 "/trip_manager_app/ressources/icons/home_light.svg", 
                 new Color(108, 99, 255), 
@@ -78,9 +84,7 @@ public class UserHomepageView extends JPanel{
         );
                 
         //destination button 
-        destinationButton = new RoundedButton();
-        styleButton(
-                destinationButton,
+        destinationButton = new UIButton(
                 " Destinations",
                 "/trip_manager_app/ressources/icons/travel.svg", 
                 new Color(0, 0, 0, 0), 
@@ -89,9 +93,7 @@ public class UserHomepageView extends JPanel{
         );
         
         //reservation button
-        reservationButton = new RoundedButton(" Réservations");
-        styleButton(
-                reservationButton,
+        reservationButton = new UIButton(
                 " Réservations",
                 "/trip_manager_app/ressources/icons/date_range.svg", 
                 new Color(0, 0, 0, 0), 
@@ -110,9 +112,7 @@ public class UserHomepageView extends JPanel{
         profileButtonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         profileButtonContainer.setOpaque(false);
         
-        userProfileButton = new RoundedButton();
-        styleButton(
-                userProfileButton,
+        userProfileButton = new UIButton(
                 "  Mon Profil",
                 "/trip_manager_app/ressources/icons/account_circle_light.svg", 
                 new Color(108, 99, 255, 125), 
@@ -221,7 +221,7 @@ public class UserHomepageView extends JPanel{
         bottomWrapper.setBackground(Color.white);
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        //bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
         JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
@@ -266,52 +266,149 @@ public class UserHomepageView extends JPanel{
         });
         
         
-        JPanel row1 = new JPanel();
-        row1.setBackground(Color.green);
+        HorizontalScrollPanel row1 = new HorizontalScrollPanel();
+        row1.setOpaque(false);
         row1.setLayout(new BoxLayout(row1, BoxLayout.X_AXIS));
         row1.setPreferredSize(new Dimension(0, 300));
         row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-        row1.setMinimumSize(new Dimension(0, 300));
+        row1.setMinimumSize(new Dimension(1, 300));
+        row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 0));
         
-        JScrollPane destinationsWrapper = new JScrollPane(row1);
-        destinationsWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        destinationsWrapper.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        destinationsWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+//        "/home/ely/Downloads/_ - 2026-01-27T002355.176.jpeg"));
+//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235924.487.jpeg"));
+//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg"
+
+
+        for(int i =0; i<4; i++){
+            DestinationCard card = new DestinationCard("Paris", "4,5", "/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg");
+//            cards.add(card);
+            row1.add(card);
+            row1.add(Box.createHorizontalStrut(20));  
+        }
         
-//        for(int i =0; i<3; i++){
-//            DestinationCard card = new DestinationCard("Paris", "/logan/sen/lyla.mpeg", "4,5");
-//            destinationsWrapper.add(card);
-//        }
-        
-//        DestinationCard card = new DestinationCard("Paris", "/logan/sen/lyla.mpeg", "4,5");
-        JPanel card = new JPanel();
-        card.setPreferredSize(new Dimension(300, 200));
-        card.setMaximumSize(new Dimension(300, 200));
-        card.setMinimumSize(new Dimension(300, 200));
-        card.setBackground(Color.PINK);
-        destinationsWrapper.add(card);
+//        row1.addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                resizeCards();
+//            }
+//        });
                 
         SubtitleLabel subtitle1 = new SubtitleLabel("Destinations en vedette");
+        
+        JPanel seeMoreBtnCtnr = new JPanel();
+        seeMoreBtnCtnr.setOpaque(false);
+        
+        
+        seeMoreDestinationsButton = new UIButton(
+            "  Voir plus",
+            "/trip_manager_app/ressources/icons/plus.svg", 
+            new Color(101, 93, 235, 20), 
+            new Color(108, 99, 255)      
+        );
+        seeMoreDestinationsButton.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // button color change on hover
+        
+        seeMoreDestinationsButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                seeMoreDestinationsButton.setBackground(new Color(101, 93, 235, 40));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                seeMoreDestinationsButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+        });
 
-        JPanel row2 = new JPanel();
-        row2.setBackground(Color.blue);
-        row2.setPreferredSize(new Dimension(0, 400));
-        row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
-        row2.setMinimumSize(new Dimension(0, 400));
+        seeMoreBtnCtnr.add(seeMoreDestinationsButton);
+        
         
         SubtitleLabel subtitle2 = new SubtitleLabel("Mes réservations");
         
+        JPanel row2 = new JPanel();
+        row2.setOpaque(false);
+        row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        row2.setMinimumSize(new Dimension(Integer.MAX_VALUE, 300));
+        row2.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+        row2.setLayout(new BoxLayout(row2, BoxLayout.Y_AXIS));
         
-//        bottomWrapper.add(title);
+        int n = 10;
+        if(n > 0){
+            for(int i = 0; i<4; i++){
+                ReservationRow resRow = new ReservationRow("Paris", "12 Fevrier 2026", "En attente" );
+                row2.add(resRow);
+                row2.add(Box.createVerticalStrut(20));  
+            }
+        }else{
+            // Center the empty state vertically and horizontally
+            row2.add(Box.createVerticalGlue()); // Push content to center
+
+            JPanel noResPanel = new JPanel();
+            noResPanel.setLayout(new BoxLayout(noResPanel, BoxLayout.Y_AXIS));
+            noResPanel.setOpaque(false);
+            noResPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage1 = new JLabel(">-<");
+            noResMessage1.setFont(new Font("SansSerif", Font.BOLD, 48));
+            noResMessage1.setForeground(new Color(180, 180, 180));
+            noResMessage1.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage2 = new JLabel("Aucune réservation pour le moment");
+            noResMessage2.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            noResMessage2.setForeground(new Color(120, 120, 120));
+            noResMessage2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            noResPanel.add(noResMessage1);
+            noResPanel.add(Box.createVerticalStrut(10));
+            noResPanel.add(noResMessage2);
+
+            row2.add(noResPanel);
+            row2.add(Box.createVerticalGlue()); 
+            
+        }
+        
+        
+        JPanel seeMoreBtn2Ctnr = new JPanel();
+        seeMoreBtn2Ctnr.setOpaque(false);
+        
+        
+        seeMoreReservationsButton = new UIButton(
+            "  Voir plus",
+            "/trip_manager_app/ressources/icons/plus.svg", 
+            new Color(101, 93, 235, 20), 
+            new Color(108, 99, 255));
+        
+        seeMoreReservationsButton.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // button color change on hover
+        
+        seeMoreReservationsButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                seeMoreReservationsButton.setBackground(new Color(101, 93, 235, 40));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                seeMoreReservationsButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+        });
+
+        seeMoreBtn2Ctnr.add(seeMoreReservationsButton);
+        
+        
         bottomWrapper.add(subtitle1);
         bottomWrapper.add(Box.createVerticalStrut(20));
-//        bottomWrapper.add(card);
-//        bottomWrapper.add(Box.createVerticalStrut(20));
-        bottomWrapper.add(destinationsWrapper);
+        bottomWrapper.add(row1);
+        bottomWrapper.add(Box.createVerticalStrut(10));
+        bottomWrapper.add(seeMoreBtnCtnr);
         bottomWrapper.add(Box.createVerticalStrut(20));
         bottomWrapper.add(subtitle2);
         bottomWrapper.add(Box.createVerticalStrut(20));
         bottomWrapper.add(row2);
+        bottomWrapper.add(Box.createVerticalStrut(10));
+        bottomWrapper.add(seeMoreBtn2Ctnr);
 
 
         
@@ -323,28 +420,29 @@ public class UserHomepageView extends JPanel{
         return wrapper;
     }
     
-    private void styleButton(RoundedButton button, String text, String iconPath, Color backgroundColor, Color foregroundColor){
-        //button
-
-        button.setText(text);
-        button.setPreferredSize(new Dimension(250, 50));
-        button.setRadius(50);
-        button.setBorderWidth(0);
-        button.setBorderColor(new Color(0, 0, 0, 0));
-        button.setBackground(backgroundColor);
-        button.setForeground(foregroundColor);
-        button.setFont(new Font("SansSerif", Font.BOLD, 16));
-        button.setIcon(SvgUtils.loadSvg(iconPath, 22, 22));
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setMargin(new Insets(0, 10, 0, 0));
-    }
+//    private void resizeCards() {
+//        int width = getWidth(); // now safe
+//        if (width <= 0) return;
+//
+//        int cardWidth = width / 5 - 20;   // example
+//        int cardHeight = cardWidth;
+//
+//        for (JPanel card : cards) {
+//            card.setPreferredSize(new Dimension(cardWidth, cardHeight));
+//        }
+//
+//        revalidate();
+//        repaint();
+//    }
     
     public void addDestinationButtonListener(ActionListener listener){
         destinationButton.addActionListener(listener);
+        seeMoreDestinationsButton.addActionListener(listener);
     }
     
     public void addReservationButtonListener(ActionListener listener){
         reservationButton.addActionListener(listener);
+        seeMoreReservationsButton.addActionListener(listener);
     }
     
     public void addUserProfileButtonListener(ActionListener listener){
