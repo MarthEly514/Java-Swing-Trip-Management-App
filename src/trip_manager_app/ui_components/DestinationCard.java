@@ -27,9 +27,10 @@ public class DestinationCard extends PanelRound{
         setRoundBottomRight(radius);
         setRoundTopLeft(radius);
         setRoundTopRight(radius);
-        setPreferredSize(new Dimension(250, 250));
-        setMaximumSize(new Dimension(250, 250));
-        setMinimumSize(new Dimension(250, 250));
+        Dimension size = new Dimension(250, 250);
+        setPreferredSize(size);
+        setMaximumSize(size);
+        setMinimumSize(size);
         
         PanelRound bottomPanel = new PanelRound();
         bottomPanel.setLayout(new BorderLayout());

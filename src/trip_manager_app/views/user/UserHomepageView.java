@@ -266,7 +266,7 @@ public class UserHomepageView extends JPanel{
         });
         
         
-        HorizontalScrollPanel row1 = new HorizontalScrollPanel();
+        JPanel row1 = new JPanel();
         row1.setOpaque(false);
         row1.setLayout(new BoxLayout(row1, BoxLayout.X_AXIS));
         row1.setPreferredSize(new Dimension(0, 300));
@@ -419,21 +419,6 @@ public class UserHomepageView extends JPanel{
         
         return wrapper;
     }
-    
-//    private void resizeCards() {
-//        int width = getWidth(); // now safe
-//        if (width <= 0) return;
-//
-//        int cardWidth = width / 5 - 20;   // example
-//        int cardHeight = cardWidth;
-//
-//        for (JPanel card : cards) {
-//            card.setPreferredSize(new Dimension(cardWidth, cardHeight));
-//        }
-//
-//        revalidate();
-//        repaint();
-//    }
     
     public void addDestinationButtonListener(ActionListener listener){
         destinationButton.addActionListener(listener);

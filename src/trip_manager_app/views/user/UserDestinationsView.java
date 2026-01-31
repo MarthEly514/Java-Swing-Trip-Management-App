@@ -4,31 +4,17 @@
  */
 package trip_manager_app.views.user;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import trip_manager_app.ui_components.RoundedButton;
-import trip_manager_app.ui_components.RoundedPasswordField;
-import trip_manager_app.ui_components.RoundedTextField;
-import trip_manager_app.ui_components.UIButton;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.ui_components.*;
 import trip_manager_app.utils.SvgUtils;
 import trip_manager_app.views.LoginView;
 
@@ -41,6 +27,8 @@ public class UserDestinationsView extends JPanel{
     private UIButton destinationButton;
     private UIButton reservationButton;
     private UIButton userProfileButton;
+    private List<String> options;
+    private JPanel row1;
     
     public UserDestinationsView(){
         setLayout(new BorderLayout());
@@ -191,68 +179,156 @@ public class UserDestinationsView extends JPanel{
     }
     
     private JPanel createRightPanel(){
-        JPanel wrapper = new JPanel(new GridBagLayout());
+        JPanel wrapper = new JPanel();
         wrapper.setBackground(Color.white);
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-        formPanel.setPreferredSize(new Dimension(450, 350));
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setBorder(BorderFactory.createEmptyBorder(20, 45, 20, 45));
+        wrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        JLabel title = new JLabel("Connexion");
+        JPanel topWrapper = new JPanel();
+        topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.Y_AXIS));
+        topWrapper.setBackground(Color.white);
+        topWrapper.setPreferredSize(new Dimension(Integer.MAX_VALUE, 250));
+        topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
+        topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
+        topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        
+        JPanel searchBar = new JPanel();
+        searchBar.setBackground(Color.red);
+        searchBar.setPreferredSize(new Dimension(300, 60));
+        searchBar.setMaximumSize(new Dimension(300, 100));
+//        searchBar.setMinimumSize(new Dimension(1000, 0));
+        searchBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel title = new JLabel("Destinations");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
-        title.setForeground(new Color(117, 117, 117));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Email Field
-
-        RoundedTextField emailField = new RoundedTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        emailField.setRadius(50);
-        emailField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        emailField.setForeground(new Color(117, 117, 117));
-        emailField.setPlaceholder("Email");
-        emailField.setBorderColor(new Color(214,211,255));
-        emailField.setPlaceholderColor(new Color(190, 190, 190));
-        emailField.setFocusedBorderColor(new Color(108, 99, 255));
-
-        // Password Field
+        title.setForeground(new Color(50, 50, 50));
+        title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
+        title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
-        RoundedPasswordField passwordField = new RoundedPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        passwordField.setRadius(50);
-        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        passwordField.setForeground(new Color(117, 117, 117));
-        passwordField.setPlaceholder("Mot de passe");
-        passwordField.setBorderColor(new Color(214,211,255));
-        passwordField.setPlaceholderColor(new Color(190, 190, 190));
-        passwordField.setFocusedBorderColor(new Color(108, 99, 255));
-
-        formPanel.setOpaque(false);
-        formPanel.add(title);
-        formPanel.add(Box.createVerticalStrut(30));
-        formPanel.add(emailField);
-        formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(passwordField);
+        JPanel bottomWrapper = new JPanel();
+        bottomWrapper.setBackground(Color.white);
+        bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
+        bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
+        
+        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
+        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
+        
+        // customizing the scrollbar aspect to match the design
+        scrollBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
+                Graphics2D g2 = (Graphics2D) grphcs;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(thumbColor);
+               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
+            }
+            
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
 
-        wrapper.add(formPanel);
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+
+            @Override
+            protected void configureScrollBarColors(){
+                this.thumbColor = new Color(101, 93, 235, 40);
+                this.trackColor = Color.white;
+                this.scrollBarWidth = 10;
+            }
+        });
+        
+        options = new ArrayList<>();
+        options.add("Populaires");
+        options.add("Meilleurs prix");
+        options.add("Meilleures notes");
+
+        
+        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
+        
+        topWrapper.add(searchBar);
+        topWrapper.add(Box.createVerticalGlue());     
+        topWrapper.add(title);
+        topWrapper.add(Box.createVerticalStrut(10));
+        topWrapper.add(navBar);
+        
+        
+        row1 = new JPanel();
+        row1.setOpaque(false);
+        row1.setLayout(new GridLayout(0, 4, 20, 20));  
+        row1.setPreferredSize(null);
+        row1.setMaximumSize(null);
+        row1.setMinimumSize(new Dimension(1, 600));
+        row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 0));
+        
+        
+//        "/home/ely/Downloads/_ - 2026-01-27T002355.176.jpeg"));
+//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235924.487.jpeg"));
+//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg"
+
+        showDestinationCards(6);
+
+                
+        bottomWrapper.add(row1);
+
+
+        
+        wrapper.add(topWrapper);
+        wrapper.add(Box.createVerticalStrut(20));
+        wrapper.add(scrollWrapper);
+        
+        
         return wrapper;
     }
     
-    private void styleButton(RoundedButton button, String text, String iconPath, Color backgroundColor, Color foregroundColor){
-        //button
-
-        button.setText(text);
-        button.setPreferredSize(new Dimension(250, 50));
-        button.setRadius(50);
-        button.setBorderWidth(0);
-        button.setBorderColor(new Color(0, 0, 0, 0));
-        button.setBackground(backgroundColor);
-        button.setForeground(foregroundColor);
-        button.setFont(new Font("SansSerif", Font.BOLD, 16));
-        button.setIcon(SvgUtils.loadSvg(iconPath, 22, 22));
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setMargin(new Insets(0, 10, 0, 0));
+    public void loadReservations(String labelName){
+//        System.out.println(labelName+"I'm gunna catch u nigger");
+        if(labelName.equals(options.get(0))){  
+//            System.out.println(labelName+" Option 1 clicked");
+            row1.removeAll();       // removes every child component
+            row1.revalidate();      // tells the layout manager to recalculate layout
+            row1.repaint();
+            showDestinationCards(6); 
+        }
+        else if(labelName.equals(options.get(1))){
+//            System.out.println(labelName+" Option 2 clicked");
+            row1.removeAll();       
+            row1.revalidate();
+            row1.repaint();
+            showDestinationCards(100); 
+        }
+        else if(labelName.equals(options.get(2))){
+//            System.out.println(labelName+" Option 3 clicked");
+            row1.removeAll();       
+            row1.revalidate();
+            row1.repaint();
+            showDestinationCards(5); 
+        }
+    }
+    
+    private void showDestinationCards(int n) {
+        for(int i =0; i<n; i++){
+            DestinationCard card = new DestinationCard("Paris", "4,5", "/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg");
+//            cards.add(card);
+            row1.add(card);
+        }
     }
     
     public void addHomeButtonListener(ActionListener listener){
@@ -266,5 +342,6 @@ public class UserDestinationsView extends JPanel{
     public void addUserProfileButtonListener(ActionListener listener){
         userProfileButton.addActionListener(listener);
     }
+
     
 }

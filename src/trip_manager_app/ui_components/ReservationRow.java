@@ -14,48 +14,50 @@ import javax.swing.*;
  * @author ely
  */
 public class ReservationRow extends PanelRound{
-    int radius = 80;
+    int radius = 70;
     UIButton showConfirmDialogButton;
     public ReservationRow(String destination, String date, String state){
-//        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+//        setLayout(new FlowLayout(FlowLayout.LEADING, 10, 5));
         setBackground(new Color(101, 93, 235, 20));
         setRoundBottomLeft(radius);
         setRoundBottomRight(radius);
         setRoundTopLeft(radius);
         setRoundTopRight(radius);
+        setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 //        setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
         
         JLabel destinationLabel = new JLabel(destination);
+        destinationLabel.setFont(new Font("SansSerif",Font.BOLD, 18));
         JLabel dateLabel = new JLabel(date);
         JLabel stateLabel = new JLabel(state);
         
-        
-        JPanel showConfirmDialogButtonCtnr = new JPanel();
-//        showConfirmDialogButtonCtnr.setOpaque(false);
-        showConfirmDialogButtonCtnr.setLayout(new BorderLayout());
+        JPanel buttonContainer = new JPanel();
+        buttonContainer.setOpaque(false);
+        buttonContainer.setPreferredSize(new Dimension(250, 50));
+        buttonContainer.setMaximumSize(new Dimension(250, 50));
+        buttonContainer.setLayout(new BorderLayout());
+        buttonContainer.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         showConfirmDialogButton = new UIButton(
-            "Voir plus",
+            "Confirmer",
             "", 
-            new Color(101, 93, 235, 20), 
-            new Color(108, 99, 255)      
+            new Color(101, 93, 235, 190), 
+            new Color(255, 255, 255)      
         );
         showConfirmDialogButton.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        showConfirmDialogButtonCtnr.add(showConfirmDialogButton, BorderLayout.EAST);
+        buttonContainer.add(showConfirmDialogButton, BorderLayout.CENTER);
         
         // button color change on hover
         
         showConfirmDialogButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 40));            
+                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 250));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 20));            
+                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 190));            
             }
         });
 
@@ -66,7 +68,7 @@ public class ReservationRow extends PanelRound{
         add(Box.createHorizontalGlue());
         add(stateLabel);
         add(Box.createHorizontalGlue());
-        add(showConfirmDialogButtonCtnr);
+        add(buttonContainer);
 
     
     }
