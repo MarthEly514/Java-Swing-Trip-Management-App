@@ -3,7 +3,22 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/Trip_Manager_App.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/Trip_Manager_App_Main.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserHomepageView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/ReservationRow.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserReservationDetailDialog.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserReservationsView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/NavBarHorizontal.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserDestinationsView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserProfileView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/ClientDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/ClientModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/ReservationDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/VoyageDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/ClientController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserDestinationDetails.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/MainFrame.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/DestinationCard.java</file>
         </group>
     </open-files>
 </project-private>

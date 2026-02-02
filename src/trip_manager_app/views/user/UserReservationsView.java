@@ -27,9 +27,16 @@ public class UserReservationsView extends JPanel{
     private UIButton reservationButton;
     private UIButton userProfileButton;
     private List<String> options;
-    JPanel row1;
+    private JPanel row1;
+    private JFrame parentFrame;
     
     public UserReservationsView(){
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
+    public UserReservationsView(JFrame parentFrame){
+        this.parentFrame = parentFrame;
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -213,7 +220,6 @@ public class UserReservationsView extends JPanel{
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
         
-        
         topWrapper.add(searchBar);
         topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
@@ -279,7 +285,6 @@ public class UserReservationsView extends JPanel{
         int n = 4;
         showReservationRows(n); 
         
-        
         bottomWrapper.add(row1);
 
         wrapper.add(topWrapper);
@@ -318,11 +323,21 @@ public class UserReservationsView extends JPanel{
     public void addUserProfileButtonListener(ActionListener listener){
         userProfileButton.addActionListener(listener);
     }
+    
+    public void showDetails(String content){
+        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content);   
+        dialog.showDialog();
+    }
 
     private void showReservationRows(int n) {
         if(n > 0){
+            String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", "LA, Los Angeles", "Utah", "Ares", "Revan", "Java", "Caire", "Jerusalem"};
             for(int i = 0; i<n; i++){
-                ReservationRow resRow = new ReservationRow("Paris", "12 Fevrier 2026", "En attente" );
+                String destination = destinations[i];
+                ReservationRow resRow = new ReservationRow(destination, "12 Fevrier 2026", "En attente", e ->{
+                    showDetails(destination);
+                } 
+            );
                 row1.add(resRow);
                 row1.add(Box.createVerticalStrut(20));  
             }

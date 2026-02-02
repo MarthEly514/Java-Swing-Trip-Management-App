@@ -45,6 +45,7 @@ public class ClientController {
         userProfileView.addHomeButtonListener(e -> frame.showView("userHomepageView"));
         userProfileView.addDestinationButtonListener(e -> frame.showView("userDestinationsView"));
         userProfileView.addReservationButtonListener(e -> frame.showView("userReservationsView"));
+        userProfileView.addlogoutButtonListener(e -> frame.showView("loginView"));
 
     }
 }

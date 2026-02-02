@@ -5,9 +5,12 @@
 package trip_manager_app.ui_components;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -20,6 +23,27 @@ public class DestinationCard extends PanelRound{
 
     public DestinationCard(String destination, String rating, String imagePath){
         super(imagePath); 
+        initCard(destination,rating);
+    }
+    
+    public DestinationCard(String destination, String rating, String imagePath, Consumer<String> execAction){
+        super(imagePath); 
+        initCard(destination,rating);
+        addMouseListener(new MouseAdapter() {
+                        @Override
+            public void mouseClicked(MouseEvent e){
+//                if(!active.equals(optionLabel.getText())){
+//                    setActive(optionLabel.getText());
+//                    optionLabels.forEach(optionLabel->setFocusedOption(optionLabel));
+//                }
+                    execAction.accept("");          
+                
+            }
+        });
+    
+    }
+    
+    private void initCard(String destination, String rating){
         int radius = 50;
         setLayout(new BorderLayout());
         setBackground(Color.pink);
@@ -58,7 +82,8 @@ public class DestinationCard extends PanelRound{
         
         bottomPanel.add(destinationLabel, BorderLayout.NORTH);
         bottomPanel.add(ratingLabel, BorderLayout.SOUTH);
-    
     }
+    
+    
     
 }

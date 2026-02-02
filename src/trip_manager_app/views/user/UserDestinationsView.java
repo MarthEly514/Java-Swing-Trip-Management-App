@@ -29,6 +29,7 @@ public class UserDestinationsView extends JPanel{
     private UIButton userProfileButton;
     private List<String> options;
     private JPanel row1;
+    private JFrame parentFrame;
     
     public UserDestinationsView(){
         setLayout(new BorderLayout());
@@ -36,6 +37,12 @@ public class UserDestinationsView extends JPanel{
         add(createRightPanel(), BorderLayout.CENTER);
     }
     
+    public UserDestinationsView(JFrame parentFrame){
+        this.parentFrame = parentFrame;
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -262,7 +269,7 @@ public class UserDestinationsView extends JPanel{
 
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
-        
+                        
         topWrapper.add(searchBar);
         topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
@@ -312,7 +319,7 @@ public class UserDestinationsView extends JPanel{
             row1.removeAll();       
             row1.revalidate();
             row1.repaint();
-            showDestinationCards(100); 
+            showDestinationCards(10); 
         }
         else if(labelName.equals(options.get(2))){
 //            System.out.println(labelName+" Option 3 clicked");
@@ -324,11 +331,20 @@ public class UserDestinationsView extends JPanel{
     }
     
     private void showDestinationCards(int n) {
+        String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", "LA, Los Angeles", "Utah", "Ares", "Revan", "Java", "Caire", "Jerusalem"};
         for(int i =0; i<n; i++){
-            DestinationCard card = new DestinationCard("Paris", "4,5", "/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg");
+            String destinationName = destinations[i];
+            DestinationCard card = new DestinationCard(destinationName, "4,5", "/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg",e -> {
+                showDetails(destinationName);
+            });
 //            cards.add(card);
             row1.add(card);
         }
+    }
+    
+    public void showDetails(String content){
+        UserDestinationDetails dialog = new UserDestinationDetails(parentFrame, content);   
+        dialog.showDialog();
     }
     
     public void addHomeButtonListener(ActionListener listener){

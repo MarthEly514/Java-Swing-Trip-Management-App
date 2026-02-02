@@ -28,8 +28,8 @@ public class Trip_Manager_App_Main {
             LoginView loginView = new LoginView();
             SignupView signupView = new SignupView();
             UserHomepageView userHomepageView = new UserHomepageView();
-            UserDestinationsView userDestinationsView = new UserDestinationsView();
-            UserReservationsView userReservationsView = new UserReservationsView();
+            UserDestinationsView userDestinationsView = new UserDestinationsView(frame);
+            UserReservationsView userReservationsView = new UserReservationsView(frame);
             UserProfileView userProfileView = new UserProfileView();
             
             //controllers

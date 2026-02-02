@@ -26,6 +26,7 @@ public class UserProfileView extends JPanel{
     private UIButton destinationButton;
     private UIButton reservationButton;
     private UIButton userProfileButton;
+    private UIButton logoutButton;
     private JPanel row1;
     
     public UserProfileView(){
@@ -215,6 +216,7 @@ public class UserProfileView extends JPanel{
         
         
         JPanel bottomWrapper = new JPanel();
+        bottomWrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
         bottomWrapper.setBackground(Color.white);
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -262,8 +264,45 @@ public class UserProfileView extends JPanel{
             }
         });
         
-        SubtitleLabel subtitle1 = new SubtitleLabel("Destinations en vedette");
+        SubtitleLabel subtitle1 = new SubtitleLabel("Mes informations");
+        JPanel informationsPanel = new JPanel();
+        informationsPanel.setOpaque(false);
+        informationsPanel.setLayout(new BoxLayout(informationsPanel, BoxLayout.Y_AXIS));    
+        informationsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        JLabel nameLabel = new JLabel("Nom complet:    Ash Lorian");
+        JLabel emailLabel = new JLabel("Adresse mail:    ashLori@gmail.com");
+        JLabel phoneLabel = new JLabel("Téléphone:   +33 019 68 945");
+        
+        Font font = new Font("SansSerif", Font.PLAIN, 18);
+        nameLabel.setFont(font);
+        emailLabel.setFont(font);
+        phoneLabel.setFont(font);
+        
+        JPanel buttonContainer = new JPanel();
+        buttonContainer.setOpaque(false);
+        buttonContainer.setPreferredSize(new Dimension(250, 50));
+        buttonContainer.setMaximumSize(new Dimension(250, 50));
+        buttonContainer.setLayout(new BorderLayout());
+        buttonContainer.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        logoutButton = new UIButton(
+                "  Mon Profil",
+                "/trip_manager_app/ressources/icons/logout_light.svg", 
+                new Color(255, 100, 100), 
+                Color.white
+        );
+        logoutButton.setHorizontalAlignment(SwingConstants.CENTER);
+        buttonContainer.add(logoutButton, BorderLayout.CENTER);
+        
+        
+        informationsPanel.add(nameLabel);
+        informationsPanel.add(Box.createVerticalStrut(20));
+        informationsPanel.add(emailLabel);
+        informationsPanel.add(Box.createVerticalStrut(20));
+        informationsPanel.add(phoneLabel);
 
+        
+        SubtitleLabel subtitle2 = new SubtitleLabel("Mon activité");
 
         row1 = new JPanel();
         row1.setOpaque(false);
@@ -272,10 +311,26 @@ public class UserProfileView extends JPanel{
         row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
+        subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
+        subtitle2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        informationsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row1.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        emailLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        phoneLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
         int n = 4;
         showReservationRows(n); 
         
         bottomWrapper.add(subtitle1);
+        bottomWrapper.add(Box.createVerticalStrut(20));
+        bottomWrapper.add(informationsPanel);
+        bottomWrapper.add(Box.createVerticalStrut(30));
+        bottomWrapper.add(buttonContainer);
+        bottomWrapper.add(Box.createVerticalStrut(20));
+        bottomWrapper.add(subtitle2);
         bottomWrapper.add(Box.createVerticalStrut(20));
         bottomWrapper.add(row1);
 
@@ -303,6 +358,10 @@ public class UserProfileView extends JPanel{
     
     public void addReservationButtonListener(ActionListener listener){
         reservationButton.addActionListener(listener);
+    }
+    
+    public void addlogoutButtonListener(ActionListener listener){
+        logoutButton.addActionListener(listener);
     }
     
     private void showReservationRows(int n) {

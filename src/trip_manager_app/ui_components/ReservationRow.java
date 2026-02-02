@@ -7,6 +7,7 @@ package trip_manager_app.ui_components;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 import javax.swing.*;
 
 /**
@@ -17,6 +18,27 @@ public class ReservationRow extends PanelRound{
     int radius = 70;
     UIButton showConfirmDialogButton;
     public ReservationRow(String destination, String date, String state){
+        initRow(destination, date, state);
+    }
+    
+    public ReservationRow(String destination, String date, String state, Consumer<String> execAction){
+        initRow(destination, date, state);
+        showConfirmDialogButton.addMouseListener(new MouseAdapter() {
+            
+            @Override
+            public void mouseClicked(MouseEvent e){
+//                if(!active.equals(optionLabel.getText())){
+//                    setActive(optionLabel.getText());
+//                    optionLabels.forEach(optionLabel->setFocusedOption(optionLabel));
+//                    execAction.accept(optionLabel.getName());          
+//                }
+                    execAction.accept("");          
+                
+            }
+        });
+    }
+
+    private void initRow(String destination, String date, String state) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 //        setLayout(new FlowLayout(FlowLayout.LEADING, 10, 5));
         setBackground(new Color(101, 93, 235, 20));
@@ -39,7 +61,7 @@ public class ReservationRow extends PanelRound{
         buttonContainer.setLayout(new BorderLayout());
         buttonContainer.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         showConfirmDialogButton = new UIButton(
-            "Confirmer",
+            "Voir",
             "", 
             new Color(101, 93, 235, 190), 
             new Color(255, 255, 255)      
@@ -72,4 +94,4 @@ public class ReservationRow extends PanelRound{
 
     
     }
-}
+    }
