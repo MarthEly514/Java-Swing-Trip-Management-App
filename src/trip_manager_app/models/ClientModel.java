@@ -9,5 +9,90 @@ package trip_manager_app.models;
  * @author ely
  */
 public class ClientModel {
+    private int idClient;
+    private String nom;
+    private String prenom;
+    private String eMail;
+    private String motDePasse;
+    private int telephone;
+    
+    
+    
+     public ClientModel() {}
+    
+    // Constructeur avec paramètres
+    public ClientModel(String nom, String prenom, String eMail, int telephone, String motDePasse) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.eMail = eMail;
+        this.telephone = telephone;
+        this.motDePasse = motDePasse;
+    }
+    
+    
+    
+    
+    
+    
+    public int getIdClient(){
+        return idClient;
+    }
+    
+    public String getNom(){
+        return nom;
+    }
+    
+    public String getPrenom(){
+        return prenom;
+        
+    } 
+    
+    public String getEMail(){
+        return eMail;
+    }
+    
+    public String getMotDePasse(){
+        return motDePasse;
+    }
+    
+    public int getTelephone(){
+        return telephone;
+    }
+    
+    
+    
+    public void setIdClient(int idClient){
+        this.idClient=idClient;
+    }
+    
+    public void setNom(String nom){
+        this.nom=nom;
+    }
+    
+    public void setPrenom(String prenom){
+        this.prenom=prenom;
+        
+    } 
+    
+    public void setEMail(String eMail){
+        this.eMail=eMail;
+    }
+    
+    public void setMotDePasse(String motDePasse){
+        this.motDePasse=motDePasse;
+    }
+    
+    public void setTelephone(int telephone){
+        this.telephone=telephone;
+    }
+    
+     @Override
+    public String toString() {
+        return nom + " " + prenom + " (" + eMail + ")";
+    }
+    
+    
+    
+   
     
 }
