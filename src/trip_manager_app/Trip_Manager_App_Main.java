@@ -4,8 +4,7 @@
  */
 package trip_manager_app;
 
-import trip_manager_app.controllers.LoginController;
-import trip_manager_app.controllers.SignupController;
+import trip_manager_app.controllers.*;
 import trip_manager_app.views.LoginView;
 import trip_manager_app.views.*;
 import trip_manager_app.views.user.*;
@@ -23,12 +22,20 @@ public class Trip_Manager_App_Main {
     public static void main(String[] args) {
         // TODO code application logic here
         javax.swing.SwingUtilities.invokeLater(()->{
+            
+            // pages
             MainFrame frame = new MainFrame();
             LoginView loginView = new LoginView();
             SignupView signupView = new SignupView();
             UserHomepageView userHomepageView = new UserHomepageView();
+            UserDestinationsView userDestinationsView = new UserDestinationsView(frame);
+            UserReservationsView userReservationsView = new UserReservationsView(frame);
+            UserProfileView userProfileView = new UserProfileView();
+            
+            //controllers
             new LoginController(frame, loginView, userHomepageView);
             new SignupController(frame, signupView, userHomepageView);
+            new ClientController(frame, loginView, userHomepageView, userDestinationsView, userReservationsView, userProfileView);
 
             // default view frame.showView("Login");
             frame.addView(userHomepageView, "userHomepageView");
