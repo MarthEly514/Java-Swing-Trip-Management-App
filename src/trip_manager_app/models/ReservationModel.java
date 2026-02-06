@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @author ely
  */
 public class ReservationModel {
-    
+//    DDSH
     private int idReservation;
     private LocalDateTime dateReservation;
     private NewEnumReservation statut;
@@ -39,7 +39,7 @@ public class ReservationModel {
     public ReservationModel() {
     }
     
-    
+//    XFHS
     
     public int getIdReservation(){
         return idReservation;

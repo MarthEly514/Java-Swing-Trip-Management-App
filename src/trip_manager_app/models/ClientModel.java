@@ -75,7 +75,7 @@ public class ClientModel {
     } 
     
     public void setEMail(String eMail){
-        this.eMail=eMail;
+        this.eMail = eMail;
     }
     
     public void setMotDePasse(String motDePasse){

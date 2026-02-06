@@ -91,7 +91,7 @@ public class ReservationDAO {
             return pstmt.executeUpdate() > 0;
             
         } catch (SQLException e) {
-            System.err.println("❌ Erreur modification statut: " + e.getMessage());
+            System.err.println("❌ Erreur modification statut INVALIDE: " + e.getMessage());
             return false;
         }
     }
