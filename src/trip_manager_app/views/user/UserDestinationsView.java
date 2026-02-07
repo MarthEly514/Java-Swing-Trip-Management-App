@@ -199,13 +199,6 @@ public class UserDestinationsView extends JPanel{
         topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
-        JPanel searchBar = new JPanel();
-        searchBar.setBackground(Color.red);
-        searchBar.setPreferredSize(new Dimension(300, 60));
-        searchBar.setMaximumSize(new Dimension(300, 100));
-//        searchBar.setMinimumSize(new Dimension(1000, 0));
-        searchBar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel title = new JLabel("Destinations");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -270,7 +263,6 @@ public class UserDestinationsView extends JPanel{
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
                         
-        topWrapper.add(searchBar);
         topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
         topWrapper.add(Box.createVerticalStrut(10));

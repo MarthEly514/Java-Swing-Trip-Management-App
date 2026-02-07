@@ -1,13 +1,6 @@
 package trip_manager_app.ui_components;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -17,10 +10,27 @@ import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class PanelRound extends JPanel {
+
+
+
+    /**
+     * @return the scaleToFit
+     */
+    @java.beans.BeanProperty(preferred = true, visualUpdate = true)
+    public boolean isScaleToFit() {
+        return scaleToFit;
+    }
+
+    /**
+     * @param scaleToFit the scaleToFit to set
+     */
+    @java.beans.BeanProperty(preferred = true, visualUpdate = true)
+    public void setScaleToFit(boolean scaleToFit) {
+        this.scaleToFit = scaleToFit;
+    }
 
     private int roundTopLeft = 0;    
     private int roundTopRight = 0;
@@ -33,6 +43,7 @@ public class PanelRound extends JPanel {
     private Color gradientStartColor;
     private Color gradientEndColor; 
     private boolean scaleToFit = false;
+    private boolean fitWidth = false;
     private boolean blurred = false;
     private float blurRadius = 10f;
     private float opacity = 0.3f;
@@ -265,7 +276,7 @@ public class PanelRound extends JPanel {
     }
     
     private void drawBackgroundImage(Graphics2D g2) {
-        if (scaleToFit) {
+        if (isScaleToFit()) {
             double panelRatio = (double) getWidth() / getHeight();
             double imageRatio = (double) backgroundImage.getWidth() / backgroundImage.getHeight();
 
@@ -282,7 +293,17 @@ public class PanelRound extends JPanel {
             }
 
             g2.drawImage(backgroundImage, x, y, drawWidth, drawHeight, this);
-        } else {
+        } else if(isFitWidth()){
+            int panelWidth = getWidth();
+            int bgWidth = backgroundImage.getWidth();
+            int bgHeight = backgroundImage.getHeight();
+            double ratio = (double)panelWidth/bgWidth;
+            int resizedHeight = (int)(bgHeight*ratio);
+            int y = bgHeight - resizedHeight;
+            Image resizedBg = backgroundImage.getScaledInstance(panelWidth, resizedHeight, Image.SCALE_SMOOTH);
+            
+            g2.drawImage(resizedBg, 0, y, this);
+        }else {
             int x = (getWidth() - backgroundImage.getWidth()) / 2;
             int y = (getHeight() - backgroundImage.getHeight()) / 2;
             g2.drawImage(backgroundImage, x, y, this);
@@ -439,5 +460,19 @@ public class PanelRound extends JPanel {
         area.add(new Area(new Rectangle2D.Double(0, 0, width-roundX/2, height)));
         area.add(new Area(new Rectangle2D.Double(0, 0,  width, height-roundY/2)));      
         return area;     
+    }
+
+    /**
+     * @return the fitWidth
+     */
+    public boolean isFitWidth() {
+        return fitWidth;
+    }
+
+    /**
+     * @param fitWidth the fitWidth to set
+     */
+    public void setFitWidth(boolean fitWidth) {
+        this.fitWidth = fitWidth;
     }
 }

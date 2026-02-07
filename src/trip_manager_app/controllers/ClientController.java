@@ -23,9 +23,6 @@ public class ClientController {
         frame.addView(userReservationsView, "userReservationsView");
         frame.addView(userProfileView, "userProfileView");
         
-        loginView.addSignupRedirectButtonListener(e -> frame.showView("signupView"));
-        loginView.addLoginButtonListener(e -> frame.showView("userHomepageView"));
-        
         //homepage navigation
         userHomepageView.addDestinationButtonListener(e -> frame.showView("userDestinationsView"));
         userHomepageView.addReservationButtonListener(e -> frame.showView("userReservationsView"));

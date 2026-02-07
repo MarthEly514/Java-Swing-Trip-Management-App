@@ -28,8 +28,54 @@ import trip_manager_app.utils.SvgUtils;
  * @author ely
  */
 public class SignupView extends JPanel{
+
+    /**
+     * @return the lastNameField
+     */
+    public RoundedTextField getLastNameField() {
+        return lastNameField;
+    }
+
+    /**
+     * @return the firstNameField
+     */
+    public RoundedTextField getFirstNameField() {
+        return firstNameField;
+    }
+
+    /**
+     * @return the emailField
+     */
+    public RoundedTextField getEmailField() {
+        return emailField;
+    }
+
+    /**
+     * @return the phoneField
+     */
+    public RoundedTextField getPhoneField() {
+        return phoneField;
+    }
+
+    /**
+     * @return the passwordField
+     */
+    public RoundedPasswordField getPasswordField() {
+        return passwordField;
+    }
+    
+    
+    
+    private JPanel formPanel;
     private RoundedButton signupButton;
     private RoundedButton loginRedirectButton;
+    private RoundedTextField lastNameField;
+    private RoundedTextField firstNameField;
+    private RoundedTextField emailField;
+    private RoundedTextField phoneField;
+    private RoundedPasswordField passwordField;
+    private JLabel errorLabel;
+    
     public SignupView(){
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
@@ -128,7 +174,7 @@ public class SignupView extends JPanel{
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.setBackground(Color.white);
         //wrapper.setBackground(new Color(248, 248, 250));
-        JPanel formPanel = new JPanel();
+        formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
         formPanel.setPreferredSize(new Dimension(450, 550));
@@ -140,64 +186,64 @@ public class SignupView extends JPanel{
         
         // Lastname Field
 
-        RoundedTextField lastNameField = new RoundedTextField();
-        lastNameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        lastNameField.setRadius(50);
-        lastNameField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        lastNameField.setForeground(new Color(117, 117, 117));
-        lastNameField.setPlaceholder("Nom");
-        lastNameField.setBorderColor(new Color(214,211,255));
-        lastNameField.setPlaceholderColor(new Color(190, 190, 190));
-        lastNameField.setFocusedBorderColor(new Color(108, 99, 255));
+        lastNameField = new RoundedTextField();
+        getLastNameField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getLastNameField().setRadius(50);
+        getLastNameField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getLastNameField().setForeground(new Color(117, 117, 117));
+        getLastNameField().setPlaceholder("Nom");
+        getLastNameField().setBorderColor(new Color(214,211,255));
+        getLastNameField().setPlaceholderColor(new Color(190, 190, 190));
+        getLastNameField().setFocusedBorderColor(new Color(108, 99, 255));
         
         // FirstName Field
 
-        RoundedTextField firstNameField = new RoundedTextField();
-        firstNameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        firstNameField.setRadius(50);
-        firstNameField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        firstNameField.setForeground(new Color(117, 117, 117));
-        firstNameField.setPlaceholder("Prenom");
-        firstNameField.setBorderColor(new Color(214,211,255));
-        firstNameField.setPlaceholderColor(new Color(190, 190, 190));
-        firstNameField.setFocusedBorderColor(new Color(108, 99, 255));
+        firstNameField = new RoundedTextField();
+        getFirstNameField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getFirstNameField().setRadius(50);
+        getFirstNameField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getFirstNameField().setForeground(new Color(117, 117, 117));
+        getFirstNameField().setPlaceholder("Prenom");
+        getFirstNameField().setBorderColor(new Color(214,211,255));
+        getFirstNameField().setPlaceholderColor(new Color(190, 190, 190));
+        getFirstNameField().setFocusedBorderColor(new Color(108, 99, 255));
 
 
         // Email Field
 
-        RoundedTextField emailField = new RoundedTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        emailField.setRadius(50);
-        emailField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        emailField.setForeground(new Color(117, 117, 117));
-        emailField.setPlaceholder("Email");
-        emailField.setBorderColor(new Color(214,211,255));
-        emailField.setPlaceholderColor(new Color(190, 190, 190));
-        emailField.setFocusedBorderColor(new Color(108, 99, 255));
+        emailField = new RoundedTextField();
+        getEmailField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getEmailField().setRadius(50);
+        getEmailField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getEmailField().setForeground(new Color(117, 117, 117));
+        getEmailField().setPlaceholder("Email");
+        getEmailField().setBorderColor(new Color(214,211,255));
+        getEmailField().setPlaceholderColor(new Color(190, 190, 190));
+        getEmailField().setFocusedBorderColor(new Color(108, 99, 255));
         
         // Phone Number Field
 
-        RoundedTextField phoneField = new RoundedTextField();
-        phoneField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        phoneField.setRadius(50);
-        phoneField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        phoneField.setForeground(new Color(117, 117, 117));
-        phoneField.setPlaceholder("Email");
-        phoneField.setBorderColor(new Color(214,211,255));
-        phoneField.setPlaceholderColor(new Color(190, 190, 190));
-        phoneField.setFocusedBorderColor(new Color(108, 99, 255));
+        phoneField = new RoundedTextField();
+        getPhoneField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getPhoneField().setRadius(50);
+        getPhoneField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getPhoneField().setForeground(new Color(117, 117, 117));
+        getPhoneField().setPlaceholder("Numero de telephone");
+        getPhoneField().setBorderColor(new Color(214,211,255));
+        getPhoneField().setPlaceholderColor(new Color(190, 190, 190));
+        getPhoneField().setFocusedBorderColor(new Color(108, 99, 255));
 
         // Password Field
         
-        RoundedPasswordField passwordField = new RoundedPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        passwordField.setRadius(50);
-        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        passwordField.setForeground(new Color(117, 117, 117));
-        passwordField.setPlaceholder("Mot de passe");
-        passwordField.setBorderColor(new Color(214,211,255));
-        passwordField.setPlaceholderColor(new Color(190, 190, 190));
-        passwordField.setFocusedBorderColor(new Color(108, 99, 255));
+        passwordField = new RoundedPasswordField();
+        getPasswordField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getPasswordField().setRadius(50);
+        getPasswordField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getPasswordField().setForeground(new Color(117, 117, 117));
+        getPasswordField().setPlaceholder("Mot de passe");
+        getPasswordField().setBorderColor(new Color(214,211,255));
+        getPasswordField().setPlaceholderColor(new Color(190, 190, 190));
+        getPasswordField().setFocusedBorderColor(new Color(108, 99, 255));
 
         // Login Button
         
@@ -224,21 +270,28 @@ public class SignupView extends JPanel{
                 signupButton.setBackground(new Color(108, 99, 255));            
             }
         });
+        
+        errorLabel = new JLabel();
+        errorLabel.setForeground(Color.red);
+        errorLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         formPanel.setOpaque(false);
         formPanel.add(title);
         formPanel.add(Box.createVerticalStrut(30));
-        formPanel.add(lastNameField);
+        formPanel.add(getLastNameField());
         formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(firstNameField);
+        formPanel.add(getFirstNameField());
         formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(emailField);
+        formPanel.add(getEmailField());
         formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(phoneField);
+        formPanel.add(getPhoneField());
         formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(passwordField);
+        formPanel.add(getPasswordField());
         formPanel.add(Box.createVerticalStrut(20));
         formPanel.add(signupButton);
+        formPanel.add(Box.createVerticalStrut(30));
+        formPanel.add(errorLabel);
 
         
 
@@ -252,5 +305,52 @@ public class SignupView extends JPanel{
     
     public void addLoginRedirectButtonListener(ActionListener listener){
         loginRedirectButton.addActionListener(listener);
+    }
+    
+    /**
+     * @return the lastNameField content
+     */
+    public String getLastName() {
+        return lastNameField.getText();
+    }
+
+    /**
+     * @return the firstNameField content
+     */
+    public String getFirstName() {
+        return firstNameField.getText();
+    }
+
+    /**
+     * @return the emailField content
+     */
+    public String getEmail() {
+        return emailField.getText();
+    }
+
+    /**
+     * @return the phoneField content
+     */
+    public String getPhone() {
+        return phoneField.getText();
+    }
+
+    /**
+     * @return the passwordField content
+     */
+    public char[] getPassword() {
+        return passwordField.getPassword();
+    }
+
+    public void emptyFields() {
+        getLastNameField().setText("");
+        getFirstNameField().setText("");
+        getEmailField().setText("");
+        getPhoneField().setText("");
+        getPasswordField().setText("");
+    }
+
+    public void hideErrorMessage() {
+        errorLabel.setText(" ");
     }
 }

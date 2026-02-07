@@ -192,13 +192,6 @@ public class UserProfileView extends JPanel{
         topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
-        JPanel searchBar = new JPanel();
-        searchBar.setBackground(Color.red);
-        searchBar.setPreferredSize(new Dimension(300, 60));
-        searchBar.setMaximumSize(new Dimension(300, 100));
-//        searchBar.setMinimumSize(new Dimension(1000, 0));
-        searchBar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel title = new JLabel("Profil");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -209,7 +202,6 @@ public class UserProfileView extends JPanel{
 
         
         
-        topWrapper.add(searchBar);
         topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
         topWrapper.add(Box.createVerticalStrut(10));
@@ -286,7 +278,7 @@ public class UserProfileView extends JPanel{
         buttonContainer.setLayout(new BorderLayout());
         buttonContainer.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         logoutButton = new UIButton(
-                "  Mon Profil",
+                "  Se deconnecter",
                 "/trip_manager_app/ressources/icons/logout_light.svg", 
                 new Color(255, 100, 100), 
                 Color.white

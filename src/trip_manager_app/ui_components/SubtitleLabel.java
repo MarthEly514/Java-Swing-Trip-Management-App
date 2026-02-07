@@ -15,7 +15,7 @@ public class SubtitleLabel extends JPanel{
     public SubtitleLabel(String text){
         JLabel title = new JLabel(text);
         title.setFont(new Font("SansSerif", Font.BOLD, 16));
-        title.setForeground(new Color(50, 50, 50));
+        title.setForeground(new Color(0, 0, 0, 160));
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(100, 30));
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));

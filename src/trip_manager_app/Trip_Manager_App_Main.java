@@ -27,19 +27,25 @@ public class Trip_Manager_App_Main {
             MainFrame frame = new MainFrame();
             LoginView loginView = new LoginView();
             SignupView signupView = new SignupView();
+            
+            //User views
             UserHomepageView userHomepageView = new UserHomepageView();
             UserDestinationsView userDestinationsView = new UserDestinationsView(frame);
             UserReservationsView userReservationsView = new UserReservationsView(frame);
             UserProfileView userProfileView = new UserProfileView();
             
+            //Admin views
+            AdminHomepageView adminHomepageView = new AdminHomepageView();
+            AdminReservationsManagementView adminReservationsManagementView = new AdminReservationsManagementView();
+            AdminUserManagementView adminUserManagementView = new AdminUserManagementView();
+            
             //controllers
-            new LoginController(frame, loginView, userHomepageView);
-            new SignupController(frame, signupView, userHomepageView);
+//            new LoginController(frame, loginView, userHomepageView);
+//            new SignupController(frame, signupView, userHomepageView);
             new ClientController(frame, loginView, userHomepageView, userDestinationsView, userReservationsView, userProfileView);
-
-            // default view frame.showView("Login");
-            frame.addView(userHomepageView, "userHomepageView");
-            frame.showView("userHomepageView");
+            new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView);
+            new AuthController(frame, loginView, signupView, adminHomepageView, userHomepageView);
+            
             frame.setVisible(true); 
         });
     }

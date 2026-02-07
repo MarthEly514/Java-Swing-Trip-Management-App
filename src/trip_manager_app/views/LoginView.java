@@ -5,9 +5,7 @@
 package trip_manager_app.views;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,6 +19,26 @@ import trip_manager_app.utils.SvgUtils;
  * @author ely
  */
 public class LoginView extends JPanel{
+
+    /**
+     * @return the emailField
+     */
+    public RoundedTextField getEmailField() {
+        return emailField;
+    }
+
+    /**
+     * @return the passwordField
+     */
+    public RoundedPasswordField getPasswordField() {
+        return passwordField;
+    }
+    
+    private RoundedTextField emailField;
+    private RoundedPasswordField passwordField;
+    private JLabel errorLabel;
+    private JPanel formPanel;
+    
     private RoundedButton signupRedirectButton;
     private RoundedButton loginButton;
     public LoginView(){
@@ -117,10 +135,10 @@ public class LoginView extends JPanel{
         JPanel wrapper = new JPanel(new GridBagLayout());
         wrapper.setBackground(Color.white);
         //wrapper.setBackground(new Color(248, 248, 250));
-        JPanel formPanel = new JPanel();
+        formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-        formPanel.setPreferredSize(new Dimension(450, 350));
+        formPanel.setPreferredSize(new Dimension(450, 450));
 
         JLabel title = new JLabel("Connexion");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -129,27 +147,27 @@ public class LoginView extends JPanel{
 
         // Email Field
 
-        RoundedTextField emailField = new RoundedTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        emailField.setRadius(50);
-        emailField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        emailField.setForeground(new Color(117, 117, 117));
-        emailField.setPlaceholder("Email");
-        emailField.setBorderColor(new Color(214,211,255));
-        emailField.setPlaceholderColor(new Color(190, 190, 190));
-        emailField.setFocusedBorderColor(new Color(108, 99, 255));
+        emailField = new RoundedTextField();
+        getEmailField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getEmailField().setRadius(50);
+        getEmailField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getEmailField().setForeground(new Color(117, 117, 117));
+        getEmailField().setPlaceholder("Email");
+        getEmailField().setBorderColor(new Color(214,211,255));
+        getEmailField().setPlaceholderColor(new Color(190, 190, 190));
+        getEmailField().setFocusedBorderColor(new Color(108, 99, 255));
 
         // Password Field
         
-        RoundedPasswordField passwordField = new RoundedPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        passwordField.setRadius(50);
-        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        passwordField.setForeground(new Color(117, 117, 117));
-        passwordField.setPlaceholder("Mot de passe");
-        passwordField.setBorderColor(new Color(214,211,255));
-        passwordField.setPlaceholderColor(new Color(190, 190, 190));
-        passwordField.setFocusedBorderColor(new Color(108, 99, 255));
+        passwordField = new RoundedPasswordField();
+        getPasswordField().setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        getPasswordField().setRadius(50);
+        getPasswordField().setFont(new Font("SansSerif", Font.PLAIN, 16));
+        getPasswordField().setForeground(new Color(117, 117, 117));
+        getPasswordField().setPlaceholder("Mot de passe");
+        getPasswordField().setBorderColor(new Color(214,211,255));
+        getPasswordField().setPlaceholderColor(new Color(190, 190, 190));
+        getPasswordField().setFocusedBorderColor(new Color(108, 99, 255));
 
         // Login Button
         
@@ -177,19 +195,49 @@ public class LoginView extends JPanel{
             }
         });
 
+        
+        errorLabel = new JLabel();
+        errorLabel.setForeground(Color.red);
+        errorLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
         formPanel.setOpaque(false);
         formPanel.add(title);
         formPanel.add(Box.createVerticalStrut(30));
-        formPanel.add(emailField);
+        formPanel.add(getEmailField());
         formPanel.add(Box.createVerticalStrut(20));
-        formPanel.add(passwordField);
+        formPanel.add(getPasswordField());
         formPanel.add(Box.createVerticalStrut(20));
         formPanel.add(loginButton);
+        formPanel.add(Box.createVerticalStrut(30));
+        formPanel.add(errorLabel);
 
         
 
         wrapper.add(formPanel);
         return wrapper;
+    }
+    
+    public void showErrorMessage(String errorMessage){ 
+        errorLabel.setText(errorMessage);
+    }
+    
+    public void hideErrorMessage(){ 
+        errorLabel.setText(" ");
+    }
+    
+    public String getEmail(){
+        return getEmailField().getText();
+    }
+    
+    public char[] getPassword(){
+        return getPasswordField().getPassword();
+    }
+    
+    public void emptyFields(){
+        getEmailField().setText("");
+        getPasswordField().setText("");
     }
     
     public void addSignupRedirectButtonListener(ActionListener listener){
@@ -199,5 +247,7 @@ public class LoginView extends JPanel{
     public void addLoginButtonListener(ActionListener listener){
         loginButton.addActionListener(listener);
     }
+    
+   
         
 }
