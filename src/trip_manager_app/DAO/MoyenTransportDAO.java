@@ -74,20 +74,22 @@ public class MoyenTransportDAO {
 
      //UPDATE
     public void modifier(MoyenTransportModel transport) {
-        String sql = "UPDATE moyen_de_transport SET type_transport = ?, nombre_places = ? WHERE id_transport = ?";
+    String sql = "UPDATE moyen_de_transport SET type_transport = ?, nombre_places = ? WHERE id_transport = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, transport.getTypeVehicule());
-            ps.setString(2, transport.getTypeVehicule());
-            ps.setInt(3, transport.getNombrePlaces());
-            ps.executeUpdate();
+        ps.setString(1, transport.getTypeVehicule());
+        ps.setInt(2, transport.getNombrePlaces());
+        ps.setInt(3, transport.getNoVehicule());
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        ps.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+
 
      //DELETE
     public void supprimer(int id) {

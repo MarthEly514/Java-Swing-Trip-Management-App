@@ -53,7 +53,7 @@ public class VoyageModel {
         return dateDepart;
     }
        
-    public LocalDateTime getDateaArrive(){
+    public LocalDateTime getDateArrive(){
         return dateArrive;
     }
     
@@ -77,7 +77,7 @@ public class VoyageModel {
         this.villeDepart=villeDepart;
     }
     
-    public void setvilleDestination(String villeDestination){
+    public void setVilleDestination(String villeDestination){
         this.villeDestination=villeDestination;
     }
     
