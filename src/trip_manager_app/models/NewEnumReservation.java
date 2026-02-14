@@ -15,6 +15,10 @@ public enum NewEnumReservation {
 
     private final String libelle;
 
+    NewEnumReservation() {
+        this.libelle = "En attente";
+    }
+    
     NewEnumReservation(String libelle) {
         this.libelle = libelle;
     }
@@ -23,7 +27,7 @@ public enum NewEnumReservation {
         return libelle;
     }
 
-    // Conversion depuis String (pour le DAO)
+    // Conversion depuis String
     public static NewEnumReservation fromString(String text) {
         for (NewEnumReservation statut : NewEnumReservation.values()) {
             if (statut.name().equalsIgnoreCase(text) ||

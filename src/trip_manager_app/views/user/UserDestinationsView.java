@@ -5,6 +5,7 @@
 package trip_manager_app.views.user;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,6 +15,9 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.models.ClientModel;
+import trip_manager_app.models.DestinationModel;
 import trip_manager_app.ui_components.*;
 import trip_manager_app.utils.SvgUtils;
 import trip_manager_app.views.LoginView;
@@ -30,6 +34,9 @@ public class UserDestinationsView extends JPanel{
     private List<String> options;
     private JPanel row1;
     private JFrame parentFrame;
+    private DestinationDAO destDao;
+    private SearchField searchBar;
+    private ClientModel user;
     
     public UserDestinationsView(){
         setLayout(new BorderLayout());
@@ -39,10 +46,21 @@ public class UserDestinationsView extends JPanel{
     
     public UserDestinationsView(JFrame parentFrame){
         this.parentFrame = parentFrame;
+        destDao = new DestinationDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
     }
+    
+    public UserDestinationsView(JFrame parentFrame, ClientModel user){
+        this.parentFrame = parentFrame;
+        this.user = user;
+        destDao = new DestinationDAO();
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
+    
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -207,6 +225,17 @@ public class UserDestinationsView extends JPanel{
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
+        JPanel searchBarContainer = new JPanel();
+        searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
+        searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
+        searchBarContainer.setOpaque(false); 
+        
+        searchBar = new SearchField(e-> searchDestination(searchBar.getSearchQuery()));
+        searchBar.setBorderColor(new Color(161, 117, 255, 30));
+                
+        
+        searchBarContainer.add(searchBar);
+        
         JPanel bottomWrapper = new JPanel();
         bottomWrapper.setBackground(Color.white);
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
@@ -214,56 +243,17 @@ public class UserDestinationsView extends JPanel{
         bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
-        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
-        
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
         
         options = new ArrayList<>();
         options.add("Populaires");
-        options.add("Meilleurs prix");
         options.add("Meilleures notes");
 
         
-        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
-                        
-        topWrapper.add(Box.createVerticalGlue());     
+        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadDestinations(optionName));
+        
+        topWrapper.add(searchBarContainer);         
+//        topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
         topWrapper.add(Box.createVerticalStrut(10));
         topWrapper.add(navBar);
@@ -271,24 +261,16 @@ public class UserDestinationsView extends JPanel{
         
         row1 = new JPanel();
         row1.setOpaque(false);
-        row1.setLayout(new GridLayout(0, 4, 20, 20));  
-        row1.setPreferredSize(null);
-        row1.setMaximumSize(null);
-        row1.setMinimumSize(new Dimension(1, 600));
-        row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 0));
+        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        row1.setMinimumSize(new Dimension(Integer.MAX_VALUE, 600));
+        row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+        row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
+
+        loadDestinations("*");
         
-//        "/home/ely/Downloads/_ - 2026-01-27T002355.176.jpeg"));
-//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235924.487.jpeg"));
-//        images.add(new ImageIcon("/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg"
-
-        showDestinationCards(6);
-
-                
         bottomWrapper.add(row1);
-
-
-        
+ 
         wrapper.add(topWrapper);
         wrapper.add(Box.createVerticalStrut(20));
         wrapper.add(scrollWrapper);
@@ -297,45 +279,100 @@ public class UserDestinationsView extends JPanel{
         return wrapper;
     }
     
-    public void loadReservations(String labelName){
-//        System.out.println(labelName+"I'm gunna catch u nigger");
-        if(labelName.equals(options.get(0))){  
-//            System.out.println(labelName+" Option 1 clicked");
+    public void loadDestinations(String labelName){
+        List<DestinationModel> destinations;
+        if(labelName.equals("*")){
+            destinations = destDao.getNDestinations(4);
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showDestinationCards(6); 
+            showDestinationRows(destinations); 
+        }
+        else if(labelName.equals(options.get(0))){
+                destinations = destDao.getNPopularDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                showDestinationRows(destinations); 
         }
         else if(labelName.equals(options.get(1))){
-//            System.out.println(labelName+" Option 2 clicked");
-            row1.removeAll();       
-            row1.revalidate();
-            row1.repaint();
-            showDestinationCards(10); 
+                destinations = destDao.getNBestDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                showDestinationRows(destinations); 
         }
-        else if(labelName.equals(options.get(2))){
-//            System.out.println(labelName+" Option 3 clicked");
-            row1.removeAll();       
-            row1.revalidate();
-            row1.repaint();
-            showDestinationCards(5); 
-        }
+ 
     }
     
-    private void showDestinationCards(int n) {
-        String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", "LA, Los Angeles", "Utah", "Ares", "Revan", "Java", "Caire", "Jerusalem"};
-        for(int i =0; i<n; i++){
-            String destinationName = destinations[i];
-            DestinationCard card = new DestinationCard(destinationName, "4,5", "/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg",e -> {
-                showDetails(destinationName);
-            });
-//            cards.add(card);
-            row1.add(card);
-        }
+    private void showDestinationRows(List<DestinationModel> destinations) {
+
+        if(!destinations.isEmpty()){
+            for(DestinationModel destination:destinations){
+
+//                    DestinationModel dest = new DestinationModel(destination.getDestinationId(), destination.getVille(), destination.getPays(),  destination.getDescription(), destination.getNote(), destination.getImageId());
+
+                    ListElementRow destRow = new ListElementRow(destination.getVille(), "", "Note: " + destination.getNote(), "/trip_manager_app/ressources/icons/star.svg", e ->{
+                        showDetails(destination);
+                    } 
+                );
+                    row1.add(destRow);
+                    row1.add(Box.createVerticalStrut(20));  
+                }
+        }else{
+            // Center the empty state vertically and horizontally
+            row1.add(Box.createVerticalGlue());
+
+            JPanel noResPanel = new JPanel();
+            noResPanel.setLayout(new BoxLayout(noResPanel, BoxLayout.Y_AXIS));
+            noResPanel.setOpaque(false);
+            noResPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage1 = new JLabel(">-<");
+            noResMessage1.setFont(new Font("SansSerif", Font.BOLD, 48));
+            noResMessage1.setForeground(new Color(180, 180, 180));
+            noResMessage1.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage2 = new JLabel("Aucune destination repondant a ces critères");
+            noResMessage2.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            noResMessage2.setForeground(new Color(120, 120, 120));
+            noResMessage2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            noResPanel.add(noResMessage1);
+            noResPanel.add(Box.createVerticalStrut(10));
+            noResPanel.add(noResMessage2);
+
+            row1.add(noResPanel);
+            row1.add(Box.createVerticalGlue()); 
+            
+        }  
     }
     
-    public void showDetails(String content){
-        UserDestinationDetails dialog = new UserDestinationDetails(parentFrame, content);   
+    private void searchDestination(String searchText){
+        SwingUtilities.invokeLater(()->{
+            List<DestinationModel> destinations;
+            if(searchText.trim().equals("")){
+                destinations = destDao.getNDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching all..."+searchText);
+                showDestinationRows(destinations); 
+
+            } else {
+                destinations = destDao.getMatchingDestinations(searchText);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching..."+searchText);
+                showDestinationRows(destinations); 
+
+            }
+        });
+    }
+
+    public void showDetails(DestinationModel destination){
+        UserDestinationDetails dialog = new UserDestinationDetails(parentFrame, destination);   
         dialog.showDialog();
     }
     

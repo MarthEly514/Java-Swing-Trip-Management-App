@@ -16,7 +16,7 @@ public class PaiementModel {
     private EnumModePaiement modePaiement;
     private int idReservation;
      
-       public PaiementModel() {
+    public PaiementModel() {
         this.datePaiement = LocalDateTime.now();
     }
     

@@ -5,8 +5,12 @@
 package trip_manager_app.ui_components;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.function.Consumer;
 import javax.swing.*;
 
 /**
@@ -17,7 +21,7 @@ import javax.swing.*;
 
 public class SearchField extends JPanel{
     private RoundedTextField field;
-    private JButton button;
+    private JLabel searchIcon;
 
     /**
      * @return the borderRadius
@@ -70,9 +74,11 @@ public class SearchField extends JPanel{
 
     private int borderRadius = 40;
     private int borderWidth = 2;
+    private int delay = 500;
+    private Timer timer;
     private Color borderColor = Color.LIGHT_GRAY;
 
-    public SearchField(){
+    public SearchField(Consumer <String> execFunc){
         setOpaque(false);
         setFocusable(true);
         setLayout(new BorderLayout());
@@ -95,16 +101,55 @@ public class SearchField extends JPanel{
         
         //serachButton
         ImageIcon icon = new ImageIcon(getClass().getResource("/trip_manager_app/ressources/icons/searchIcon.png").getFile());
-        button = new JButton(icon);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        button.setOpaque(false);
-        button.setBackground(new Color(0,0,0,0));
-        button.setFocusPainted(false);
+        searchIcon = new JLabel(icon);
+        searchIcon.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        searchIcon.setOpaque(false);
+        searchIcon.setBackground(new Color(0,0,0,0));
+        
+        //listening on the typed keys inside the text Field
+        field.addKeyListener(new KeyListener(){
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(timer != null && timer.isRunning()){
+                    timer.stop();
+                }
+                
+                timer = new Timer(delay, e1 ->{
+                    String searchText = field.getText();
+                    SwingWorker<String, Void> worker = new SwingWorker <String, Void>(){
+                        @Override
+                        protected String doInBackground() throws Exception {
+                            execFunc.accept(searchText);
+                            return searchText;
+                        }
+                        @Override
+                        protected void done(){
+                            
+                        }
+                        
+                    };
+                    worker.execute();
+                });
+                timer.setRepeats(false);
+                timer.start();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        
+        });
         
         
         add(field, BorderLayout.CENTER);
-        add(button, BorderLayout.EAST);
+        add(searchIcon, BorderLayout.EAST);
 
+    }
+    
+    public String getSearchQuery(){
+        return field.getText().trim();
     }
     
     @Override

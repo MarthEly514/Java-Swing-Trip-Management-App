@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package trip_manager_app.models;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  *
@@ -13,30 +14,36 @@ public class VoyageModel {
     private int idVoyage;
     private String villeDepart;
     private String villeDestination;
-    private LocalDateTime dateDepart;
-    private LocalDateTime dateArrive;
-    private double prix; 
-    private int idMoyenTransport; 
-    private int placesDisponibles; 
+    private LocalDate dateDepart;
+    private LocalDate dateRetour;
+    private BigDecimal prix; 
+    private int noVehicule;
     
     
     
      public VoyageModel() {
-        this.placesDisponibles = 50; 
     }
     
-    public VoyageModel(String villeDepart, String villeDestination, 
-                      LocalDateTime dateDepart, LocalDateTime dateArrive,
-                      double prix, int idMoyenTransport) {
+    public VoyageModel(String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, int noVehicule) {
         this();
         this.villeDepart = villeDepart;
         this.villeDestination = villeDestination;
         this.dateDepart = dateDepart;
-        this.dateArrive = dateArrive;
+        this.dateRetour = dateRetour;
         this.prix = prix;
-        this.idMoyenTransport = idMoyenTransport;
+        this.noVehicule = noVehicule;
     }
     
+    public VoyageModel(int idVoyage, String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, int noVehicule) {
+        this();
+        this.idVoyage = idVoyage;
+        this.villeDepart = villeDepart;
+        this.villeDestination = villeDestination;
+        this.dateDepart = dateDepart;
+        this.dateRetour = dateRetour;
+        this.prix = prix;
+        this.noVehicule = noVehicule;
+    }
     public int getIdVoyage(){
         return idVoyage;
     }
@@ -49,24 +56,20 @@ public class VoyageModel {
         return villeDestination;
     }
       
-    public LocalDateTime getDateDepart(){
+    public LocalDate getDateDepart(){
         return dateDepart;
     }
        
-    public LocalDateTime getDateaArrive(){
-        return dateArrive;
+    public LocalDate getDateRetour(){
+        return dateRetour;
     }
     
-    public double getPrix() { 
+    public BigDecimal getPrix() { 
         return prix;
     }
     
-    public int getIdMoyenTransport() {
-        return idMoyenTransport; 
-    }
-    
-    public int getPlacesDisponibles() { 
-        return placesDisponibles;
+    public int getNoVehicule() {
+        return noVehicule; 
     }
     
     public void setIdVoyage(int idVoyage){
@@ -81,36 +84,33 @@ public class VoyageModel {
         this.villeDestination=villeDestination;
     }
     
-    public void setDateDepart(LocalDateTime dateDepart){
+    public void setDateDepart(LocalDate dateDepart){
         this.dateDepart=dateDepart;
     }
     
-    public void setDateArrive(LocalDateTime dateArrive){
-        this.dateArrive=dateArrive;
+    public void setDateRetour(LocalDate dateRetour){
+        this.dateRetour=dateRetour;
     }
     
-    public void setPrix(double prix) { 
+    public void setPrix(BigDecimal prix) { 
         this.prix = prix; 
     }
     
-     public void setIdMoyenTransport(int idMoyenTransport) {
-         this.idMoyenTransport = idMoyenTransport; 
+     public void setNoVehicule(int noVehicule) {
+         this.noVehicule = noVehicule; 
      }
      
-      public void setPlacesDisponibles(int placesDisponibles) { 
-          this.placesDisponibles = placesDisponibles; 
-      }
       
        public long getDureeEnHeures() {
-        if (dateDepart != null && dateArrive != null) {
-            return java.time.Duration.between(dateDepart, dateArrive).toHours();
+        if (dateDepart != null && dateRetour != null) {
+            return java.time.Duration.between(dateDepart, dateRetour).toHours();
         }
         return 0;
     }
     
     @Override
     public String toString() {
-        return villeDepart + " → " + villeDestination + " (" + dateDepart.toLocalDate() + ") - " + prix + "€";
+        return villeDepart + " → " + villeDestination + " (" + dateDepart + ") - " + prix + "€";
     }
     
     

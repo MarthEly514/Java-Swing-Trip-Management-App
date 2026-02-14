@@ -5,12 +5,23 @@
 package trip_manager_app.views.user;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.ReservationDAO;
+import trip_manager_app.DAO.VoyageDAO;
+import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.NewEnumReservation;
+import trip_manager_app.models.ReservationModel;
+import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.*;
+import trip_manager_app.utils.CachedImageLoader;
 import trip_manager_app.utils.SvgUtils;
 
 /**
@@ -18,15 +29,74 @@ import trip_manager_app.utils.SvgUtils;
  * @author ely
  */
 public class UserDestinationDetails extends JDialog{
+
+    /**
+     * @return the ville
+     */
+    public String getVille() {
+        return ville;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @return the departureDatePicker
+     */
+    public DatePickerField getDepartureDatePicker() {
+        return departureDatePicker;
+    }
+
+    /**
+     * @param departureDatePicker the departureDatePicker to set
+     */
+    public void setDepartureDatePicker(DatePickerField departureDatePicker) {
+        this.departureDatePicker = departureDatePicker;
+    }
+
+    /**
+     * @return the returnDatePicker
+     */
+    public DatePickerField getReturnDatePicker() {
+        return returnDatePicker;
+    }
+
+    /**
+     * @param returnDatePicker the returnDatePicker to set
+     */
+    public void setReturnDatePicker(DatePickerField returnDatePicker) {
+        this.returnDatePicker = returnDatePicker;
+    }
     private final JFrame parentFrame;
     private int cornerRadius = 30; 
-    private String content;
+    private String ville;
+    private String description;
+    private DatePickerField departureDatePicker;
+    private DatePickerField returnDatePicker;
+//    private LocalDate dateDepart;
+//    private LocalDate dateRetour;
     private UIButton bookingBtn;
+    private CachedImageLoader cachedImageLoader;
+    private BufferedImage backgroundImage;
+    private VoyageDAO voyageDao;
+    private ReservationDAO reservationDao;
+
+
     
-    public UserDestinationDetails(JFrame parentFrame, String content){
+    public UserDestinationDetails(JFrame parentFrame, DestinationModel destination){
         super(parentFrame, "Destination details", true); 
         this.parentFrame = parentFrame;
-        this.content = content;
+        this.ville = destination.getVille();
+        this.description = destination.getDescription();
+        cachedImageLoader = new CachedImageLoader();
+        reservationDao = new ReservationDAO();
+        voyageDao = new VoyageDAO();
+        
+        loadAndSetImage(destination.getImageId()); 
         initDialog();
     }
     
@@ -38,16 +108,16 @@ public class UserDestinationDetails extends JDialog{
         applyRoundedShape();
         
         JPanel top = new JPanel();
-        top.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
+        top.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
         top.setLayout(new OverlayLayout(top));
         
-        PanelRound layer1 = new PanelRound("/home/ely/Downloads/_ - 2026-01-26T235911.754.jpeg");
-        layer1.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
+        PanelRound layer1 = new PanelRound(backgroundImage);
+        layer1.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
         layer1.setFitWidth(true);
         
         JPanel layer2 = new JPanel();
         layer2.setBackground(new Color(20, 20, 20, 100));
-        layer2.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
+        layer2.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
         layer2.setLayout(new BorderLayout());
         
         JPanel layer2Sub1 = new JPanel();
@@ -61,7 +131,7 @@ public class UserDestinationDetails extends JDialog{
         layer2Sub2.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         JLabel destinationName = new JLabel();
-        destinationName.setText(content);
+        destinationName.setText(getVille());
         destinationName.setFont(new Font("Segoe UI", Font.BOLD, 90));
         destinationName.setForeground(Color.white);
         
@@ -81,7 +151,7 @@ public class UserDestinationDetails extends JDialog{
         
         
         top.add(layer2);
-        top.add(layer1);
+        top.add(layer1); 
         
         JPanel bottom = new JPanel();
         bottom.setBackground(Color.white);
@@ -91,69 +161,50 @@ public class UserDestinationDetails extends JDialog{
         bottom.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
-        JScrollPane scrollWrapper = new JScrollPane(bottom);
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottom);
         scrollWrapper.setBackground(Color.white);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
-        
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
         
         SubtitleLabel subtitle1 = new SubtitleLabel("Description");
+        subtitle1.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
         
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setOpaque(false);
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));    
-        descriptionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 0));
+        descriptionPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         
-        JLabel descriptionText = new JLabel("<html><body style='width: 300px'>Lorem ipsum dolor sit amet consectetur...Lorem ipsum dolor sit amet consectetur...Lorem ipsum dolor sit amet consectetur...</body></html>");
         
-        Font font = new Font("SansSerif", Font.PLAIN, 16);
+        JLabel descriptionText = new JLabel("<html><body style='width: 400px'>"+ getDescription() +"</body></html>");
+        
+        Font font = new Font("SansSerif", Font.PLAIN, 14);
         descriptionText.setFont(font);
+        descriptionText.setForeground(new Color(150, 150, 150, 10));
         
         descriptionPanel.add(descriptionText);
 
         
-        SubtitleLabel subtitle2 = new SubtitleLabel("Moyens de transport disponibles: ");
+        SubtitleLabel subtitle2 = new SubtitleLabel("Dates: ");
+        setDepartureDatePicker(new DatePickerField("Date de Départ"));
+        setReturnDatePicker(new DatePickerField("Date de Retour"));
+        
+        JPanel datesPanel = new JPanel();
+        datesPanel.setOpaque(false);
+        datesPanel.setLayout(new BorderLayout());    
+        datesPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        datesPanel.add(getDepartureDatePicker(), BorderLayout.NORTH);
+        datesPanel.add(getReturnDatePicker(), BorderLayout.SOUTH);
+        datesPanel.setPreferredSize(new Dimension(300, 110));
+        datesPanel.setMaximumSize(new Dimension(300, 110));
+        
+        
+
+        
+        SubtitleLabel subtitle3 = new SubtitleLabel("Moyens de transport disponibles: ");
         
         JPanel optionsPanel = new JPanel();
         optionsPanel.setOpaque(false);
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));    
-        optionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 0));
+        optionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         
         ButtonGroup radioGroup = new ButtonGroup();
         
@@ -174,7 +225,9 @@ public class UserDestinationDetails extends JDialog{
         
         JPanel buttonContainer = new JPanel();
         buttonContainer.setLayout(new BorderLayout());
-        buttonContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 40));
+        buttonContainer.setPreferredSize(new Dimension(600, 70));
+        buttonContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        buttonContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         buttonContainer.setOpaque(false);
         bookingBtn = new UIButton(
             "Reserver mon voyage",
@@ -195,10 +248,18 @@ public class UserDestinationDetails extends JDialog{
             }
         });
         
+        // listener to add the reservation on click
+        bookingBtn.addActionListener((e)->{
+            createAndSaveReservation();
+        });
+
+        
         buttonContainer.add(bookingBtn, BorderLayout.EAST);
         subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
         subtitle2.setAlignmentX(Component.LEFT_ALIGNMENT);
+        subtitle3.setAlignmentX(Component.LEFT_ALIGNMENT);
         descriptionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        datesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         descriptionText.setAlignmentX(Component.LEFT_ALIGNMENT); 
         buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -208,6 +269,10 @@ public class UserDestinationDetails extends JDialog{
         bottom.add(descriptionPanel);
         bottom.add(Box.createVerticalStrut(20));
         bottom.add(subtitle2);
+        bottom.add(Box.createVerticalStrut(10));
+        bottom.add(datesPanel);
+        bottom.add(Box.createVerticalStrut(10));
+        bottom.add(subtitle3);
         bottom.add(Box.createVerticalStrut(10));
         bottom.add(optionsPanel);
         bottom.add(Box.createVerticalStrut(10));
@@ -225,6 +290,23 @@ public class UserDestinationDetails extends JDialog{
         setVisible(true); 
     }
     
+    private void loadAndSetImage(int imageId){
+        BufferedImage image = cachedImageLoader.loadImage(imageId);
+        if (image != null) {
+            // I will need to add a setter in PanelRound to set the background image
+            setBackgroundImage(image);
+            repaint();
+        }
+    }
+    
+    private void createAndSaveReservation(){
+        VoyageModel voyageSaved = new VoyageModel("Luxembourg", ville,  departureDatePicker.getLocalDate(),  returnDatePicker.getLocalDate(), new BigDecimal(500.34), 15);
+        voyageDao.addVoyage(voyageSaved);
+        VoyageModel voyageUsed = voyageDao.getVoyageByDate(departureDatePicker.getLocalDate());
+        ReservationModel reservation = new ReservationModel(1, voyageUsed.getIdVoyage(),NewEnumReservation.fromString("En attente"));
+        reservationDao.addReservation(reservation);
+    }
+    
     private void applyRoundedShape() {
         SwingUtilities.invokeLater(() -> {
             int w = getWidth();
@@ -233,5 +315,14 @@ public class UserDestinationDetails extends JDialog{
                 setShape(new RoundRectangle2D.Double(0, 0, w, h, cornerRadius, cornerRadius));
             }
         });
+    }
+    
+    public void addBookingButtonListener(ActionListener listener){
+        bookingBtn.addActionListener(listener);
+    }
+    
+
+    private void setBackgroundImage(BufferedImage image) {
+        this.backgroundImage = image;
     }
 }

@@ -5,6 +5,7 @@
 package trip_manager_app;
 
 import trip_manager_app.controllers.*;
+import trip_manager_app.services.AuthService;
 import trip_manager_app.views.LoginView;
 import trip_manager_app.views.*;
 import trip_manager_app.views.user.*;
@@ -28,23 +29,8 @@ public class Trip_Manager_App_Main {
             LoginView loginView = new LoginView();
             SignupView signupView = new SignupView();
             
-            //User views
-            UserHomepageView userHomepageView = new UserHomepageView();
-            UserDestinationsView userDestinationsView = new UserDestinationsView(frame);
-            UserReservationsView userReservationsView = new UserReservationsView(frame);
-            UserProfileView userProfileView = new UserProfileView();
-            
-            //Admin views
-            AdminHomepageView adminHomepageView = new AdminHomepageView();
-            AdminReservationsManagementView adminReservationsManagementView = new AdminReservationsManagementView();
-            AdminUserManagementView adminUserManagementView = new AdminUserManagementView();
-            
-            //controllers
-//            new LoginController(frame, loginView, userHomepageView);
-//            new SignupController(frame, signupView, userHomepageView);
-            new ClientController(frame, loginView, userHomepageView, userDestinationsView, userReservationsView, userProfileView);
-            new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView);
-            new AuthController(frame, loginView, signupView, adminHomepageView, userHomepageView);
+            //Auth controller is a layer between the main app and the views/controllers
+            new AuthService(frame, loginView, signupView);
             
             frame.setVisible(true); 
         });

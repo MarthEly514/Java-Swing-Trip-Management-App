@@ -9,11 +9,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.DAO.*;
+import trip_manager_app.models.ClientModel;
+import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.ReservationModel;
+import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.*;
 import trip_manager_app.views.LoginView;
 
@@ -29,6 +35,10 @@ public class UserReservationsView extends JPanel{
     private List<String> options;
     private JPanel row1;
     private JFrame parentFrame;
+    private DestinationDAO destDao;
+    private ReservationDAO resDao;
+    private VoyageDAO voyageDao;
+    private ClientModel user;
     
     public UserReservationsView(){
         setLayout(new BorderLayout());
@@ -37,6 +47,22 @@ public class UserReservationsView extends JPanel{
     }
     public UserReservationsView(JFrame parentFrame){
         this.parentFrame = parentFrame;
+        this.destDao = new DestinationDAO();
+        this.resDao = new ReservationDAO();
+        this.voyageDao = new VoyageDAO();
+
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
+    
+    public UserReservationsView(JFrame parentFrame, ClientModel user){
+        this.parentFrame = parentFrame;
+        this.destDao = new DestinationDAO();
+        this.resDao = new ReservationDAO();
+        this.voyageDao = new VoyageDAO();
+        this.user = user;
+
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -207,8 +233,8 @@ public class UserReservationsView extends JPanel{
         title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
         options = new ArrayList<>();
-        options.add("Validées");
         options.add("En attente");
+        options.add("Validées");
 
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
@@ -226,47 +252,8 @@ public class UserReservationsView extends JPanel{
         bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
-        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
         
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
-
         row1 = new JPanel();
         row1.setOpaque(false);
         row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -274,8 +261,7 @@ public class UserReservationsView extends JPanel{
         row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
-        int n = 4;
-        showReservationRows(n); 
+        loadReservations("*"); 
         
         bottomWrapper.add(row1);
 
@@ -288,19 +274,29 @@ public class UserReservationsView extends JPanel{
     }
     
     public void loadReservations(String labelName){
-//        System.out.println(labelName+"I'm gunna catch u nigger");
-        if(labelName.equals(options.get(0))){  
+        List<ReservationModel> reservations;
+
+        
+        if(labelName.equals("*")){
+            reservations = resDao.getAllReservations();
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showReservationRows(4); 
+            showReservationRows(reservations); 
+        }
+        else if(labelName.equals(options.get(0))){  
+            reservations = resDao.getReservationsByStatut(labelName);
+            row1.removeAll();       // removes every child component
+            row1.revalidate();      // tells the layout manager to recalculate layout
+            row1.repaint();
+            showReservationRows(reservations); 
         }
         else if(labelName.equals(options.get(1))){
-//            System.out.println(labelName+" Option 2 clicked");
+            reservations = resDao.getReservationsByStatut(labelName);
             row1.removeAll();       
             row1.revalidate();
             row1.repaint();
-            showReservationRows(3); 
+            showReservationRows(reservations); 
         }
     }
     
@@ -316,23 +312,28 @@ public class UserReservationsView extends JPanel{
         userProfileButton.addActionListener(listener);
     }
     
-    public void showDetails(String content){
-        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content);   
+    public void showDetails(ReservationModel reservation, VoyageModel voyage, DestinationModel destination){
+        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix() );
+        dialog.addConfirmButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Confirmed"));
+        dialog.addCancelButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Canceled"));
         dialog.showDialog();
     }
 
-    private void showReservationRows(int n) {
-        if(n > 0){
-            String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", "LA, Los Angeles", "Utah", "Ares", "Revan", "Java", "Caire", "Jerusalem"};
-            for(int i = 0; i<n; i++){
-                String destination = destinations[i];
-                ReservationRow resRow = new ReservationRow(destination, "12 Fevrier 2026", "En attente", e ->{
-                    showDetails(destination);
+    private void showReservationRows(List<ReservationModel> reservations) {
+        if(!reservations.isEmpty()){
+            for(ReservationModel reservation:reservations){
+                
+                //fetch the voyage where id_voyage = reservation.id_voyage then I fetched the actual ville from attributes
+                VoyageModel voyage = voyageDao.getVoyageById(reservation.getIdVoyage());
+                DestinationModel destination = destDao.getMatchingDestinations(voyage.getVilleDestination()).get(0);
+
+                ListElementRow resRow = new ListElementRow( voyage.getVilleDestination(), "Départ le :"+voyage.getDateDepart(), reservation.getStatut().getLibelle(), e ->{
+                    showDetails(reservation, voyage, destination);
                 } 
-            );
-                row1.add(resRow);
-                row1.add(Box.createVerticalStrut(20));  
-            }
+                );
+                    row1.add(resRow);
+                    row1.add(Box.createVerticalStrut(20));  
+                }
         }else{
             // Center the empty state vertically and horizontally
             row1.add(Box.createVerticalGlue()); // Push content to center

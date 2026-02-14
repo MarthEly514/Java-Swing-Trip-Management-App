@@ -35,7 +35,8 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.ui_components.NavBarHorizontal;
-import trip_manager_app.ui_components.ReservationRow;
+import trip_manager_app.ui_components.ListElementRow;
+import trip_manager_app.ui_components.ScrollWrapper;
 import trip_manager_app.ui_components.SearchField;
 import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.views.LoginView;
@@ -231,10 +232,10 @@ public class AdminReservationsManagementView extends JPanel{
         searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
         searchBarContainer.setOpaque(false); 
         
-        SearchField searchBar = new SearchField();
-        searchBar.setBorderColor(new Color(161, 117, 255, 30));
-        
-        searchBarContainer.add(searchBar);
+//        SearchField searchBar = new SearchField();
+//        searchBar.setBorderColor(new Color(161, 117, 255, 30));
+//        
+//        searchBarContainer.add(searchBar);
 
         JLabel title = new JLabel("Gestion des réservations");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
@@ -266,46 +267,7 @@ public class AdminReservationsManagementView extends JPanel{
         bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
-        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
-        
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
 
         row1 = new JPanel();
         row1.setOpaque(false);
@@ -356,8 +318,8 @@ public class AdminReservationsManagementView extends JPanel{
     }
     
     public void showDetails(String content){
-        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content);   
-        dialog.showDialog();
+//        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content, 400, "hello");   
+//        dialog.showDialog();
     }
 
     private void showReservationRows(int n) {
@@ -365,7 +327,7 @@ public class AdminReservationsManagementView extends JPanel{
             String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", "LA, Los Angeles", "Utah", "Ares", "Revan", "Java", "Caire", "Jerusalem"};
             for(int i = 0; i<n; i++){
                 String destination = destinations[i];
-                ReservationRow resRow  = new ReservationRow(destination, "12 Fevrier 2026", "En attente", e ->{
+                ListElementRow resRow  = new ListElementRow(destination, "12 Fevrier 2026", "En attente", e ->{
                     showDetails(destination);
                 } 
             );

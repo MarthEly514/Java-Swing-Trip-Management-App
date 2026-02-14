@@ -44,6 +44,7 @@ public class PanelRound extends JPanel {
     private Color gradientEndColor; 
     private boolean scaleToFit = false;
     private boolean fitWidth = false;
+    private boolean fitHeight = false;
     private boolean blurred = false;
     private float blurRadius = 10f;
     private float opacity = 0.3f;
@@ -57,15 +58,23 @@ public class PanelRound extends JPanel {
     public PanelRound(String imagePath) {
         setOpaque(false);
         try {
-            backgroundImage = ImageIO.read(new File(imagePath));
+        backgroundImage = ImageIO.read(
+            getClass().getResourceAsStream(imagePath)
+            );
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to load image: " + imagePath);
         }
     }
     
     public PanelRound(boolean blurred) {
         setOpaque(false);
         this.blurred = blurred;
+    }
+    
+    public PanelRound(BufferedImage backgroundImage) {
+        setOpaque(false);
+        this.backgroundImage = backgroundImage;
+        
     }
     
     public PanelRound(String imagePath, boolean blurred) {
@@ -295,14 +304,25 @@ public class PanelRound extends JPanel {
             g2.drawImage(backgroundImage, x, y, drawWidth, drawHeight, this);
         } else if(isFitWidth()){
             int panelWidth = getWidth();
+            int panelHeight = getHeight();
             int bgWidth = backgroundImage.getWidth();
             int bgHeight = backgroundImage.getHeight();
             double ratio = (double)panelWidth/bgWidth;
             int resizedHeight = (int)(bgHeight*ratio);
-            int y = bgHeight - resizedHeight;
+            int y = (panelHeight - resizedHeight )/2;
             Image resizedBg = backgroundImage.getScaledInstance(panelWidth, resizedHeight, Image.SCALE_SMOOTH);
             
             g2.drawImage(resizedBg, 0, y, this);
+        } else if(isFitHeight()){
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
+            int bgWidth = backgroundImage.getWidth();
+            int bgHeight = backgroundImage.getHeight();
+            double ratio = (double)panelHeight/bgHeight;
+            int resizedWidth = (int)(bgWidth*ratio);
+            int x = (panelWidth - resizedWidth) / 2;              
+            Image resizedBg = backgroundImage.getScaledInstance(resizedWidth, panelHeight, Image.SCALE_SMOOTH);        
+            g2.drawImage(resizedBg, x, 0, this);
         }else {
             int x = (getWidth() - backgroundImage.getWidth()) / 2;
             int y = (getHeight() - backgroundImage.getHeight()) / 2;
@@ -332,6 +352,11 @@ public class PanelRound extends JPanel {
         this.roundTopLeft = roundTopLeft;
         repaint();
     }
+    
+    public void setBackgroundImage(BufferedImage image) {
+    this.backgroundImage = image;
+    repaint();
+}
 
     @java.beans.BeanProperty(preferred = true, visualUpdate = true)
     public int getRoundTopRight() {
@@ -468,11 +493,24 @@ public class PanelRound extends JPanel {
     public boolean isFitWidth() {
         return fitWidth;
     }
+    
+    /**
+     * @return the fitWidth
+     */
+    public boolean isFitHeight() {
+        return fitHeight;
+    }
 
     /**
      * @param fitWidth the fitWidth to set
      */
     public void setFitWidth(boolean fitWidth) {
         this.fitWidth = fitWidth;
+    }
+    /**
+     * @param fitHeight the fitHeight to set
+     */
+    public void setFitHeight(boolean fitHeight) {
+        this.fitHeight = fitHeight;
     }
 }

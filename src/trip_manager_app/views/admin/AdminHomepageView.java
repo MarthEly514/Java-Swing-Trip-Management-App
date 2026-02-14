@@ -292,7 +292,7 @@ public class AdminHomepageView extends JPanel{
         int n = 10;
         if(n > 0){
             for(int i = 0; i<4; i++){
-                ReservationRow resRow = new ReservationRow("Paris", "12 Fevrier 2026", "En attente" );
+                ListElementRow resRow = new ListElementRow("Paris", "12 Fevrier 2026", "En attente" );
                 row2.add(resRow);
                 row2.add(Box.createVerticalStrut(20));  
             }

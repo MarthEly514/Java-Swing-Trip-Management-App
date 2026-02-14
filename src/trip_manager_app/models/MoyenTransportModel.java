@@ -9,14 +9,24 @@ package trip_manager_app.models;
  * @author estev
  */
 public class MoyenTransportModel {
+
     private int noVehicule;
     private String typeVehicule;
+    private String descriptionVehicule;
     private int nombrePlaces;
     
     public MoyenTransportModel() {}
     
-    public MoyenTransportModel(String typeVehicule, int nombrePlaces) {
+    public MoyenTransportModel(String typeVehicule, String descriptionVehicule, int nombrePlaces) {
         this.typeVehicule = typeVehicule;
+        this.descriptionVehicule = descriptionVehicule;
+        this.nombrePlaces = nombrePlaces;
+    }
+
+    public MoyenTransportModel(int noVehicule, String typeVehicule, String descriptionVehicule, int nombrePlaces) {
+        this.noVehicule = noVehicule;
+        this.typeVehicule = typeVehicule;
+        this.descriptionVehicule = descriptionVehicule;
         this.nombrePlaces = nombrePlaces;
     }
     
@@ -33,12 +43,23 @@ public class MoyenTransportModel {
     public void setNoVehicule(int noVehicule){
         this.noVehicule= noVehicule;
     }
+    
     public void setTypeVehicule(String typeVehicule){
         this.typeVehicule=typeVehicule;
     }
+    
     public void setNombrePlaces(int nombrePlaces){
         this.nombrePlaces=nombrePlaces;
     }
+    
+    public String getDescriptionVehicule() {
+        return descriptionVehicule;
+    }
+    
+    public void setDescriptionVehicule(String descriptionVehicule) {
+        this.descriptionVehicule = descriptionVehicule;
+    }
+    
     
      @Override
     public String toString() {

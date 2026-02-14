@@ -13,15 +13,25 @@ public class ClientModel {
     private String nom;
     private String prenom;
     private String eMail;
+    private String telephone;
     private String motDePasse;
-    private int telephone;
     
     
     
      public ClientModel() {}
     
     // Constructeur avec paramètres
-    public ClientModel(String nom, String prenom, String eMail, int telephone, String motDePasse) {
+    public ClientModel(String nom, String prenom, String eMail, String telephone, String motDePasse) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.eMail = eMail;
+        this.telephone = telephone;
+        this.motDePasse = motDePasse;
+    }
+    
+    // for db fetching
+    public ClientModel(int idClient, String nom, String prenom, String eMail, String telephone, String motDePasse) {
+        this.idClient = idClient;
         this.nom = nom;
         this.prenom = prenom;
         this.eMail = eMail;
@@ -47,7 +57,7 @@ public class ClientModel {
         
     } 
     
-    public String getEMail(){
+    public String getEmail(){
         return eMail;
     }
     
@@ -55,7 +65,7 @@ public class ClientModel {
         return motDePasse;
     }
     
-    public int getTelephone(){
+    public String getTelephone(){
         return telephone;
     }
     
@@ -74,7 +84,7 @@ public class ClientModel {
         
     } 
     
-    public void setEMail(String eMail){
+    public void setEmail(String eMail){
         this.eMail = eMail;
     }
     
@@ -82,7 +92,7 @@ public class ClientModel {
         this.motDePasse=motDePasse;
     }
     
-    public void setTelephone(int telephone){
+    public void setTelephone(String telephone){
         this.telephone=telephone;
     }
     

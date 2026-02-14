@@ -14,7 +14,7 @@ public class ReservationModel {
     private int idReservation;
     private LocalDateTime dateReservation;
     private NewEnumReservation statut;
-    private int idClient ;
+    private int idClient;
     private int idVoyage;
     
      // Constructeur pour création

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.models.ClientModel;
 import trip_manager_app.ui_components.*;
 import trip_manager_app.utils.SvgUtils;
 import trip_manager_app.views.LoginView;
@@ -28,8 +29,16 @@ public class UserProfileView extends JPanel{
     private UIButton userProfileButton;
     private UIButton logoutButton;
     private JPanel row1;
+    private ClientModel user;
     
     public UserProfileView(){
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
+    
+    public UserProfileView(ClientModel user){
+        this.user = user;
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -215,46 +224,7 @@ public class UserProfileView extends JPanel{
         bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         
         
-        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
-        
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
         
         SubtitleLabel subtitle1 = new SubtitleLabel("Mes informations");
         JPanel informationsPanel = new JPanel();
@@ -262,9 +232,9 @@ public class UserProfileView extends JPanel{
         informationsPanel.setLayout(new BoxLayout(informationsPanel, BoxLayout.Y_AXIS));    
         informationsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JLabel nameLabel = new JLabel("Nom complet:    Ash Lorian");
-        JLabel emailLabel = new JLabel("Adresse mail:    ashLori@gmail.com");
-        JLabel phoneLabel = new JLabel("Téléphone:   +33 019 68 945");
+        JLabel nameLabel = new JLabel("Nom complet:    "+user.getPrenom()+" "+user.getNom());
+        JLabel emailLabel = new JLabel("Adresse mail:   "+user.getEmail());
+        JLabel phoneLabel = new JLabel("Téléphone:   "+user.getTelephone());
         
         Font font = new Font("SansSerif", Font.PLAIN, 18);
         nameLabel.setFont(font);
@@ -359,7 +329,7 @@ public class UserProfileView extends JPanel{
     private void showReservationRows(int n) {
         if(n > 0){
             for(int i = 0; i<n; i++){
-                ReservationRow resRow = new ReservationRow("Paris", "12 Fevrier 2026", "En attente" );
+                ListElementRow resRow = new ListElementRow("Paris", "12 Fevrier 2026", "En attente" );
                 row1.add(resRow);
                 row1.add(Box.createVerticalStrut(20));  
             }

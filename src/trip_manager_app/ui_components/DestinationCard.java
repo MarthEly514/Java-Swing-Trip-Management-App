@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import trip_manager_app.models.DestinationModel;
+import trip_manager_app.utils.CachedImageLoader;
 
 /**
  *
@@ -20,15 +22,23 @@ import javax.swing.*;
  */
 public class DestinationCard extends PanelRound{
     private BufferedImage backgroundImage;
+    private CachedImageLoader cachedImageLoader;
 
-    public DestinationCard(String destination, String rating, String imagePath){
-        super(imagePath); 
-        initCard(destination,rating);
+    public DestinationCard(DestinationModel destination){
+        
+        super(); 
+        cachedImageLoader = new CachedImageLoader();
+        
+        loadAndSetImage(destination.getImageId());        
+        initCard(destination.getVille(), destination.getNote());
     }
     
-    public DestinationCard(String destination, String rating, String imagePath, Consumer<String> execAction){
-        super(imagePath); 
-        initCard(destination,rating);
+    public DestinationCard(DestinationModel destination, Consumer<String> execAction){
+        super(); 
+        cachedImageLoader = new CachedImageLoader();
+        
+        loadAndSetImage(destination.getImageId());        
+        initCard(destination.getVille(), destination.getNote());
         addMouseListener(new MouseAdapter() {
                         @Override
             public void mouseClicked(MouseEvent e){
@@ -43,7 +53,7 @@ public class DestinationCard extends PanelRound{
     
     }
     
-    private void initCard(String destination, String rating){
+    private void initCard(String destination, float rating){
         int radius = 50;
         setLayout(new BorderLayout());
         setBackground(Color.pink);
@@ -82,6 +92,15 @@ public class DestinationCard extends PanelRound{
         
         bottomPanel.add(destinationLabel, BorderLayout.NORTH);
         bottomPanel.add(ratingLabel, BorderLayout.SOUTH);
+    }
+    
+    private void loadAndSetImage(int imageId){
+        BufferedImage image = cachedImageLoader.loadImage(imageId);
+        if (image != null) {
+            // You'll need to add a setter in PanelRound to set the background image
+            setBackgroundImage(image);
+            repaint();
+        }
     }
     
     

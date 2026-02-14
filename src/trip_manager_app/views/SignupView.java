@@ -353,4 +353,8 @@ public class SignupView extends JPanel{
     public void hideErrorMessage() {
         errorLabel.setText(" ");
     }
+
+    public void showErrorMessage(String error) {
+        errorLabel.setText(error);
+    }
 }
