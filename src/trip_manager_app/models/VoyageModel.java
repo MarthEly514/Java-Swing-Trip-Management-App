@@ -80,7 +80,7 @@ public class VoyageModel {
         this.villeDepart=villeDepart;
     }
     
-    public void setvilleDestination(String villeDestination){
+    public void setVilleDestination(String villeDestination){
         this.villeDestination=villeDestination;
     }
     

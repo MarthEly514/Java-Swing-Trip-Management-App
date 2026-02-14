@@ -1,7 +1,7 @@
 package trip_manager_app.DAO;
 
-import trip_manager_app.utils.DatabaseConnection;
 import trip_manager_app.models.ClientModel;
+import trip_manager_app.utils.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class ClientDAO {
     private Connection connection;
 
     public ClientDAO() {
-        connection = DatabaseConnection.getConnection();
+        this.connection = DatabaseConnection.getConnection();
     }
 
    // CREATE
@@ -43,7 +43,7 @@ public class ClientDAO {
        List<ClientModel> clients = new ArrayList<>();
         String sql = "SELECT * FROM clients";
 
-       try (Statement stmt = connection.createStatement();
+        try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -141,4 +141,3 @@ public class ClientDAO {
         }
     }
 }
-
