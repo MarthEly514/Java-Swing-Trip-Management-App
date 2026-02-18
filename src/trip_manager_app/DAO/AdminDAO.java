@@ -20,17 +20,15 @@ import trip_manager_app.utils.DatabaseConnection;
  */
 public class AdminDAO {
 
-    private Connection connection;
-
-    public AdminDAO() {
-        connection = DatabaseConnection.getConnection();
-    }
 
    // CREATE
     public void addAdmin(AdminModel admin) {
         String sql = "INSERT INTO admins (e_mail, mot_de_passe) VALUES (?, ?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1,admin.getEmail());
             ps.setString(2,admin.getMotDePasse());
             ps.executeUpdate();
@@ -44,8 +42,11 @@ public class AdminDAO {
        List<AdminModel> admins = new ArrayList<>();
         String sql = "SELECT * FROM admins";
 
-       try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (
+                Connection conn = DatabaseConnection.getConnection();
+                Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)
+                ) {
 
             while (rs.next()) {
                 AdminModel a = new AdminModel(
@@ -65,7 +66,10 @@ public class AdminDAO {
         String sql = "SELECT * FROM admins WHERE id_admin = ?";
         AdminModel admin = null;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -86,7 +90,10 @@ public class AdminDAO {
         String sql = "SELECT * FROM admins WHERE e_mail = ?";
         AdminModel admin = null;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
 

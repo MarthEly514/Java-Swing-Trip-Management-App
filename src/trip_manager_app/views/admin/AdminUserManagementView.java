@@ -14,13 +14,11 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.DAO.ClientDAO;
 import trip_manager_app.models.ClientModel;
-import trip_manager_app.models.NewEnumReservation;
-import trip_manager_app.models.ReservationModel;
 import trip_manager_app.ui_components.*;
 import trip_manager_app.ui_components.renderers.ClientsCellRenderer;
 import trip_manager_app.views.LoginView;
-import trip_manager_app.views.user.UserReservationDetailDialog;
 
 /**
  *
@@ -34,14 +32,17 @@ public class AdminUserManagementView extends JPanel{
     private List<String> options;
     private JPanel row1;
     private JFrame parentFrame;
+    private ClientDAO clientDao;
     
     public AdminUserManagementView(){
+        clientDao = new ClientDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
     }
     public AdminUserManagementView(JFrame parentFrame){
         this.parentFrame = parentFrame;
+        clientDao = new ClientDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -92,7 +93,7 @@ public class AdminUserManagementView extends JPanel{
         //destination button 
         clientsButton = new UIButton(
                 " Gestion des clients",
-                "/trip_manager_app/ressources/icons/travel_light.svg", 
+                "/trip_manager_app/ressources/icons/users_light.svg", 
                 new Color(108, 99, 255), 
                 Color.white
                 
@@ -225,13 +226,13 @@ public class AdminUserManagementView extends JPanel{
         title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
         options = new ArrayList<>();
-        options.add("Actifs");
-        options.add("Inactifs");
+        options.add("Tous");
+        options.add("Nouveaux");
         
         
 
         
-        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
+        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadClients(optionName));
         
         topWrapper.add(searchBarContainer);
 //        topWrapper.add(Box.createVerticalGlue());     
@@ -253,8 +254,7 @@ public class AdminUserManagementView extends JPanel{
         row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
-        int n = 40;
-        showUsersTable(n); 
+        loadClients("*"); 
         
         bottomWrapper.add(row1);
         
@@ -268,18 +268,29 @@ public class AdminUserManagementView extends JPanel{
         return wrapper;
     }
     
-    public void loadReservations(String labelName){
-        if(labelName.equals(options.get(0))){  
+    public void loadClients(String labelName){
+        java.util.List<ClientModel> clients;
+        if(labelName.equals("*")){
+            clients = clientDao.getAllClients();
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showUsersTable(40); 
+            showUsersTable(clients); 
+        }
+        else 
+        if(labelName.equals(options.get(0))){  
+            clients = clientDao.getAllClients();
+            row1.removeAll();       
+            row1.revalidate();      
+            row1.repaint();
+            showUsersTable(clients); 
         }
         else if(labelName.equals(options.get(1))){
+            clients = clientDao.getNewClients();
             row1.removeAll();       
-            row1.revalidate();
+            row1.revalidate();      
             row1.repaint();
-            showUsersTable(3); 
+            showUsersTable(clients); 
         }
     }
     
@@ -300,8 +311,9 @@ public class AdminUserManagementView extends JPanel{
 //        dialog.showDialog();
     }
 
-    private void showUsersTable(int n) {
-        if(n > 0){
+    private void showUsersTable(java.util.List<ClientModel> clients) {
+        
+        if(!clients.isEmpty()){
         // Create the list
         CustomList<ClientModel> clientList = new CustomList<>(
             new ClientsCellRenderer(),
@@ -311,39 +323,12 @@ public class AdminUserManagementView extends JPanel{
             }
         );
         
-        // Add some reservations
-        String[] destinations = {"Paris", "Accra", "Nepal", "Uruguay", "Rome", 
-                                 "LA, Los Angeles", "Utah", "Ares", "Revan", 
-                                 "Java", "Caire", "Jerusalem"};
-         
-        for (int i = 0; i < n; i++) {
-            clientList.addItem(new ClientModel("Logan", "Sen", "nigger@sen.com", "990099898", "Raven"));
-            
-//            ReservationModel reservation = new ReservationModel(dest, "12 Fevrier 2026", "En attente");
-//            reservationList.addReservation(reservation);
+        for (ClientModel client: clients) {
+            clientList.addItem(client);
+           
         }
-//        // Add reservations
-//        reservationList.addItem(new ReservationModel(1, LocalDateTime.now(), 
-//            NewEnumReservation.EN_ATTENTE, 101, 201));
-//        reservationList.addItem(new ReservationModel(2, LocalDateTime.now().minusDays(1), 
-//            NewEnumReservation.VALIDE, 102, 202));
-//        reservationList.addItem(new ReservationModel(3, LocalDateTime.now().minusDays(5), 
-//            NewEnumReservation.ANNULE, 103, 203));
-
-        // Add to your panel
         row1.add(clientList);
-
-
-
-//        // Or set all at once
-//        List<ReservationModel> reservations = new ArrayList<>();
-//        for (String dest : destinations) {
-//            reservations.add(new ReservationModel(dest, "12 Fevrier 2026", "En attente"));
-//        }
-//        reservationList.setReservations(reservations);
-            
         }else{
-            // Center the empty state vertically and horizontally
             row1.add(Box.createVerticalGlue()); // Push content to center
 
             JPanel noResPanel = new JPanel();
@@ -371,19 +356,6 @@ public class AdminUserManagementView extends JPanel{
         }  
     }
 
-//      private void showReservationDetails(ReservationModel reservation) {
-//        JOptionPane.showMessageDialog(
-//            this,
-//            "Réservation #" + reservation.getIdReservation() + "\n" +
-//            "Client ID: " + reservation.getIdClient() + "\n" +
-//            "Voyage ID: " + reservation.getIdVoyage() + "\n" +
-//            "Date: " + reservation.getDateReservation() + "\n" +
-//            "Statut: " + reservation.getStatut().getLibelle(),
-//            "Détails de la réservation",
-//            JOptionPane.INFORMATION_MESSAGE
-//        );
-//      }
-    
       private void showClientDetails(ClientModel client) {
         JOptionPane.showMessageDialog(
             this,

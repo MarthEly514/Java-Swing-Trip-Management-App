@@ -10,8 +10,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import trip_manager_app.DAO.ClientDAO;
+import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.ReservationDAO;
+import trip_manager_app.models.DestinationModel;
 import trip_manager_app.ui_components.*;
 import trip_manager_app.views.LoginView;
+import trip_manager_app.views.user.UserDestinationDetails;
 
 /**
  *
@@ -24,8 +29,16 @@ public class AdminHomepageView extends JPanel{
     private UIButton reservationButton;
     private UIButton logoutButton;
     private UIButton addDestinationsButton;
+    private final ClientDAO clientDao;
+    private final DestinationDAO destinationDao;
+    private final ReservationDAO reservationDao;
+    private JPanel row2;
+    private JPanel row1;
 
     public AdminHomepageView(){    
+        this.clientDao = new ClientDAO();
+        this.destinationDao = new DestinationDAO();
+        this.reservationDao = new ReservationDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -78,7 +91,7 @@ public class AdminHomepageView extends JPanel{
         //destination button 
         clientsButton = new UIButton(
                 " Gestion des clients",
-                "/trip_manager_app/ressources/icons/travel.svg", 
+                "/trip_manager_app/ressources/icons/users.svg", 
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
                 
@@ -250,7 +263,7 @@ public class AdminHomepageView extends JPanel{
         });
         
         
-        JPanel row1 = new JPanel();
+        row1 = new JPanel();
         row1.setOpaque(false);
         row1.setLayout(new BorderLayout());
         row1.setPreferredSize(new Dimension(0, 250));
@@ -261,9 +274,9 @@ public class AdminHomepageView extends JPanel{
         SubtitleLabel subtitle1 = new SubtitleLabel("   Statistiques generales");
         
 //        avec une commande de recuperation de longueur de table, on recupere le nombre d'elements dans la table clients, reservations et dans la table destinations
-        int usersCount = 20;
-        int destinationsCount = 17;
-        int reservationsCount = 0;
+        long usersCount = clientDao.count();
+        long destinationsCount = destinationDao.count();
+        long reservationsCount = reservationDao.count();
         
         JLabel usersCountLabel = new JLabel("<html><body><span style = 'font-size: 32px; color: #a175ff;'>"+((usersCount>=10)?usersCount:"0"+usersCount)+"</span>&nbsp;&nbsp;&nbsp;<span style='font-size:25;'>Clients</span></body></html>");
         JLabel destinationsCountLabel = new JLabel("<html><body><span style = 'font-size: 32px; color: #a175ff;'>"+((destinationsCount>=10)?destinationsCount:"0"+destinationsCount)+"</span>&nbsp;&nbsp;&nbsp;<span style='font-size:25;'>Destinations disponibles</span></body></html>");
@@ -282,47 +295,14 @@ public class AdminHomepageView extends JPanel{
         
         SubtitleLabel subtitle2 = new SubtitleLabel("   Destinations disponibles");
         
-        JPanel row2 = new JPanel();
+        row2 = new JPanel();
         row2.setOpaque(false);
         row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         row2.setMinimumSize(new Dimension(Integer.MAX_VALUE, 300));
         row2.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row2.setLayout(new BoxLayout(row2, BoxLayout.Y_AXIS));
         
-        int n = 10;
-        if(n > 0){
-            for(int i = 0; i<4; i++){
-                ListElementRow resRow = new ListElementRow("Paris", "12 Fevrier 2026", "En attente" );
-                row2.add(resRow);
-                row2.add(Box.createVerticalStrut(20));  
-            }
-        }else{
-            // Center the empty state vertically and horizontally
-            row2.add(Box.createVerticalGlue()); // Push content to center
-
-            JPanel noResPanel = new JPanel();
-            noResPanel.setLayout(new BoxLayout(noResPanel, BoxLayout.Y_AXIS));
-            noResPanel.setOpaque(false);
-            noResPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JLabel noResMessage1 = new JLabel(">-<");
-            noResMessage1.setFont(new Font("SansSerif", Font.BOLD, 48));
-            noResMessage1.setForeground(new Color(180, 180, 180));
-            noResMessage1.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JLabel noResMessage2 = new JLabel("Aucune destination pour le moment, veuillez en ajouter");
-            noResMessage2.setFont(new Font("SansSerif", Font.PLAIN, 16));
-            noResMessage2.setForeground(new Color(120, 120, 120));
-            noResMessage2.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            noResPanel.add(noResMessage1);
-            noResPanel.add(Box.createVerticalStrut(10));
-            noResPanel.add(noResMessage2);
-
-            row2.add(noResPanel);
-            row2.add(Box.createVerticalGlue()); 
-            
-        }
+        loadDestinations("*");
         
         JPanel addMoreBtnCtnr = new JPanel();
         addMoreBtnCtnr.setOpaque(false);
@@ -369,6 +349,82 @@ public class AdminHomepageView extends JPanel{
         
         return wrapper;
     }
+    
+    public void loadDestinations(String labelName){
+        java.util.List<DestinationModel> destinations;
+        if(labelName.equals("*")){
+            destinations = destinationDao.getNDestinations(4);
+            row2.removeAll();       // removes every child component
+            row2.revalidate();      // tells the layout manager to recalculate layout
+            row2.repaint();
+            showDestinationRows(destinations); 
+        }
+ 
+    }
+    
+    private void showDestinationRows(java.util.List<DestinationModel> destinations) {
+
+        if(!destinations.isEmpty()){
+            for(DestinationModel destination:destinations){
+
+//                    DestinationModel dest = new DestinationModel(destination.getDestinationId(), destination.getVille(), destination.getPays(),  destination.getDescription(), destination.getNote(), destination.getImageId());
+
+                    ListElementRow destRow = new ListElementRow(destination.getVille(), "", "Note: " + destination.getNote(), "/trip_manager_app/ressources/icons/star.svg", e ->{});
+                    row2.add(destRow);
+                    row2.add(Box.createVerticalStrut(20));  
+                }
+        }else{
+            // Center the empty state vertically and horizontally
+            row2.add(Box.createVerticalGlue());
+
+            JPanel noResPanel = new JPanel();
+            noResPanel.setLayout(new BoxLayout(noResPanel, BoxLayout.Y_AXIS));
+            noResPanel.setOpaque(false);
+            noResPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage1 = new JLabel(">-<");
+            noResMessage1.setFont(new Font("SansSerif", Font.BOLD, 48));
+            noResMessage1.setForeground(new Color(180, 180, 180));
+            noResMessage1.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel noResMessage2 = new JLabel("Aucune destination repondant a ces critères");
+            noResMessage2.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            noResMessage2.setForeground(new Color(120, 120, 120));
+            noResMessage2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            noResPanel.add(noResMessage1);
+            noResPanel.add(Box.createVerticalStrut(10));
+            noResPanel.add(noResMessage2);
+
+            row2.add(noResPanel);
+            row2.add(Box.createVerticalGlue()); 
+            
+        }  
+    }
+    
+    private void searchDestination(String searchText){
+        SwingUtilities.invokeLater(()->{
+            java.util.List<DestinationModel> destinations;
+            if(searchText.trim().equals("")){
+                destinations = destinationDao.getNDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching all..."+searchText);
+                showDestinationRows(destinations); 
+
+            } else {
+                destinations = destinationDao.getMatchingDestinations(searchText);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching..."+searchText);
+                showDestinationRows(destinations); 
+
+            }
+        });
+    }
+
     
     public void addClientManagementButtonListener(ActionListener listener){
         clientsButton.addActionListener(listener);

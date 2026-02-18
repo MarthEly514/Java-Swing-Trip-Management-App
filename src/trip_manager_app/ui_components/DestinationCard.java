@@ -27,7 +27,7 @@ public class DestinationCard extends PanelRound{
     public DestinationCard(DestinationModel destination){
         
         super(); 
-        cachedImageLoader = new CachedImageLoader();
+        cachedImageLoader = CachedImageLoader.getInstance();
         
         loadAndSetImage(destination.getImageId());        
         initCard(destination.getVille(), destination.getNote());
@@ -35,7 +35,7 @@ public class DestinationCard extends PanelRound{
     
     public DestinationCard(DestinationModel destination, Consumer<String> execAction){
         super(); 
-        cachedImageLoader = new CachedImageLoader();
+        cachedImageLoader = CachedImageLoader.getInstance();
         
         loadAndSetImage(destination.getImageId());        
         initCard(destination.getVille(), destination.getNote());

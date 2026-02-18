@@ -18,10 +18,12 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.MoyenTransportDAO;
 import trip_manager_app.DAO.ReservationDAO;
 import trip_manager_app.DAO.VoyageDAO;
 import trip_manager_app.models.ClientModel;
 import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.MoyenTransportModel;
 import trip_manager_app.models.ReservationModel;
 import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.*;
@@ -46,6 +48,7 @@ public class UserHomepageView extends JPanel{
     private JPanel row1;
     private JPanel row2;
     private ReservationDAO resDao;
+    private MoyenTransportDAO transportDao;
     private JFrame parentFrame;
     private VoyageDAO voyageDao;
     private ClientModel client;
@@ -54,6 +57,7 @@ public class UserHomepageView extends JPanel{
         destDao = new DestinationDAO();
         voyageDao = new VoyageDAO();
         resDao = new ReservationDAO();
+        transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -65,6 +69,7 @@ public class UserHomepageView extends JPanel{
         destDao = new DestinationDAO();
         voyageDao = new VoyageDAO();
         resDao = new ReservationDAO();
+        transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -229,6 +234,15 @@ public class UserHomepageView extends JPanel{
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
+        
+
+        JLabel title = new JLabel("Accueil");
+        title.setFont(new Font("SansSerif", Font.BOLD, 34));
+        title.setForeground(new Color(50, 50, 50));
+        title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
+        title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
+        
         String userName =client.getPrenom()+" "+ client.getNom();
         String[] subGreetingList = {"Que réservons-nous aujourd'hui?", "Une destination en tête?", "Toutes les routes mènent a Rome comme on dit...", "Où allons-nous aujourd'hui?"};
         
@@ -252,20 +266,13 @@ public class UserHomepageView extends JPanel{
         subGreeting.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         subGreeting.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
-
-        JLabel title = new JLabel("Accueil");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
-        title.setForeground(new Color(50, 50, 50));
-        title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
-        title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
-        
-        topWrapper.add(Box.createVerticalStrut(10));     
+        topWrapper.add(Box.createVerticalStrut(20));     
+        topWrapper.add(title);
+        topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(greetings);
         topWrapper.add(Box.createVerticalStrut(5));     
         topWrapper.add(subGreeting);
-        topWrapper.add(Box.createVerticalGlue());     
-        topWrapper.add(title);
+        topWrapper.add(Box.createVerticalStrut(5));     
         
         JPanel bottomWrapper = new JPanel();
         bottomWrapper.setBackground(Color.white);
@@ -388,7 +395,7 @@ public class UserHomepageView extends JPanel{
     
     public void loadReservations(int n){
         List<ReservationModel> reservations;
-        reservations = resDao.getNReservations(n);
+        reservations = resDao.getNReservationsByClientId(n, client.getIdClient());
         row2.removeAll();       // removes every child component
         row2.revalidate();      // tells the layout manager to recalculate layout
         row2.repaint();
@@ -396,7 +403,8 @@ public class UserHomepageView extends JPanel{
     }
     
     public void showDetails(ReservationModel reservation, VoyageModel voyage, DestinationModel destination){
-        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix() );
+        MoyenTransportModel transport = transportDao.findByNo(voyage.getNoVehicule());
+        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix() ,transport);
         dialog.addConfirmButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Confirmed"));
         dialog.addCancelButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Canceled"));
         dialog.showDialog();

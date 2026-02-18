@@ -11,12 +11,18 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.MoyenTransportDAO;
 import trip_manager_app.DAO.ReservationDAO;
 import trip_manager_app.DAO.VoyageDAO;
 import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.MoyenTransportModel;
 import trip_manager_app.models.NewEnumReservation;
 import trip_manager_app.models.ReservationModel;
 import trip_manager_app.models.VoyageModel;
@@ -30,11 +36,13 @@ import trip_manager_app.utils.SvgUtils;
  */
 public class UserDestinationDetails extends JDialog{
 
+    private JPanel optionsPanel;
+
     /**
-     * @return the ville
+     * @return the villeArrivee
      */
     public String getVille() {
-        return ville;
+        return villeArrivee;
     }
 
     /**
@@ -73,7 +81,8 @@ public class UserDestinationDetails extends JDialog{
     }
     private final JFrame parentFrame;
     private int cornerRadius = 30; 
-    private String ville;
+    private RoundedTextField departureField;
+    private String villeArrivee;
     private String description;
     private DatePickerField departureDatePicker;
     private DatePickerField returnDatePicker;
@@ -83,18 +92,28 @@ public class UserDestinationDetails extends JDialog{
     private CachedImageLoader cachedImageLoader;
     private BufferedImage backgroundImage;
     private VoyageDAO voyageDao;
+    private MoyenTransportDAO transportDao;
     private ReservationDAO reservationDao;
+    private DestinationModel destination;
+    private int idClient;
+    private List<RadioButton> radioButtons = new ArrayList<>(); 
+    private ButtonGroup radioGroup;
+    private List<MoyenTransportModel> transports ;
+
 
 
     
-    public UserDestinationDetails(JFrame parentFrame, DestinationModel destination){
+    public UserDestinationDetails(JFrame parentFrame, DestinationModel destination, int idClient){
         super(parentFrame, "Destination details", true); 
         this.parentFrame = parentFrame;
-        this.ville = destination.getVille();
+        this.villeArrivee = destination.getVille();
+        this.destination = destination;
         this.description = destination.getDescription();
-        cachedImageLoader = new CachedImageLoader();
+        this.idClient = idClient;
+        cachedImageLoader = CachedImageLoader.getInstance();
         reservationDao = new ReservationDAO();
         voyageDao = new VoyageDAO();
+        transportDao = new MoyenTransportDAO();
         
         loadAndSetImage(destination.getImageId()); 
         initDialog();
@@ -128,12 +147,25 @@ public class UserDestinationDetails extends JDialog{
         JPanel layer2Sub2 = new JPanel(); 
         layer2Sub2.setOpaque(false);
         layer2Sub2.setLayout(new BorderLayout());
-        layer2Sub2.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        layer2Sub2.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+        
+        JPanel descriptionPanel = new JPanel();
+        descriptionPanel.setOpaque(false);
+        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));    
+        descriptionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         
         JLabel destinationName = new JLabel();
-        destinationName.setText(getVille());
-        destinationName.setFont(new Font("Segoe UI", Font.BOLD, 90));
+        destinationName.setText("<html><body style='width: 400px'><span style='font-size: 60px'>"+ getVille() +"</span><span style ='font-size: 30px'>, "+destination.getPays()+"</span></body></html>");
         destinationName.setForeground(Color.white);
+        
+        JLabel descriptionText = new JLabel("<html><body style='width: 400px'>"+ getDescription() +"</body></html>");
+        Font font = new Font("SansSerif", Font.PLAIN, 16);
+        descriptionText.setFont(font);
+        descriptionText.setForeground(new Color(255, 255, 255, 100));
+        
+        descriptionPanel.add(destinationName);
+        descriptionPanel.add(Box.createVerticalStrut(5));
+        descriptionPanel.add(descriptionText);
         
         JButton closeBtn = new JButton();
         closeBtn.setBorder(BorderFactory.createEmptyBorder());
@@ -144,7 +176,7 @@ public class UserDestinationDetails extends JDialog{
 
         closeBtn.addActionListener(ev -> dispose());
         
-        layer2Sub1.add(destinationName, BorderLayout.SOUTH);
+        layer2Sub1.add(descriptionPanel, BorderLayout.SOUTH);
         layer2Sub2.add(closeBtn, BorderLayout.NORTH);
         layer2.add(layer2Sub1, BorderLayout.WEST);
         layer2.add(layer2Sub2, BorderLayout.EAST);
@@ -165,23 +197,18 @@ public class UserDestinationDetails extends JDialog{
         scrollWrapper.setBackground(Color.white);
         scrollWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        SubtitleLabel subtitle1 = new SubtitleLabel("Description");
-        subtitle1.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
+        SubtitleLabel subtitle1 = new SubtitleLabel("Ville de départ: ");
+        subtitle1.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 10));
         
-        JPanel descriptionPanel = new JPanel();
-        descriptionPanel.setOpaque(false);
-        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));    
-        descriptionPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        
-        
-        JLabel descriptionText = new JLabel("<html><body style='width: 400px'>"+ getDescription() +"</body></html>");
-        
-        Font font = new Font("SansSerif", Font.PLAIN, 14);
-        descriptionText.setFont(font);
-        descriptionText.setForeground(new Color(150, 150, 150, 10));
-        
-        descriptionPanel.add(descriptionText);
-
+        departureField = new RoundedTextField();
+        departureField.setPlaceholder("Londres");
+        departureField.setBorderWidth(2);
+        departureField.setBorderColor(new Color(20, 20, 20, 70));
+        departureField.setPlaceholderColor(new Color(20, 20, 20, 70));
+        departureField.setFocusedBorderColor(new Color(108, 99, 255));
+        departureField.setPreferredSize(new Dimension(200, 40));
+        departureField.setMaximumSize(new Dimension(200, 40));
+        departureField.setMinimumSize(new Dimension(200, 40));
         
         SubtitleLabel subtitle2 = new SubtitleLabel("Dates: ");
         setDepartureDatePicker(new DatePickerField("Date de Départ"));
@@ -201,27 +228,17 @@ public class UserDestinationDetails extends JDialog{
         
         SubtitleLabel subtitle3 = new SubtitleLabel("Moyens de transport disponibles: ");
         
-        JPanel optionsPanel = new JPanel();
+        optionsPanel = new JPanel();
         optionsPanel.setOpaque(false);
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));    
         optionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
         
-        ButtonGroup radioGroup = new ButtonGroup();
         
-        String[] transports = {
-            "AirBus 747 - 16 place(s) disponible(s)",
-            "Boeing 237 - 08 place(s) disponible(s)",
-            "Yatch T500 - 12 place(s) disponible(s)",
-            "Boeing 237 - 08 place(s) disponible(s)", 
-        };
-        
-        for (String transport : transports) {
-            RadioButton option = new RadioButton(transport);
-            option.setOpaque(false);
-            radioGroup.add(option);
-            optionsPanel.add(option);
-            
-        }
+//        List<MoyenTransportModel> vehicules = transportDao.getAllByType("Voiture");
+        transports = transportDao.getAll();
+
+        showTransports(transports);
+
         
         JPanel buttonContainer = new JPanel();
         buttonContainer.setLayout(new BorderLayout());
@@ -239,18 +256,42 @@ public class UserDestinationDetails extends JDialog{
         bookingBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                bookingBtn.setBackground(new Color(101, 93, 235, 250));            
+                if(bookingBtn.isEnabled() == true){
+                    bookingBtn.setBackground(new Color(101, 93, 235, 250));            
+                }
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                bookingBtn.setBackground(new Color(101, 93, 235, 190));            
+                if(bookingBtn.isEnabled() == true){
+                    bookingBtn.setBackground(new Color(101, 93, 235, 190));            
+                }
             }
+        });
+        
+        //detects if the user is entering anything in the field
+        activateBookingButton();
+        departureField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                activateBookingButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                activateBookingButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+            
         });
         
         // listener to add the reservation on click
         bookingBtn.addActionListener((e)->{
-            createAndSaveReservation();
+            createAndSaveReservation();            
         });
 
         
@@ -258,7 +299,8 @@ public class UserDestinationDetails extends JDialog{
         subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
         subtitle2.setAlignmentX(Component.LEFT_ALIGNMENT);
         subtitle3.setAlignmentX(Component.LEFT_ALIGNMENT);
-        descriptionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        departureField.setAlignmentX(Component.LEFT_ALIGNMENT);
+//        descriptionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         datesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         descriptionText.setAlignmentX(Component.LEFT_ALIGNMENT); 
         buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -266,7 +308,7 @@ public class UserDestinationDetails extends JDialog{
         
         bottom.add(subtitle1);
         bottom.add(Box.createVerticalStrut(10));
-        bottom.add(descriptionPanel);
+        bottom.add(departureField);
         bottom.add(Box.createVerticalStrut(20));
         bottom.add(subtitle2);
         bottom.add(Box.createVerticalStrut(10));
@@ -290,6 +332,31 @@ public class UserDestinationDetails extends JDialog{
         setVisible(true); 
     }
     
+    public void showTransports(List<MoyenTransportModel> transports){
+        
+        radioGroup = new ButtonGroup();
+        radioButtons.clear();
+        optionsPanel.removeAll();
+        for (MoyenTransportModel transport : transports) {
+            RadioButton option = new RadioButton(transport.getDescriptionVehicule()+"- Nombre de places: "+transport.getNombrePlaces());
+            option.setOpaque(false);
+            radioGroup.add(option);
+            optionsPanel.add(option);
+            
+        }
+        optionsPanel.revalidate();
+        optionsPanel.repaint();
+    }
+    
+    public MoyenTransportModel getSelectedTransportModel(List<MoyenTransportModel> transports) {
+    for (int i = 0; i < radioButtons.size(); i++) {
+        if (radioButtons.get(i).isSelected()) {
+            return transports.get(i);
+        }
+    }
+    return null;
+}
+    
     private void loadAndSetImage(int imageId){
         BufferedImage image = cachedImageLoader.loadImage(imageId);
         if (image != null) {
@@ -299,13 +366,71 @@ public class UserDestinationDetails extends JDialog{
         }
     }
     
-    private void createAndSaveReservation(){
-        VoyageModel voyageSaved = new VoyageModel("Luxembourg", ville,  departureDatePicker.getLocalDate(),  returnDatePicker.getLocalDate(), new BigDecimal(500.34), 15);
-        voyageDao.addVoyage(voyageSaved);
-        VoyageModel voyageUsed = voyageDao.getVoyageByDate(departureDatePicker.getLocalDate());
-        ReservationModel reservation = new ReservationModel(1, voyageUsed.getIdVoyage(),NewEnumReservation.fromString("En attente"));
-        reservationDao.addReservation(reservation);
+    private void activateBookingButton(){
+        // disables the button when some informations are not entered
+        if(departureField.getText().isEmpty()){
+            bookingBtn.setBackground(new Color(20, 20, 20, 20));
+        }else{
+            bookingBtn.setBackground(new Color(101, 93, 235, 190)); 
+        }
+        bookingBtn.setEnabled(!departureField.getText().isEmpty()); 
     }
+    
+    private void createAndSaveReservation() {
+        bookingBtn.setText("Chargement...");
+        bookingBtn.setBackground(new Color(20, 20, 20, 20));
+        bookingBtn.setEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                VoyageModel voyageSaved = new VoyageModel(
+                    departureField.getText(), 
+                    villeArrivee, 
+                    departureDatePicker.getLocalDate(), 
+                    returnDatePicker.getLocalDate(), 
+                    new BigDecimal("500.34"), 
+                    getSelectedTransportModel(transports).getNoVehicule()
+                    
+                );
+                voyageDao.addVoyage(voyageSaved);
+
+                VoyageModel voyageUsed = voyageDao.getLastVoyage();
+
+                ReservationModel reservation = new ReservationModel(
+                    idClient, 
+                    voyageUsed.getIdVoyage(), 
+                    NewEnumReservation.fromString("En attente")
+                );
+                reservationDao.addReservation(reservation);
+                
+
+                Thread.sleep(2500);
+
+                return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                get(); 
+                bookingBtn.setText("Réservé");
+                bookingBtn.setBackground(new Color(208, 255, 207)); 
+                bookingBtn.setEnabled(false); 
+            } catch (Exception ex) {
+                bookingBtn.setText("Error – Try again");
+                bookingBtn.setBackground(new Color(220, 50, 50)); // red
+                bookingBtn.setEnabled(true); // allow retry
+                JOptionPane.showMessageDialog(
+                    null,
+                    "Échec de la réservation : " + ex.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    }.execute();
+}
     
     private void applyRoundedShape() {
         SwingUtilities.invokeLater(() -> {

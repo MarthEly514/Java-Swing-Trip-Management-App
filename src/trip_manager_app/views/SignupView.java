@@ -18,6 +18,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import trip_manager_app.ui_components.RoundedButton;
 import trip_manager_app.ui_components.RoundedPasswordField;
 import trip_manager_app.ui_components.RoundedTextField;
@@ -78,6 +80,7 @@ public class SignupView extends JPanel{
     
     public SignupView(){
         setLayout(new BorderLayout());
+        signupButton = new RoundedButton("S'inscrire");
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
     }
@@ -221,6 +224,27 @@ public class SignupView extends JPanel{
         getEmailField().setPlaceholderColor(new Color(190, 190, 190));
         getEmailField().setFocusedBorderColor(new Color(108, 99, 255));
         
+        emailField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                checkEmail();
+                enableButton(); 
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                checkEmail();
+                enableButton(); 
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                checkEmail();
+                enableButton(); 
+            }
+        
+        });
+        
         // Phone Number Field
 
         phoneField = new RoundedTextField();
@@ -228,10 +252,31 @@ public class SignupView extends JPanel{
         getPhoneField().setRadius(50);
         getPhoneField().setFont(new Font("SansSerif", Font.PLAIN, 16));
         getPhoneField().setForeground(new Color(117, 117, 117));
-        getPhoneField().setPlaceholder("Numero de telephone");
+        getPhoneField().setPlaceholder("Téléphone(01XX..)");
         getPhoneField().setBorderColor(new Color(214,211,255));
         getPhoneField().setPlaceholderColor(new Color(190, 190, 190));
         getPhoneField().setFocusedBorderColor(new Color(108, 99, 255));
+        
+        phoneField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                checkPhone();
+                enableButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                checkPhone();
+                enableButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                checkPhone();
+                enableButton();
+            }
+        
+        });
 
         // Password Field
         
@@ -240,19 +285,37 @@ public class SignupView extends JPanel{
         getPasswordField().setRadius(50);
         getPasswordField().setFont(new Font("SansSerif", Font.PLAIN, 16));
         getPasswordField().setForeground(new Color(117, 117, 117));
-        getPasswordField().setPlaceholder("Mot de passe");
+        getPasswordField().setPlaceholder("Mot de passe(8 caractères min)");
         getPasswordField().setBorderColor(new Color(214,211,255));
         getPasswordField().setPlaceholderColor(new Color(190, 190, 190));
         getPasswordField().setFocusedBorderColor(new Color(108, 99, 255));
+        
+        passwordField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                enableButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                enableButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                enableButton();
+            }
+        
+        });
 
         // Login Button
         
-        signupButton = new RoundedButton("S'inscrire");
+        signupButton.setEnabled(false);
+        signupButton.setBackground(new Color(160, 160, 160, 20));
         signupButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         signupButton.setRadius(50);
         signupButton.setBorderWidth(0);
         signupButton.setBorderColor(new Color(0,0,0,0));
-        signupButton.setBackground(new Color(108, 99, 255));
         signupButton.setForeground(Color.white);
         signupButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         signupButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -297,6 +360,47 @@ public class SignupView extends JPanel{
 
         wrapper.add(formPanel);
         return wrapper;
+    }
+    
+    private boolean checkEmail(){
+        String email = emailField.getText();
+        String emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.]+\\.[A-Z]{2,6}$";
+        if (email.matches("(?i)"+emailRegex)){
+            emailField.setForeground(new Color(100, 100, 100));
+            return true;
+        }else{
+            emailField.setForeground(Color.RED);
+            return false;
+        }
+    }
+    
+    
+    private boolean checkPhone(){
+        String phone = phoneField.getText();
+        String phoneRegex = "^01+\\d{8}$";
+        if (phone.matches("(?i)"+phoneRegex)){
+            phoneField.setForeground(new Color(100, 100, 100));
+            return true;
+        }else{
+            phoneField.setForeground(Color.RED);
+            return false;
+        }
+    }
+    
+    public void enableButton(){
+        signupButton.setEnabled(
+                checkPhone() && 
+                checkEmail() && 
+                !firstNameField.getText().isEmpty() && 
+                !lastNameField.getText().isEmpty() && 
+                passwordField.getPassword().length >= 8
+        );
+        
+        if(signupButton.isEnabled() == true){
+            signupButton.setBackground(new Color(108, 99, 255));
+        }else{
+            signupButton.setBackground(new Color(160, 160, 160, 20));
+        }
     }
     
     public void addSignupButtonListener(ActionListener listener){

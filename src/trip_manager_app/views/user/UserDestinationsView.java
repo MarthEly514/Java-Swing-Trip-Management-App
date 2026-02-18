@@ -219,7 +219,7 @@ public class UserDestinationsView extends JPanel{
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         JLabel title = new JLabel("Destinations");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
+        title.setFont(new Font("SansSerif", Font.BOLD, 34));
         title.setForeground(new Color(50, 50, 50));
         title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -372,7 +372,7 @@ public class UserDestinationsView extends JPanel{
     }
 
     public void showDetails(DestinationModel destination){
-        UserDestinationDetails dialog = new UserDestinationDetails(parentFrame, destination);   
+        UserDestinationDetails dialog = new UserDestinationDetails(parentFrame, destination, user.getIdClient());   
         dialog.showDialog();
     }
     

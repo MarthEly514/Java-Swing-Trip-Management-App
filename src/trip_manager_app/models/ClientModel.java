@@ -100,9 +100,5 @@ public class ClientModel {
     public String toString() {
         return nom + " " + prenom + " (" + eMail + ")";
     }
-    
-    
-    
-    
-    
+  
 }

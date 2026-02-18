@@ -18,6 +18,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.*;
 import trip_manager_app.models.ClientModel;
 import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.MoyenTransportModel;
 import trip_manager_app.models.ReservationModel;
 import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.*;
@@ -39,6 +40,8 @@ public class UserReservationsView extends JPanel{
     private ReservationDAO resDao;
     private VoyageDAO voyageDao;
     private ClientModel user;
+    private String currentTab;
+    private MoyenTransportDAO transportDao;
     
     public UserReservationsView(){
         setLayout(new BorderLayout());
@@ -50,7 +53,7 @@ public class UserReservationsView extends JPanel{
         this.destDao = new DestinationDAO();
         this.resDao = new ReservationDAO();
         this.voyageDao = new VoyageDAO();
-
+        this.transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -61,6 +64,7 @@ public class UserReservationsView extends JPanel{
         this.destDao = new DestinationDAO();
         this.resDao = new ReservationDAO();
         this.voyageDao = new VoyageDAO();
+        this.transportDao = new MoyenTransportDAO();
         this.user = user;
 
         setLayout(new BorderLayout());
@@ -226,7 +230,7 @@ public class UserReservationsView extends JPanel{
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         JLabel title = new JLabel("Mes réservations");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24));
+        title.setFont(new Font("SansSerif", Font.BOLD, 34));
         title.setForeground(new Color(50, 50, 50));
         title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -234,7 +238,7 @@ public class UserReservationsView extends JPanel{
         
         options = new ArrayList<>();
         options.add("En attente");
-        options.add("Validées");
+        options.add("Validé");
 
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
@@ -261,7 +265,7 @@ public class UserReservationsView extends JPanel{
         row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
-        loadReservations("*"); 
+        loadReservations("En attente"); 
         
         bottomWrapper.add(row1);
 
@@ -278,25 +282,29 @@ public class UserReservationsView extends JPanel{
 
         
         if(labelName.equals("*")){
-            reservations = resDao.getAllReservations();
+            reservations = resDao.getAllReservationsByClientId(user.getIdClient());
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
             showReservationRows(reservations); 
         }
         else if(labelName.equals(options.get(0))){  
-            reservations = resDao.getReservationsByStatut(labelName);
+            reservations = resDao.getReservationsByStatutByClientId(labelName, user.getIdClient());
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
             showReservationRows(reservations); 
+            currentTab = options.get(0);
+            System.out.println(currentTab);
         }
         else if(labelName.equals(options.get(1))){
-            reservations = resDao.getReservationsByStatut(labelName);
+            reservations = resDao.getReservationsByStatutByClientId(labelName, user.getIdClient());
             row1.removeAll();       
             row1.revalidate();
             row1.repaint();
             showReservationRows(reservations); 
+            currentTab = options.get(1);
+            System.out.println(currentTab);
         }
     }
     
@@ -313,9 +321,10 @@ public class UserReservationsView extends JPanel{
     }
     
     public void showDetails(ReservationModel reservation, VoyageModel voyage, DestinationModel destination){
-        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix() );
-        dialog.addConfirmButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Confirmed"));
-        dialog.addCancelButtonListener(e -> System.out.println(voyage.getVilleDestination() + " Canceled"));
+        MoyenTransportModel transport = transportDao.findByNo(voyage.getNoVehicule());
+        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix(), transport);
+        dialog.addConfirmButtonListener(e -> loadReservations(currentTab));
+        dialog.addCancelButtonListener(e -> loadReservations(currentTab));
         dialog.showDialog();
     }
 

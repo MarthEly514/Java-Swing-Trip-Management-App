@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 14, 2026 at 08:10 PM
+-- Generation Time: Feb 18, 2026 at 02:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,10 @@ CREATE TABLE `clients` (
 
 INSERT INTO `clients` (`id_client`, `nom`, `prenom`, `e_mail`, `telephone`, `mot_de_passe`) VALUES
 (1, 'Chishiya', 'Shuntaro', 'chishiya51@gmail.com', '0139383736', 'chishiya51shuntaro#'),
-(2, 'Arisu', 'Ryohei', 'arisu@gmail.com', '011819202122', 'arisu');
+(2, 'Arisu', 'Ryohei', 'arisu@gmail.com', '011819202122', 'arisu'),
+(3, 'Ido', 'Alita', 'alita99@gmail.com', '0196979899', 'destroyZalem'),
+(4, 'Meta', 'AI', 'meta@gmail.com', '0190919293', 'metaAi'),
+(5, 'Lana', 'Rogers', 'lana@gmail.com', '0167666564', 'lanaRogers');
 
 -- --------------------------------------------------------
 
@@ -125,6 +128,27 @@ INSERT INTO `images` (`id_image`, `image_data`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `moyens_transport`
+--
+
+CREATE TABLE `moyens_transport` (
+  `no_vehicule` int(11) NOT NULL,
+  `type_transport` varchar(100) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  `nombre_places` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `moyens_transport`
+--
+
+INSERT INTO `moyens_transport` (`no_vehicule`, `type_transport`, `description`, `nombre_places`) VALUES
+(10, 'voiture', 'Toyota Camry', 5),
+(15, 'avion', 'Boeing 747', 12);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `reservations`
 --
 
@@ -144,7 +168,13 @@ INSERT INTO `reservations` (`id_reservation`, `date_reservation`, `statut`, `id_
 (1, '2026-02-11 17:23:15', 'En attente', 1, 1),
 (2, '2026-02-11 17:23:15', 'En attente', 1, 2),
 (3, '2026-02-13 20:35:43', 'En attente', 1, 3),
-(4, '2026-02-13 22:04:12', 'En attente', 1, 4);
+(4, '2026-02-13 22:04:12', 'En attente', 1, 4),
+(5, '2026-02-15 15:05:42', 'Validé', 5, 5),
+(26, '2026-02-16 10:19:10', 'En attente', 5, 26),
+(28, '2026-02-17 12:54:21', 'Validé', 5, 28),
+(30, '2026-02-17 12:30:39', 'Validé', 5, 25),
+(31, '2026-02-17 12:30:24', 'Validé', 5, 25),
+(32, '2026-02-17 12:29:15', 'Validé', 5, 25);
 
 -- --------------------------------------------------------
 
@@ -170,7 +200,37 @@ INSERT INTO `voyages` (`id_voyage`, `ville_depart`, `ville_destination`, `date_d
 (1, 'Moscou', 'Paris', '2026-02-13', '2026-02-17', 500.00, 10),
 (2, 'Londres', 'Rome', '2026-02-14', '2026-02-27', 350.00, 6),
 (3, 'Luxembourg', 'Rome', '2026-02-04', '2026-02-12', 500.34, 15),
-(4, 'Luxembourg', 'Paris', '2026-02-24', '2026-02-27', 500.34, 15);
+(4, 'Luxembourg', 'Paris', '2026-02-24', '2026-02-27', 500.34, 15),
+(5, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(6, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(7, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(8, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(9, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(10, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(11, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(12, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(13, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(14, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(15, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(16, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(17, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(18, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(19, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(20, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(21, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(22, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(23, 'Luxembourg', 'Paris', '2026-02-15', '2026-02-15', 500.34, 15),
+(24, 'Luxembourg', 'Rome', '2026-02-15', '2026-02-15', 500.34, 15),
+(25, 'Luxembourg', 'Paris', '2026-02-16', '2026-02-16', 500.34, 15),
+(26, 'Cotonou', 'Paris', '2026-02-19', '2026-02-26', 500.34, 15),
+(27, 'Ares', 'Rome', '2026-02-16', '2026-02-16', 500.34, 15),
+(28, 'Cybertron', 'Rome', '2026-02-16', '2026-02-16', 500.34, 15),
+(29, 'Nuakchot', 'Rome', '2027-02-20', '2026-02-16', 500.34, 15),
+(30, 'Yamtcha', 'Paris', '2026-02-16', '2026-02-16', 500.34, 15),
+(31, 'Raven', 'Paris', '2026-02-16', '2026-02-16', 500.34, 15),
+(32, 'Darkness', 'Rome', '2026-02-16', '2026-02-16', 500.34, 15),
+(33, 'TAkeOf', 'Paris', '2026-02-16', '2026-02-16', 500.34, 15),
+(34, 'Io', 'Paris', '2026-02-16', '2026-02-16', 500.34, 15);
 
 --
 -- Indexes for dumped tables
@@ -201,6 +261,12 @@ ALTER TABLE `images`
   ADD PRIMARY KEY (`id_image`);
 
 --
+-- Indexes for table `moyens_transport`
+--
+ALTER TABLE `moyens_transport`
+  ADD PRIMARY KEY (`no_vehicule`);
+
+--
 -- Indexes for table `reservations`
 --
 ALTER TABLE `reservations`
@@ -226,7 +292,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id_client` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_client` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `destinations`
@@ -241,16 +307,22 @@ ALTER TABLE `images`
   MODIFY `id_image` int(250) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `moyens_transport`
+--
+ALTER TABLE `moyens_transport`
+  MODIFY `no_vehicule` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id_reservation` int(250) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_reservation` int(250) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `voyages`
 --
 ALTER TABLE `voyages`
-  MODIFY `id_voyage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_voyage` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

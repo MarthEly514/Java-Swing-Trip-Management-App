@@ -17,10 +17,43 @@ import trip_manager_app.utils.SvgUtils;
  * @author ely
  */
 public class UIButton extends RoundedButton{
+
+    /**
+     * @return the text
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * @param text the text to set
+     */
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    /**
+     * @return the iconPath
+     */
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    /**
+     * @param iconPath the iconPath to set
+     */
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
+    }
+    private String text;
+    private String iconPath;
+    
     public UIButton(String text, String iconPath, Color backgroundColor, Color foregroundColor){
         //button
 
         setText(text);
+        this.text = text;
+        this.iconPath = iconPath;
         setPreferredSize(new Dimension(250, 50));
         setRadius(50);
         setBorderWidth(0);
@@ -34,6 +67,5 @@ public class UIButton extends RoundedButton{
         setHorizontalAlignment(SwingConstants.LEFT);
         setMargin(new Insets(0, 10, 0, 0));
     }
-
     
 }

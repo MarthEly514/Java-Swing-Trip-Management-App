@@ -9,6 +9,8 @@ import java.awt.event.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import trip_manager_app.ui_components.RoundedButton;
 import trip_manager_app.ui_components.RoundedPasswordField;
 import trip_manager_app.ui_components.RoundedTextField;
@@ -156,6 +158,24 @@ public class LoginView extends JPanel{
         getEmailField().setBorderColor(new Color(214,211,255));
         getEmailField().setPlaceholderColor(new Color(190, 190, 190));
         getEmailField().setFocusedBorderColor(new Color(108, 99, 255));
+        
+        emailField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                checkEmail();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                checkEmail();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                checkEmail();
+            }
+        
+        });
 
         // Password Field
         
@@ -217,6 +237,16 @@ public class LoginView extends JPanel{
 
         wrapper.add(formPanel);
         return wrapper;
+    }
+    
+    private void checkEmail(){
+        String email = emailField.getText();
+        String emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.]+\\.[A-Z]{2,6}$";
+        if (email.matches("(?i)"+emailRegex)){
+            emailField.setForeground(new Color(100, 100, 100));
+        }else{
+            emailField.setForeground(Color.RED);
+        }
     }
     
     public void showErrorMessage(String errorMessage){ 

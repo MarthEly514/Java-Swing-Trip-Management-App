@@ -56,6 +56,42 @@ public class AuthService {
         loginView.addSignupRedirectButtonListener(e -> frame.showView("signupView"));
         loginView.addLoginButtonListener(e -> verifyLogin()); //execute ici une fonction qui se chargera de verifier si l'user est un admin ou non puis de l'authentifier
         
+//        // START OF USER TESTING BLOCK
+//        
+//        ClientModel defaultClient = new ClientModel(
+//                5,
+//                "Eaven",
+//                "Sen",
+//                "Sen",
+//                "Sen",
+//                "sen"
+//        
+//        );
+//        userHomepageView = new UserHomepageView(frame, defaultClient);
+//        userDestinationsView = new UserDestinationsView(frame, defaultClient);
+//        userReservationsView = new UserReservationsView(frame, defaultClient);
+//        userProfileView = new UserProfileView(defaultClient);
+//        
+//        new ClientController(frame, loginView, userHomepageView, userDestinationsView, userReservationsView, userProfileView);
+//
+//        //END OF TESTING BLOCK
+
+//        // START OF ADMIN TESTING BLOCK
+//        
+//        AdminModel defaultAdmin = new AdminModel(
+//                5,
+//                "eaven@admin.com",
+//                "#senArin"    
+//        );
+//
+//        adminHomepageView = new AdminHomepageView();
+//        adminReservationsManagementView = new AdminReservationsManagementView();
+//        adminUserManagementView = new AdminUserManagementView();
+//        
+//        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView);
+//
+//        //END OF TESTING BLOCK
+        
         //User views
         userHomepageView = null;
         userDestinationsView = null;
@@ -83,14 +119,14 @@ public class AuthService {
 //            public void actionPerformed(ActionEvent e) {
 //                System.out.println("Enter pressed!");
 //                verifyLogin();
-//            }
-//        }); 
-
+//            }6
+//        }); destroyZalem
 
         // default view frame.showView("Login");
-//        frame.addView(loginView, "loginView");
+        frame.addView(loginView, "loginView");
         frame.showView("loginView");
-//        frame.showView("userHomepageView");
+//        frame.addView(adminHomepageView, "adminHomepageView");
+//        frame.showView("adminHomepageView");
     }
     
     private void saveUser(){
@@ -106,7 +142,7 @@ public class AuthService {
             signupView.getFirstName(),
             signupView.getEmail(),
             signupView.getPhone(),
-            Arrays.toString(signupView.getPassword())
+            new String(signupView.getPassword())
             );
         
         boolean isUserSaved = clientDao.addClient(client);
@@ -166,12 +202,9 @@ public class AuthService {
         
         if(pass.length==adminPass.length){
         
-            for (int i = 0; i< pass.length; i++){
-                authenticated = true;
-                if(pass[i] != adminPass[i]){
-                    authenticated = false;
-                    break;
-                }
+            authenticated = true;
+            if(!Arrays.equals(pass ,adminPass)){
+                authenticated = false;
             }
         }
         
@@ -184,8 +217,7 @@ public class AuthService {
     }
     
     private void verifyLogin(){
-//        String userEmail = "nigga@gmail.com";
-//        String adminEmail = "admin@admin.admin";
+
         System.out.println("Checking connexion...");
         
         ClientModel user = clientDao.getClientByEmail(loginView.getEmail());

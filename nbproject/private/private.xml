@@ -5,7 +5,6 @@
         <group>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/Trip_Manager_App_Main.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserHomepageView.java</file>
-            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/ReservationRow.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserReservationDetailDialog.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserReservationsView.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/NavBarHorizontal.java</file>
@@ -19,6 +18,28 @@
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/user/UserDestinationDetails.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/MainFrame.java</file>
             <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/DestinationCard.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/DatePickerField.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/ReservationModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/VoyageModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/PaiementDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/MoyenTransportDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/MoyenTransportModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/services/AuthService.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/DAO/AdminDAO.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/AdminModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/SignupView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/LoginController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/AdminController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/ui_components/renderers/ClientsCellRenderer.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/admin/AdminUserManagementView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/views/admin/AdminHomepageView.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/ReservationController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/SignupController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/controllers/VoyageController.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/EnumModePaiement.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/NewEnumReservation.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/PaiementModel.java</file>
+            <file>file:/home/ely/Documents/Projects/Java-Swing-Trip-Management-App/src/trip_manager_app/models/DestinationModel.java</file>
         </group>
     </open-files>
 </project-private>

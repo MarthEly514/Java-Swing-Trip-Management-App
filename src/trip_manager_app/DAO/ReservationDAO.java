@@ -10,18 +10,15 @@ import trip_manager_app.models.NewEnumReservation;
 
 public class ReservationDAO {
 
-    private Connection connection;
-
-    public ReservationDAO() {
-        connection = DatabaseConnection.getConnection();
-    }
-
     // CREATE
     public void addReservation(ReservationModel reservation) {
         String sql = "INSERT INTO reservations (date_reservation, statut, id_client, id_voyage) " +
                      "VALUES (?, ?, ?, ?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setTimestamp(1, Timestamp.valueOf(reservation.getDateReservation()));
             ps.setString(2, reservation.getStatut().getLibelle());
             ps.setInt(3, reservation.getIdClient());
@@ -35,10 +32,13 @@ public class ReservationDAO {
     // READ ALL
     public List<ReservationModel> getAllReservations() {
         List<ReservationModel> reservations = new ArrayList<>();
-        String sql = "SELECT * FROM reservations";
+        String sql = "SELECT * FROM reservations ORDER BY id_reservation DESC";
 
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (
+                Connection conn = DatabaseConnection.getConnection();
+                Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)
+                ) {
 
             while (rs.next()) {
                 ReservationModel reservation = new ReservationModel(
@@ -55,13 +55,58 @@ public class ReservationDAO {
         }
         return reservations;
     }
+    
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM reservations";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+             
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 
+    // READ ALL BY CLIENT ID
+    public List<ReservationModel> getAllReservationsByClientId(int idClient) {
+        List<ReservationModel> reservations = new ArrayList<>();
+        String sql = "SELECT * FROM reservations WHERE id_client = ? ORDER BY id_reservation DESC";
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            ps.setInt(1, idClient);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ReservationModel reservation = new ReservationModel(
+                        rs.getInt("id_reservation"),
+                        rs.getTimestamp("date_reservation").toLocalDateTime(),
+                        NewEnumReservation.fromString(rs.getString("statut")),
+                        rs.getInt("id_client"),
+                        rs.getInt("id_voyage")
+                );
+                reservations.add(reservation);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
     
     public List<ReservationModel> getReservationsByStatut(String statut) {
         List<ReservationModel> reservations = new ArrayList<>();
-        String sql = "SELECT * FROM reservations WHERE statut=?";
+        String sql = "SELECT * FROM reservations WHERE statut=? ORDER BY id_reservation DESC";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, statut);
             ResultSet rs = ps.executeQuery();
 
@@ -83,9 +128,12 @@ public class ReservationDAO {
     
     public List<ReservationModel> getReservationsByStatutByClientId(String statut, int idClient) {
         List<ReservationModel> reservations = new ArrayList<>();
-        String sql = "SELECT * FROM reservations WHERE id_client=? AND statut=?";
+        String sql = "SELECT * FROM reservations WHERE id_client=? AND statut=? ORDER BY id_reservation DESC";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, idClient);
             ps.setString(2, statut);
             ResultSet rs = ps.executeQuery();
@@ -110,13 +158,16 @@ public class ReservationDAO {
     // get a certain number of reservations
     public List<ReservationModel> getNReservations(int n) {
         List<ReservationModel> reservations = new ArrayList<>();
-        String sql = "SELECT * FROM reservations";
+        String sql = "SELECT * FROM reservations ORDER BY id_reservation DESC";
         if (n > 0) {
             sql += " LIMIT ?";
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            
             if (n > 0) {
                 ps.setInt(1, n);
             }
@@ -138,12 +189,51 @@ public class ReservationDAO {
         return reservations;
     }
     
+    // get a certain number of reservations by clientId
+    public List<ReservationModel> getNReservationsByClientId(int n, int idClient) {
+        List<ReservationModel> reservations = new ArrayList<>();
+        String sql = "SELECT * FROM reservations WHERE id_client = ? ORDER BY id_reservation DESC";
+        if (n > 0) {
+            sql += " LIMIT ?";
+        }
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            
+            ps.setInt(1, idClient);
+
+            if (n > 0) {
+                ps.setInt(2, n);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ReservationModel reservation = new ReservationModel(
+                            rs.getInt("id_reservation"),
+                            rs.getTimestamp("date_reservation").toLocalDateTime(),
+                            NewEnumReservation.fromString(rs.getString("statut")),
+                            rs.getInt("id_client"),
+                            rs.getInt("id_voyage")
+                    );
+                    reservations.add(reservation);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
+    
     // READ BY ID
     public ReservationModel getReservationById(int id) {
-        String sql = "SELECT * FROM reservations WHERE reservation_id = ?";
+        String sql = "SELECT * FROM reservations WHERE reservation_id = ? ";
         ReservationModel reservation = null;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -167,7 +257,10 @@ public class ReservationDAO {
         String sql = "UPDATE reservations SET date_reservation=?, statut=?, id_client=?, id_voyage=? " +
                      "WHERE id_reservation=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setTimestamp(1, Timestamp.valueOf(r.getDateReservation()));
             ps.setString(2, r.getStatut().getLibelle());
             ps.setInt(3, r.getIdClient());
@@ -183,7 +276,10 @@ public class ReservationDAO {
         String sql = "UPDATE reservations SET statut=? " +
                      "WHERE id_reservation=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, statut);
             ps.setInt(2, idReservation);
             ps.executeUpdate();
@@ -196,7 +292,10 @@ public class ReservationDAO {
     public void deleteReservation(int id) {
         String sql = "DELETE FROM reservations WHERE id_reservation=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {

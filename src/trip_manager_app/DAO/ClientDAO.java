@@ -9,17 +9,15 @@ import java.util.List;
 
 public class ClientDAO {
 
-    private Connection connection;
-
-    public ClientDAO() {
-        this.connection = DatabaseConnection.getConnection();
-    }
 
    // CREATE
     public boolean addClient(ClientModel client) {
         String sql = "INSERT INTO clients (nom, prenom, e_mail, telephone, mot_de_passe) VALUES (?, ?, ?, ?, ?)";
         boolean isUserSaved = false;
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, client.getNom());
             ps.setString(2, client.getPrenom());
             ps.setString(3, client.getEmail());
@@ -43,8 +41,11 @@ public class ClientDAO {
        List<ClientModel> clients = new ArrayList<>();
         String sql = "SELECT * FROM clients";
 
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (
+                Connection conn = DatabaseConnection.getConnection();
+                Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)
+                ) {
 
             while (rs.next()) {
                 ClientModel c = new ClientModel(
@@ -62,13 +63,68 @@ public class ClientDAO {
         }
         return clients;
     }
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM clients";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+             
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    public long countByNameContaining(String partialName) {
+        String sql = "SELECT COUNT(*) FROM clients WHERE nom ILIKE ? OR prenom ILIKE ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             
+            String pattern = "%" + partialName + "%";
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+             
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    public long countByNameStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM clients WHERE statut = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+             
+            ps.setString(1, status);
+             
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 
     // READ (by id)
     public ClientModel getClientById(int id) {
         String sql = "SELECT * FROM clients WHERE id_client = ?";
         ClientModel client = null;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
@@ -88,11 +144,41 @@ public class ClientDAO {
         return client;
     }
     
+    public List<ClientModel> getNewClients() {
+        List<ClientModel> clients = new ArrayList<>();
+        String sql = "SELECT * FROM clients  ORDER BY id_client DESC LIMIT 10";
+
+        try (
+                Connection conn = DatabaseConnection.getConnection();
+                Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)
+                ) {
+
+            while (rs.next()) {
+                ClientModel c = new ClientModel(
+                        rs.getInt("id_client"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("e_mail"),
+                        rs.getString("telephone"),
+                        rs.getString("mot_de_passe")
+                );
+                clients.add(c);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return clients;
+    }
+    
     public ClientModel getClientByEmail(String email) {
         String sql = "SELECT * FROM clients WHERE e_mail = ?";
         ClientModel client = null;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
 
@@ -117,7 +203,10 @@ public class ClientDAO {
     public void updateClient(ClientModel client) {
         String sql = "UPDATE clients SET nom=?, prenom=?, e_mail=?, telephone=? WHERE id_client=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setString(1, client.getNom());
             ps.setString(2, client.getPrenom());
             ps.setString(3, client.getEmail());
@@ -133,11 +222,15 @@ public class ClientDAO {
     public void deleteClient(int id) {
         String sql = "DELETE FROM clients WHERE id_client=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 }

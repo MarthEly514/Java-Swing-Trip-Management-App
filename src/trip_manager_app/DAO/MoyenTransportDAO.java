@@ -15,7 +15,7 @@ public class MoyenTransportDAO {
 
     // CREATE
     public void addMoyenTransport(MoyenTransportModel transport) {
-        String sql = "INSERT INTO moyen_de_transport (noVehicule, typeVehicule, descriptionVehicule, nombrePlaces) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO moyens_transport (noVehicule, typeVehicule, descriptionVehicule, nombrePlaces) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -33,7 +33,7 @@ public class MoyenTransportDAO {
 
     // READ by id
     public MoyenTransportModel findByNo(int noVehicule) {
-        String sql = "SELECT * FROM moyen_de_transport WHERE no_vehicule = ?";
+        String sql = "SELECT * FROM moyens_transport WHERE no_vehicule = ?";
         MoyenTransportModel transport = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -60,7 +60,7 @@ public class MoyenTransportDAO {
     // READ all
     public List<MoyenTransportModel> getAll() {
         List<MoyenTransportModel> liste = new ArrayList<>();
-        String sql = "SELECT * FROM moyen_de_transport";
+        String sql = "SELECT * FROM moyens_transport";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -81,10 +81,36 @@ public class MoyenTransportDAO {
         }
         return liste;
     }
+    
+    public List<MoyenTransportModel> getAllByType(String typeTransport) {
+        List<MoyenTransportModel> liste = new ArrayList<>();
+        String sql = "SELECT * FROM moyens_transport WHERE type_transport=?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, typeTransport);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                MoyenTransportModel transport = new MoyenTransportModel(
+                        rs.getInt("no_vehicule"),
+                        rs.getString("type_transport"),
+                        rs.getString("description"),
+                        rs.getInt("nombre_places")
+                );
+                liste.add(transport);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
 
     // UPDATE
     public void modifier(MoyenTransportModel transport) {
-        String sql = "UPDATE moyen_de_transport SET type_transport = ?, description = ?, nombre_places = ? WHERE no_vehicule = ?";
+        String sql = "UPDATE moyens_transport SET type_transport = ?, description = ?, nombre_places = ? WHERE no_vehicule = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -102,7 +128,7 @@ public class MoyenTransportDAO {
 
     // DELETE
     public void supprimer(int noVehicule) {
-        String sql = "DELETE FROM moyen_de_transport WHERE no_vehicule = ?";
+        String sql = "DELETE FROM moyens_transport WHERE no_vehicule = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -435,6 +435,16 @@ public class PanelRound extends JPanel {
         repaint();
     }
     
+    @java.beans.BeanProperty(preferred = true, visualUpdate = true)
+    public void rounded(int radius) {
+        radius = Math.max(0, radius);
+        this.roundTopLeft = radius;
+        this.roundTopRight = radius;
+        this.roundBottomLeft = radius;
+        this.roundBottomRight = radius;
+        repaint();
+    }
+
     private Shape createRoundedShape() {
         Area area = new Area(createRoundTopLeft());
         if (roundTopRight > 0) area.intersect(new Area(createRoundTopRight()));
@@ -486,7 +496,7 @@ public class PanelRound extends JPanel {
         area.add(new Area(new Rectangle2D.Double(0, 0,  width, height-roundY/2)));      
         return area;     
     }
-
+    
     /**
      * @return the fitWidth
      */
