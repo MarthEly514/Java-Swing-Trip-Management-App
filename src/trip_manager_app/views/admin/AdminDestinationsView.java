@@ -4,18 +4,38 @@
  */
 package trip_manager_app.views.admin;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import trip_manager_app.DAO.ClientDAO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import trip_manager_app.DAO.DestinationDAO;
-import trip_manager_app.DAO.ReservationDAO;
+import trip_manager_app.models.ClientModel;
 import trip_manager_app.models.DestinationModel;
-import trip_manager_app.ui_components.*;
+import trip_manager_app.ui_components.ListElementRow;
+import trip_manager_app.ui_components.NavBarHorizontal;
+import trip_manager_app.ui_components.ScrollWrapper;
+import trip_manager_app.ui_components.SearchField;
+import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.views.LoginView;
 import trip_manager_app.views.user.UserDestinationDetails;
 
@@ -23,49 +43,43 @@ import trip_manager_app.views.user.UserDestinationDetails;
  *
  * @author ely
  */
-public class AdminHomepageView extends JPanel{
-//    private List<JPanel> cards = new ArrayList<>();
+public class AdminDestinationsView extends JPanel{
     private UIButton homeButton;
-    private UIButton clientsButton;
+    private UIButton destinationButton;
     private UIButton reservationButton;
-    private UIButton logoutButton;
-    private UIButton addDestinationsButton;
-    private final ClientDAO clientDao;
-    private final DestinationDAO destinationDao;
-    private final ReservationDAO reservationDao;
-    private JPanel row2;
+    private UIButton userProfileButton;
+    private List<String> options;
     private JPanel row1;
     private JFrame parentFrame;
-    private long usersCount;
-    private long destinationsCount;
-    private long reservationsCount;
-    private JLabel usersCountLabel;
-    private JLabel destinationsCountLabel;
-    private JLabel reservationsCountLabel;
-    private UIButton destinationButton;
-
-    public AdminHomepageView(){    
-        this.clientDao = new ClientDAO();
-        this.destinationDao = new DestinationDAO();
-        this.reservationDao = new ReservationDAO();
+    private DestinationDAO destDao;
+    private SearchField searchBar;
+    private ClientModel user;
+    private UIButton clientsButton;
+    private UIButton logoutButton;
+    private UIButton addDestinationsButton;
+    
+    public AdminDestinationsView(){
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
-        reloadValues();
     }
     
-    public AdminHomepageView(JFrame parentFrame){    
+    public AdminDestinationsView(JFrame parentFrame){
         this.parentFrame = parentFrame;
-        this.clientDao = new ClientDAO();
-        this.destinationDao = new DestinationDAO();
-        this.reservationDao = new ReservationDAO();
+        destDao = new DestinationDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
-        reloadValues();
     }
     
-//    LEFT PANEL
+    public AdminDestinationsView(JFrame parentFrame, ClientModel user){
+        this.parentFrame = parentFrame;
+        this.user = user;
+        destDao = new DestinationDAO();
+        setLayout(new BorderLayout());
+        add(createLeftPanel(), BorderLayout.WEST);
+        add(createRightPanel(), BorderLayout.CENTER);
+    }
     
     private JPanel createLeftPanel() {
         JPanel panel = new JPanel();
@@ -103,18 +117,18 @@ public class AdminHomepageView extends JPanel{
         //home button
         homeButton = new UIButton(
                 " Dashboard",
-                "/trip_manager_app/ressources/icons/analytics_light.svg", 
-                new Color(108, 99, 255), 
-                Color.white
+                "/trip_manager_app/ressources/icons/analytics.svg", 
+                new Color(0, 0, 0, 0),
+                new Color(108, 99, 255)
                 
         );
         
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel.svg", 
-                new Color(0, 0, 0, 0), 
-                new Color(108, 99, 255)
+                "/trip_manager_app/ressources/icons/travel_light.svg", 
+                new Color(108, 99, 255), 
+                Color.white
                 
         );
                 
@@ -163,12 +177,12 @@ public class AdminHomepageView extends JPanel{
         homeButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                homeButton.setBackground(new Color(101, 93, 235));            
+                homeButton.setBackground(new Color(101, 93, 235, 20));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                homeButton.setBackground(new Color(108, 99, 255));            
+                homeButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
         
@@ -187,12 +201,12 @@ public class AdminHomepageView extends JPanel{
         destinationButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                destinationButton.setBackground(new Color(101, 93, 235, 20));            
+                destinationButton.setBackground(new Color(101, 93, 235));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                destinationButton.setBackground(new Color(0, 0, 0, 0));            
+                destinationButton.setBackground(new Color(108, 99, 255));            
             }
         });
 
@@ -230,8 +244,6 @@ public class AdminHomepageView extends JPanel{
         return panel;
     }
     
-//    RIGHT PANEL
-    
     private JPanel createRightPanel(){
         JPanel wrapper = new JPanel();
         wrapper.setBackground(Color.white);
@@ -242,118 +254,17 @@ public class AdminHomepageView extends JPanel{
         JPanel topWrapper = new JPanel();
         topWrapper.setLayout(new BoxLayout(topWrapper, BoxLayout.Y_AXIS));
         topWrapper.setBackground(Color.white);
-        topWrapper.setPreferredSize(new Dimension(Integer.MAX_VALUE, 210));
-        topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 210));
+        topWrapper.setPreferredSize(new Dimension(Integer.MAX_VALUE, 250));
+        topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        JLabel title = new JLabel("Dashboard");
+        JLabel title = new JLabel("Destinations");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
         title.setForeground(new Color(50, 50, 50));
         title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
-        
-        topWrapper.add(Box.createVerticalGlue());     
-        topWrapper.add(title);
-        
-        JPanel bottomWrapper = new JPanel();
-        bottomWrapper.setBackground(Color.white);
-        bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
-        bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        
-        
-        JScrollPane scrollWrapper = new JScrollPane(bottomWrapper);
-        scrollWrapper.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JScrollBar scrollBar = scrollWrapper.getVerticalScrollBar();
-        
-        // customizing the scrollbar aspect to match the design
-        scrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void paintThumb(Graphics grphcs, JComponent c, Rectangle thumbBounds){
-                Graphics2D g2 = (Graphics2D) grphcs;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-               g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            }
-            
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors(){
-                this.thumbColor = new Color(101, 93, 235, 40);
-                this.trackColor = Color.white;
-                this.scrollBarWidth = 10;
-            }
-        });
-        
-        
-        row1 = new JPanel();
-        row1.setOpaque(false);
-        row1.setLayout(new BorderLayout());
-        row1.setPreferredSize(new Dimension(0, 250));
-        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
-        row1.setMinimumSize(new Dimension(1, 250));
-        row1.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 0));
-                
-        SubtitleLabel subtitle1 = new SubtitleLabel("   Statistiques generales");
-        
-//        avec une commande de recuperation de longueur de table, on recupere le nombre d'elements dans la table clients, reservations et dans la table destinations
-        usersCount = clientDao.count();
-        destinationsCount = destinationDao.count();
-        reservationsCount = reservationDao.count();
-        
-        long users = clientDao.count();
-        long destinations = destinationDao.count();
-        long reservations = reservationDao.count();
-        
-        usersCountLabel = new JLabel(formatCount(users, "Clients"));
-        destinationsCountLabel = new JLabel(formatCount(destinations, "Destinations disponibles"));
-        reservationsCountLabel = new JLabel(formatCount(reservations, "Reservations faites"));
-        
-        JPanel statsContainer = new JPanel();
-        statsContainer.setLayout(new BoxLayout(statsContainer, BoxLayout.Y_AXIS));
-        statsContainer.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        statsContainer.setOpaque(false);
-        
-        statsContainer.add(usersCountLabel);
-        statsContainer.add(destinationsCountLabel);
-        statsContainer.add(reservationsCountLabel);
-        
-        row1.add(statsContainer);
-        
-        SubtitleLabel subtitle2 = new SubtitleLabel("   Destinations disponibles");
-        
-        row2 = new JPanel();
-        row2.setOpaque(false);
-        row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        row2.setMinimumSize(new Dimension(Integer.MAX_VALUE, 300));
-        row2.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
-        row2.setLayout(new BoxLayout(row2, BoxLayout.Y_AXIS));
-        
-        loadDestinations("*");
-        
-        JPanel addMoreBtnCtnr = new JPanel();
-        addMoreBtnCtnr.setOpaque(false);
-        
         
         addDestinationsButton = new UIButton(
             "  Ajouter destination",
@@ -383,64 +294,116 @@ public class AdminHomepageView extends JPanel{
             }
         });
 
-        addMoreBtnCtnr.add(addDestinationsButton);
         
-        bottomWrapper.add(subtitle1);
-        bottomWrapper.add(Box.createVerticalStrut(20));
+        JPanel titleCtnr = new JPanel();
+        titleCtnr.setOpaque(false);
+        titleCtnr.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        titleCtnr.setLayout(new BorderLayout());
+        titleCtnr.setPreferredSize(new Dimension(0, 50));
+        titleCtnr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        
+        titleCtnr.add(title, BorderLayout.WEST);
+        titleCtnr.add(addDestinationsButton, BorderLayout.EAST);
+        
+        
+        JPanel searchBarContainer = new JPanel();
+        searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
+        searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
+        searchBarContainer.setOpaque(false); 
+        
+        searchBar = new SearchField(e-> searchDestination(searchBar.getSearchQuery()));
+        searchBar.setBorderColor(new Color(161, 117, 255, 30));
+                
+        
+        searchBarContainer.add(searchBar);
+        
+        JPanel bottomWrapper = new JPanel();
+        bottomWrapper.setBackground(Color.white);
+        bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
+        bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        
+        
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
+        
+        options = new ArrayList<>();
+        options.add("Populaires");
+        options.add("Meilleures notes");
+
+        
+        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadDestinations(optionName));
+        
+        topWrapper.add(searchBarContainer);         
+//        topWrapper.add(Box.createVerticalGlue());     
+        topWrapper.add(titleCtnr);
+        topWrapper.add(Box.createVerticalStrut(5));
+        topWrapper.add(navBar);
+        
+        
+        row1 = new JPanel();
+        row1.setOpaque(false);
+        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        row1.setMinimumSize(new Dimension(Integer.MAX_VALUE, 600));
+        row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
+        row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
+        
+
+        loadDestinations("*");
+        
         bottomWrapper.add(row1);
-        bottomWrapper.add(Box.createVerticalStrut(20));
-        bottomWrapper.add(subtitle2);
-        bottomWrapper.add(Box.createVerticalStrut(10));
-        bottomWrapper.add(addMoreBtnCtnr);
-        bottomWrapper.add(Box.createVerticalStrut(20));
-        bottomWrapper.add(row2);
-        
+ 
         wrapper.add(topWrapper);
         wrapper.add(Box.createVerticalStrut(20));
         wrapper.add(scrollWrapper);
         
-        new Timer(5000, e -> reloadValues()).start();
         
         return wrapper;
     }
     
-    private String formatCount(long count, String labelText) {
-    String countStr = (count >= 10) ? String.valueOf(count) : "0" + count;
-    return "<html><span style='font-size:32px; color:#a175ff;'>" + countStr +
-           "</span>   <span style='font-size:25px;'>" + labelText + "</span></html>";
-}
-    
-    public void showDetails(){
-        AddDestinationDialog dialog = new AddDestinationDialog(parentFrame, this);   
-        dialog.showDialog();
-    }
-    
     public void loadDestinations(String labelName){
-        java.util.List<DestinationModel> destinations;
+        List<DestinationModel> destinations;
         if(labelName.equals("*")){
-            destinations = destinationDao.getNDestinations(4);
-            row2.removeAll();       // removes every child component
-            row2.revalidate();      // tells the layout manager to recalculate layout
-            row2.repaint();
+            destinations = destDao.getNDestinations(4);
+            row1.removeAll();       // removes every child component
+            row1.revalidate();      // tells the layout manager to recalculate layout
+            row1.repaint();
             showDestinationRows(destinations); 
+        }
+        else if(labelName.equals(options.get(0))){
+                destinations = destDao.getNPopularDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                showDestinationRows(destinations); 
+        }
+        else if(labelName.equals(options.get(1))){
+                destinations = destDao.getNBestDestinations(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                showDestinationRows(destinations); 
         }
  
     }
     
-    private void showDestinationRows(java.util.List<DestinationModel> destinations) {
+    private void showDestinationRows(List<DestinationModel> destinations) {
 
         if(!destinations.isEmpty()){
             for(DestinationModel destination:destinations){
 
 //                    DestinationModel dest = new DestinationModel(destination.getDestinationId(), destination.getVille(), destination.getPays(),  destination.getDescription(), destination.getNote(), destination.getImageId());
 
-                    ListElementRow destRow = new ListElementRow(destination.getVille(), "", "Note: " + destination.getNote(), "/trip_manager_app/ressources/icons/star.svg", e ->showDetails(destination));
-                    row2.add(destRow);
-                    row2.add(Box.createVerticalStrut(20));  
+                    ListElementRow destRow = new ListElementRow(destination.getVille(), "", "Note: " + destination.getNote(), "/trip_manager_app/ressources/icons/star.svg", e ->{
+                        showDetails(destination);
+                        loadDestinations("*");
+                    } 
+                );
+                    row1.add(destRow);
+                    row1.add(Box.createVerticalStrut(20));  
                 }
         }else{
             // Center the empty state vertically and horizontally
-            row2.add(Box.createVerticalGlue());
+            row1.add(Box.createVerticalGlue());
 
             JPanel noResPanel = new JPanel();
             noResPanel.setLayout(new BoxLayout(noResPanel, BoxLayout.Y_AXIS));
@@ -461,17 +424,17 @@ public class AdminHomepageView extends JPanel{
             noResPanel.add(Box.createVerticalStrut(10));
             noResPanel.add(noResMessage2);
 
-            row2.add(noResPanel);
-            row2.add(Box.createVerticalGlue()); 
+            row1.add(noResPanel);
+            row1.add(Box.createVerticalGlue()); 
             
         }  
     }
     
     private void searchDestination(String searchText){
         SwingUtilities.invokeLater(()->{
-            java.util.List<DestinationModel> destinations;
+            List<DestinationModel> destinations;
             if(searchText.trim().equals("")){
-                destinations = destinationDao.getNDestinations(5);
+                destinations = destDao.getNDestinations(5);
                 row1.removeAll();       // removes every child component
                 row1.revalidate();      // tells the layout manager to recalculate layout
                 row1.repaint();
@@ -479,7 +442,7 @@ public class AdminHomepageView extends JPanel{
                 showDestinationRows(destinations); 
 
             } else {
-                destinations = destinationDao.getMatchingDestinations(searchText);
+                destinations = destDao.getMatchingDestinations(searchText);
                 row1.removeAll();       // removes every child component
                 row1.revalidate();      // tells the layout manager to recalculate layout
                 row1.repaint();
@@ -490,17 +453,15 @@ public class AdminHomepageView extends JPanel{
         });
     }
     
-   public void reloadValues() {
+    public void showDetails(){
+        AddDestinationDialog dialog = new AddDestinationDialog(parentFrame);   
+        dialog.showDialog();
+    }
+    
+    public void reloadValues() {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
-            private long users;
-            private long destinations;
-            private long reservations;
-
             @Override
             protected Void doInBackground() throws Exception {
-                users        = clientDao.count();
-                destinations = destinationDao.count();
-                reservations = reservationDao.count();
                 return null;
             }
 
@@ -508,10 +469,6 @@ public class AdminHomepageView extends JPanel{
             protected void done() {
                 try {
                     get(); 
-
-                    usersCountLabel.setText(formatCount(users, "Clients"));
-                    destinationsCountLabel.setText(formatCount(destinations, "Destinations disponibles"));
-                    reservationsCountLabel.setText(formatCount(reservations, "Reservations faites"));
                     loadDestinations("*");
 
 
@@ -529,21 +486,22 @@ public class AdminHomepageView extends JPanel{
         dialog.showDialog();
     }
     
-    public void addClientManagementButtonListener(ActionListener listener){
-        clientsButton.addActionListener(listener);
+    public void addHomeButtonListener(ActionListener listener){
+        homeButton.addActionListener(listener);
     }
     
-    public void addReservationsManagementButtonListener(ActionListener listener){
+    public void addReservationButtonListener(ActionListener listener){
         reservationButton.addActionListener(listener);
+    }
+    
+    public void addUserManagementButtonListener(ActionListener listener){
+        clientsButton.addActionListener(listener);
     }
     
     public void addLogoutButtonListener(ActionListener listener){
         logoutButton.addActionListener(listener);
     }
-    
-    public void addDestinationsButtonListener(ActionListener listener){
-        destinationButton.addActionListener(listener);
-    }
-    
 
+    
 }
+

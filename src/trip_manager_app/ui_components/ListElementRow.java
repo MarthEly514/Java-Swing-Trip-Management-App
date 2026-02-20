@@ -19,15 +19,15 @@ public class ListElementRow extends PanelRound{
     int radius = 70;
     UIButton showConfirmDialogButton;
     public ListElementRow(String title, String description, String state){
-        initRow(title, description, state, "");
+        initRow(title, description, state, "", false);
     }
     
     public ListElementRow(String title, String description, String state, String iconPath){
-        initRow(title, description, state, iconPath);
+        initRow(title, description, state, iconPath, false);
     }
     
     public ListElementRow(String title, String description, String state, Consumer<String> execAction){
-        initRow(title, description, state, "");
+        initRow(title, description, state, "", true);
         showConfirmDialogButton.addMouseListener(new MouseAdapter() {
             
             @Override
@@ -43,7 +43,7 @@ public class ListElementRow extends PanelRound{
         });
     }
     public ListElementRow(String title, String description, String state, String iconPath, Consumer<String> execAction){
-        initRow(title, description, state, iconPath);
+        initRow(title, description, state, iconPath, true);
         showConfirmDialogButton.addMouseListener(new MouseAdapter() {
             
             @Override
@@ -59,7 +59,7 @@ public class ListElementRow extends PanelRound{
         });
     }
 
-    private void initRow(String title, String description, String state, String iconPath) {
+    private void initRow(String title, String description, String state, String iconPath, boolean containsButton) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 //        setLayout(new FlowLayout(FlowLayout.LEADING, 10, 5));
         setBackground(new Color(101, 93, 235, 20));
@@ -69,68 +69,75 @@ public class ListElementRow extends PanelRound{
         setRoundTopRight(radius);
         setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-//        setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        setPreferredSize(new Dimension(0, 70));
         
         // Title
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-        titleLabel.setPreferredSize(new Dimension(260, 40));
+//        titleLabel.setPreferredSize(new Dimension(260, 40));
         titleLabel.setMaximumSize(new Dimension(260, 40));
+        titleLabel.setMinimumSize(new Dimension(0, 40));
 
         // Description – takes remaining space
         JLabel descriptionLabel = new JLabel(description);
-        descriptionLabel.setPreferredSize(new Dimension(300, 40));
+//        descriptionLabel.setPreferredSize(new Dimension(300, 40));
         descriptionLabel.setMaximumSize(new Dimension(320, 40));
+        descriptionLabel.setMinimumSize(new Dimension(0, 40));
 //        add(descriptionLabel);
 
         // State 
         JLabel stateLabel = new JLabel(" " + state);
-        stateLabel.setPreferredSize(new Dimension(100, 40));
+//        stateLabel.setPreferredSize(new Dimension(100, 40));
         stateLabel.setMaximumSize(new Dimension(100, 40));
+        stateLabel.setMinimumSize(new Dimension(0, 40));
         if (!"".equals(iconPath.trim())){
             stateLabel.setIcon(SvgUtils.loadSvg(iconPath, 22, 22));  
         }
 //        add(stateLabel);
 
-        // Button 
-        JPanel buttonContainer = new JPanel(new BorderLayout());
-        buttonContainer.setOpaque(false);
-        buttonContainer.setPreferredSize(new Dimension(200, 50));
-        buttonContainer.setMaximumSize(new Dimension(200, 50));
-        
-        showConfirmDialogButton = new UIButton(
-            "Voir",
-            "", 
-            new Color(101, 93, 235, 190), 
-            new Color(255, 255, 255)      
-        );
-        
-        showConfirmDialogButton.setHorizontalAlignment(SwingConstants.CENTER);
-        buttonContainer.add(showConfirmDialogButton, BorderLayout.CENTER);
-        
-        // button color change on hover
-        
-        showConfirmDialogButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e){
-                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 250));            
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e){
-                showConfirmDialogButton.setBackground(new Color(101, 93, 235, 190));            
-            }
-        });
-
-        
         add(titleLabel);
         add(Box.createHorizontalStrut(10));
         add(descriptionLabel);
         add(Box.createHorizontalGlue());
         add(stateLabel);
         add(Box.createHorizontalStrut(10));
-        add(buttonContainer);
+        
+        // Button 
+        if(containsButton){
+            
+            JPanel buttonContainer = new JPanel(new BorderLayout());
+            buttonContainer.setOpaque(false);
+//            buttonContainer.setPreferredSize(new Dimension(200, 50));
+            buttonContainer.setMaximumSize(new Dimension(200, 50));
+            buttonContainer.setMinimumSize(new Dimension(0, 50));
 
-    
+            showConfirmDialogButton = new UIButton(
+                "Voir",
+                "", 
+                new Color(101, 93, 235, 190), 
+                new Color(255, 255, 255)      
+            );
+
+            showConfirmDialogButton.setHorizontalAlignment(SwingConstants.CENTER);
+            buttonContainer.add(showConfirmDialogButton, BorderLayout.CENTER);
+
+            // button color change on hover
+
+            showConfirmDialogButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e){
+                    showConfirmDialogButton.setBackground(new Color(101, 93, 235, 250));            
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e){
+                    showConfirmDialogButton.setBackground(new Color(101, 93, 235, 190));            
+                }
+            });
+            add(buttonContainer);
+        }
+
+        
+
     }
 }

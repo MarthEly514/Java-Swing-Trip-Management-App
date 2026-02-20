@@ -57,6 +57,11 @@ public class ClientModel {
         
     } 
     
+    public String getFullName(){
+        return prenom + " " + nom;
+        
+    } 
+    
     public String getEmail(){
         return eMail;
     }

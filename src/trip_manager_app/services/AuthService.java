@@ -34,6 +34,7 @@ public class AuthService {
     private AdminHomepageView adminHomepageView;
     private AdminReservationsManagementView adminReservationsManagementView;
     private AdminUserManagementView adminUserManagementView;
+    private AdminDestinationsView adminDestinationsView;
     private UserHomepageView userHomepageView;
     private UserDestinationsView userDestinationsView;
     private UserReservationsView userReservationsView;
@@ -76,32 +77,34 @@ public class AuthService {
 //
 //        //END OF TESTING BLOCK
 
-//        // START OF ADMIN TESTING BLOCK
-//        
-//        AdminModel defaultAdmin = new AdminModel(
-//                5,
-//                "eaven@admin.com",
-//                "#senArin"    
-//        );
-//
-//        adminHomepageView = new AdminHomepageView();
-//        adminReservationsManagementView = new AdminReservationsManagementView();
-//        adminUserManagementView = new AdminUserManagementView();
-//        
-//        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView);
-//
-//        //END OF TESTING BLOCK
+        // START OF ADMIN TESTING BLOCK
         
-        //User views
-        userHomepageView = null;
-        userDestinationsView = null;
-        userReservationsView = null;
-        userProfileView = null;
+        AdminModel defaultAdmin = new AdminModel(
+                5,
+                "eaven@admin.com",
+                "#senArin"    
+        );
 
-        //Admin views
-        adminHomepageView = null;
-        adminReservationsManagementView = null;
-        adminUserManagementView = null;
+        adminHomepageView = new AdminHomepageView(frame);
+        adminReservationsManagementView = new AdminReservationsManagementView();
+        adminUserManagementView = new AdminUserManagementView();
+        adminDestinationsView = new AdminDestinationsView(frame);
+        
+        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView);
+
+        //END OF TESTING BLOCK
+        
+//        //User views
+//        userHomepageView = null;
+//        userDestinationsView = null;
+//        userReservationsView = null;
+//        userProfileView = null;
+//
+//        //Admin views
+//        adminHomepageView = null;
+//        adminReservationsManagementView = null;
+//        adminUserManagementView = null;
+//        adminDestinationsView = null;
 
         //controllers
 
@@ -123,10 +126,10 @@ public class AuthService {
 //        }); destroyZalem
 
         // default view frame.showView("Login");
-        frame.addView(loginView, "loginView");
-        frame.showView("loginView");
-//        frame.addView(adminHomepageView, "adminHomepageView");
-//        frame.showView("adminHomepageView");
+//        frame.addView(loginView, "loginView");
+//        frame.showView("loginView");
+        frame.addView(adminHomepageView, "adminHomepageView");
+        frame.showView("adminHomepageView");
     }
     
     private void saveUser(){
@@ -254,9 +257,10 @@ public class AuthService {
                 adminHomepageView = new AdminHomepageView();
                 adminReservationsManagementView = new AdminReservationsManagementView();
                 adminUserManagementView = new AdminUserManagementView();
+                adminDestinationsView = new AdminDestinationsView(frame);
                 
                 //controller
-                new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView);
+                new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView);
                 
                 //views
                 frame.addView(adminHomepageView, "adminHomepageView");

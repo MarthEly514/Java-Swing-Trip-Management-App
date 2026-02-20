@@ -12,9 +12,11 @@ import javax.swing.*;
  * @author ely
  */
 public class SubtitleLabel extends JPanel{
+
+    private int fontSize = 16;
     public SubtitleLabel(String text){
         JLabel title = new JLabel(text);
-        title.setFont(new Font("SansSerif", Font.BOLD, 16));
+        title.setFont(new Font("SansSerif", Font.BOLD, getFontSize()));
         title.setForeground(new Color(0, 0, 0, 160));
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(100, 30));
@@ -22,5 +24,20 @@ public class SubtitleLabel extends JPanel{
         setMinimumSize(new Dimension(100, 30));
         add(title, BorderLayout.WEST);
         setOpaque(false);
+    }
+
+    /**
+     * @return the fontSize
+     */
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    /**
+     * @param fontSize the fontSize to set
+     */
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+//        this.repaint();
     }
 }

@@ -116,6 +116,32 @@ public class VoyageDAO {
         }
         return voyage;
     }
+    
+   public long getVoyageCountByDestination(String villeDestination) {
+        if (villeDestination == null || villeDestination.trim().isEmpty()) {
+            return 0; // or throw IllegalArgumentException
+        }
+
+        String sql = "SELECT COUNT(*) FROM voyages WHERE ville_destination = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, villeDestination.trim()); // trim to avoid whitespace issues
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Consider: Logger.getLogger(getClass().getName()).severe(...);
+        }
+
+        return 0; // safer default than -1
+    }
+    
     public VoyageModel getVoyageByDate(LocalDate dateDepart) {
         String sql = "SELECT * FROM voyages WHERE date_depart=?";
         VoyageModel voyage = null;
@@ -143,5 +169,19 @@ public class VoyageDAO {
             e.printStackTrace();
         }
         return voyage;
+    }
+
+    public void deleteVoyage(int idVoyage) {
+        String sql = "DELETE FROM voyages WHERE id_voyage=?";
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            ps.setInt(1, idVoyage);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

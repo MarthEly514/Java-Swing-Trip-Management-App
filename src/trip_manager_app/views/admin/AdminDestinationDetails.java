@@ -2,9 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package trip_manager_app.views.user;
+package trip_manager_app.views.admin;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,10 +18,22 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.DestinationDAO;
 import trip_manager_app.DAO.MoyenTransportDAO;
 import trip_manager_app.DAO.ReservationDAO;
@@ -26,7 +43,13 @@ import trip_manager_app.models.MoyenTransportModel;
 import trip_manager_app.models.NewEnumReservation;
 import trip_manager_app.models.ReservationModel;
 import trip_manager_app.models.VoyageModel;
-import trip_manager_app.ui_components.*;
+import trip_manager_app.ui_components.DatePickerField;
+import trip_manager_app.ui_components.PanelRound;
+import trip_manager_app.ui_components.RadioButton;
+import trip_manager_app.ui_components.RoundedTextField;
+import trip_manager_app.ui_components.ScrollWrapper;
+import trip_manager_app.ui_components.SubtitleLabel;
+import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.utils.CachedImageLoader;
 import trip_manager_app.utils.SvgUtils;
 
@@ -34,9 +57,12 @@ import trip_manager_app.utils.SvgUtils;
  *
  * @author ely
  */
-public class UserDestinationDetails extends JDialog{
+public class AdminDestinationDetails extends JDialog{
 
-    private JPanel optionsPanel;
+    private final DestinationDAO destinationDao;
+    private UIButton deleteDestBtn;
+
+
 
     /**
      * @return the villeArrivee
@@ -52,68 +78,28 @@ public class UserDestinationDetails extends JDialog{
         return description;
     }
 
-    /**
-     * @return the departureDatePicker
-     */
-    public DatePickerField getDepartureDatePicker() {
-        return departureDatePicker;
-    }
-
-    /**
-     * @param departureDatePicker the departureDatePicker to set
-     */
-    public void setDepartureDatePicker(DatePickerField departureDatePicker) {
-        this.departureDatePicker = departureDatePicker;
-    }
-
-    /**
-     * @return the returnDatePicker
-     */
-    public DatePickerField getReturnDatePicker() {
-        return returnDatePicker;
-    }
-
-    /**
-     * @param returnDatePicker the returnDatePicker to set
-     */
-    public void setReturnDatePicker(DatePickerField returnDatePicker) {
-        this.returnDatePicker = returnDatePicker;
-    }
     private final JFrame parentFrame;
+    private final String villeArrivee;
     private int cornerRadius = 30; 
-    private RoundedTextField departureField;
-    private String villeArrivee;
     private String description;
-    private DatePickerField departureDatePicker;
-    private DatePickerField returnDatePicker;
-//    private LocalDate dateDepart;
-//    private LocalDate dateRetour;
-    private UIButton bookingBtn;
     private CachedImageLoader cachedImageLoader;
     private BufferedImage backgroundImage;
-    private VoyageDAO voyageDao;
-    private MoyenTransportDAO transportDao;
-    private ReservationDAO reservationDao;
     private DestinationModel destination;
-    private int idClient;
+    private VoyageDAO voyageDao;
     private List<RadioButton> radioButtons = new ArrayList<>(); 
-    private ButtonGroup radioGroup;
-    private List<MoyenTransportModel> transports ;
 
 
 
     
-    public UserDestinationDetails(JFrame parentFrame, DestinationModel destination, int idClient){
+    public AdminDestinationDetails(JFrame parentFrame, DestinationModel destination){
         super(parentFrame, "Destination details", true); 
         this.parentFrame = parentFrame;
         this.villeArrivee = destination.getVille();
         this.destination = destination;
         this.description = destination.getDescription();
-        this.idClient = idClient;
+        this.destinationDao = new DestinationDAO();
+        this.voyageDao = new VoyageDAO();
         cachedImageLoader = CachedImageLoader.getInstance();
-        reservationDao = new ReservationDAO();
-        voyageDao = new VoyageDAO();
-        transportDao = new MoyenTransportDAO();
         
         loadAndSetImage(destination.getImageId()); 
         initDialog();
@@ -122,21 +108,21 @@ public class UserDestinationDetails extends JDialog{
     private void initDialog(){
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setSize(1080, 720);
+        setSize(880, 580);
         setLocationRelativeTo(parentFrame);
         applyRoundedShape();
         
         JPanel top = new JPanel();
-        top.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
+        top.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
         top.setLayout(new OverlayLayout(top));
         
         PanelRound layer1 = new PanelRound(backgroundImage);
-        layer1.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
+        layer1.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
         layer1.setFitWidth(true);
         
         JPanel layer2 = new JPanel();
         layer2.setBackground(new Color(20, 20, 20, 100));
-        layer2.setPreferredSize(new Dimension(Integer.MAX_VALUE, 260));
+        layer2.setPreferredSize(new Dimension(Integer.MAX_VALUE, 360));
         layer2.setLayout(new BorderLayout());
         
         JPanel layer2Sub1 = new JPanel();
@@ -197,48 +183,10 @@ public class UserDestinationDetails extends JDialog{
         scrollWrapper.setBackground(Color.white);
         scrollWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        SubtitleLabel subtitle1 = new SubtitleLabel("Ville de départ: ");
+        SubtitleLabel subtitle1 = new SubtitleLabel("<html><body>Note: &nbsp;&nbsp;&nbsp;"+"<span style='font-size:16px; color:#F9DB78'>"+destination.getNote()+"</span></body></html>");
         subtitle1.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 10));
         
-        departureField = new RoundedTextField();
-        departureField.setPlaceholder("Londres");
-        departureField.setBorderWidth(2);
-        departureField.setBorderColor(new Color(20, 20, 20, 70));
-        departureField.setPlaceholderColor(new Color(20, 20, 20, 70));
-        departureField.setFocusedBorderColor(new Color(108, 99, 255));
-        departureField.setPreferredSize(new Dimension(200, 40));
-        departureField.setMaximumSize(new Dimension(200, 40));
-        departureField.setMinimumSize(new Dimension(200, 40));
-        
-        SubtitleLabel subtitle2 = new SubtitleLabel("Dates: ");
-        setDepartureDatePicker(new DatePickerField("Date de Départ"));
-        setReturnDatePicker(new DatePickerField("Date de Retour"));
-        
-        JPanel datesPanel = new JPanel();
-        datesPanel.setOpaque(false);
-        datesPanel.setLayout(new BorderLayout());    
-        datesPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        datesPanel.add(getDepartureDatePicker(), BorderLayout.NORTH);
-        datesPanel.add(getReturnDatePicker(), BorderLayout.SOUTH);
-        datesPanel.setPreferredSize(new Dimension(300, 110));
-        datesPanel.setMaximumSize(new Dimension(300, 110));
-        
-        
-
-        
-        SubtitleLabel subtitle3 = new SubtitleLabel("Moyens de transport disponibles: ");
-        
-        optionsPanel = new JPanel();
-        optionsPanel.setOpaque(false);
-        optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));    
-        optionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
-        
-        
-//        List<MoyenTransportModel> vehicules = transportDao.getAllByType("Voiture");
-        transports = transportDao.getAll();
-
-        showTransports(transports);
-
+        SubtitleLabel subtitle2 = new SubtitleLabel("<html><body>Nombre de reservations faites: : &nbsp;&nbsp;&nbsp;"+"<span style='font-size:16px'>"+voyageDao.getVoyageCountByDestination(destination.getVille())+"</span></body></html>");
         
         JPanel buttonContainer = new JPanel();
         buttonContainer.setLayout(new BorderLayout());
@@ -246,80 +194,44 @@ public class UserDestinationDetails extends JDialog{
         buttonContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
         buttonContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         buttonContainer.setOpaque(false);
-        bookingBtn = new UIButton(
-            "Reserver mon voyage",
-            "", 
-            new Color(101, 93, 235, 190), 
-            new Color(255, 255, 255)      
+        deleteDestBtn = new UIButton(
+                "Supprimer destination",
+                "/trip_manager_app/ressources/icons/trash_light.svg",
+                new Color(255, 100, 100),
+                new Color(255, 255, 255)      
         );
-        bookingBtn.setHorizontalAlignment(SwingConstants.CENTER);
-        bookingBtn.addMouseListener(new MouseAdapter() {
+        deleteDestBtn.setHorizontalAlignment(SwingConstants.CENTER);
+        deleteDestBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                if(bookingBtn.isEnabled() == true){
-                    bookingBtn.setBackground(new Color(101, 93, 235, 250));            
-                }
+                deleteDestBtn.setBackground(new Color(255, 50, 50));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                if(bookingBtn.isEnabled() == true){
-                    bookingBtn.setBackground(new Color(101, 93, 235, 190));            
-                }
+                deleteDestBtn.setBackground(new Color(255, 100, 100));            
             }
-        });
-        
-        //detects if the user is entering anything in the field
-        activateBookingButton();
-        departureField.getDocument().addDocumentListener(new DocumentListener(){
-            @Override
-            public void insertUpdate(DocumentEvent de) {
-                activateBookingButton();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent de) {
-                activateBookingButton();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent de) {
-                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-            }
-            
         });
         
         // listener to add the reservation on click
-        bookingBtn.addActionListener((e)->{
-            createAndSaveReservation();            
+        deleteDestBtn.addActionListener((e)->{
+            deleteDestination();
         });
 
         
-        buttonContainer.add(bookingBtn, BorderLayout.EAST);
+        buttonContainer.add(deleteDestBtn, BorderLayout.EAST);
         subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
         subtitle2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        subtitle3.setAlignmentX(Component.LEFT_ALIGNMENT);
-        departureField.setAlignmentX(Component.LEFT_ALIGNMENT);
-//        descriptionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        datesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         descriptionText.setAlignmentX(Component.LEFT_ALIGNMENT); 
         buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         
         bottom.add(subtitle1);
         bottom.add(Box.createVerticalStrut(10));
-        bottom.add(departureField);
-        bottom.add(Box.createVerticalStrut(20));
         bottom.add(subtitle2);
         bottom.add(Box.createVerticalStrut(10));
-        bottom.add(datesPanel);
-        bottom.add(Box.createVerticalStrut(10));
-        bottom.add(subtitle3);
-        bottom.add(Box.createVerticalStrut(10));
-        bottom.add(optionsPanel);
-        bottom.add(Box.createVerticalStrut(10));
         bottom.add(buttonContainer);
-        bottom.add(Box.createVerticalStrut(20));
+        bottom.add(Box.createVerticalStrut(10));
 
         add(top, BorderLayout.NORTH);
         add(scrollWrapper, BorderLayout.CENTER);
@@ -330,22 +242,6 @@ public class UserDestinationDetails extends JDialog{
     
     public void showDialog(){
         setVisible(true); 
-    }
-    
-    public void showTransports(List<MoyenTransportModel> transports){
-        
-        radioGroup = new ButtonGroup();
-        radioButtons.clear();
-        optionsPanel.removeAll();
-        for (MoyenTransportModel transport : transports) {
-            RadioButton option = new RadioButton(transport.getDescriptionVehicule()+"- Nombre de places: "+transport.getNombrePlaces());
-            option.setOpaque(false);
-            radioGroup.add(option);
-            optionsPanel.add(option);
-            
-        }
-        optionsPanel.revalidate();
-        optionsPanel.repaint();
     }
     
     public MoyenTransportModel getSelectedTransportModel(List<MoyenTransportModel> transports) {
@@ -365,46 +261,78 @@ public class UserDestinationDetails extends JDialog{
             repaint();
         }
     }
+   
     
-    private void activateBookingButton(){
-        // disables the button when some informations are not entered
-        if(departureField.getText().isEmpty()){
-            bookingBtn.setBackground(new Color(20, 20, 20, 20));
-        }else{
-            bookingBtn.setBackground(new Color(101, 93, 235, 190)); 
-        }
-        bookingBtn.setEnabled(!departureField.getText().isEmpty()); 
+    private void deleteDestination() {
+        confirmDeleteDestination(destination, () -> {
+            destinationDao.deleteDestination(destination.getDestinationId());
+        });
+        
     }
     
-    private void createAndSaveReservation() {
-        bookingBtn.setText("Chargement...");
-        bookingBtn.setBackground(new Color(20, 20, 20, 20));
-        bookingBtn.setEnabled(false);
+    private void confirmDeleteDestination(DestinationModel destination, Runnable onConfirmed) {
+        JDialog dialog = new JDialog(parentFrame, true);
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
 
-        new SwingWorker<Void, Void>() {
+        // Main rounded content panel
+        PanelRound mainPanel = new PanelRound();
+        mainPanel.setBackground(new Color(250, 250, 255)); // very light background
+        mainPanel.setRoundTopLeft(20);
+        mainPanel.setRoundTopRight(20);
+        mainPanel.setRoundBottomLeft(20);
+        mainPanel.setRoundBottomRight(20);
+        mainPanel.setOpaque(false);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
+        mainPanel.setLayout(new BorderLayout(0, 20));
+
+        // Title / Question
+        JLabel questionLabel = new JLabel("Voulez-vous vraiment supprimer cette destination ?");
+        questionLabel.setFont(new Font("Segoe UI", Font.BOLD, 17));
+        questionLabel.setForeground(new Color(50, 50, 70));
+        questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        questionLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+
+        // Warning icon or text (optional but improves UX)
+        JLabel warningIcon = new JLabel("⚠️");
+        warningIcon.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        warningIcon.setForeground(new Color(255, 140, 0)); // orange warning color
+        warningIcon.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Buttons panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonsPanel.setOpaque(false);
+
+        // Cancel button
+        UIButton cancelBtn = new UIButton(
+            " Annuler",
+            " ", 
+            new Color(220, 220, 230),
+            new Color(80, 80, 100)
+        );
+        cancelBtn.setRadius(44);
+        cancelBtn.setPreferredSize(new Dimension(140, 44));
+        cancelBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        cancelBtn.addActionListener(e -> dialog.dispose());
+        cancelBtn.setHorizontalAlignment(SwingConstants.CENTER);
+
+        UIButton deleteBtn = new UIButton(
+            " Supprimer",
+            "/trip_manager_app/ressources/icons/trash_light.svg", // assuming you have a trash icon
+            new Color(255, 100, 100),
+            Color.WHITE
+        );
+        deleteBtn.setHorizontalAlignment(SwingConstants.CENTER);
+        
+
+        deleteBtn.setRadius(44);
+        deleteBtn.setPreferredSize(new Dimension(140, 44));
+        deleteBtn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        deleteBtn.addActionListener(e -> {
+            new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                VoyageModel voyageSaved = new VoyageModel(
-                    departureField.getText(), 
-                    villeArrivee, 
-                    departureDatePicker.getLocalDate(), 
-                    returnDatePicker.getLocalDate(), 
-                    new BigDecimal("500.34"), 
-                    getSelectedTransportModel(transports).getNoVehicule()
-                    
-                );
-                voyageDao.addVoyage(voyageSaved);
-
-                VoyageModel voyageUsed = voyageDao.getLastVoyage();
-
-                ReservationModel reservation = new ReservationModel(
-                    idClient, 
-                    voyageUsed.getIdVoyage(), 
-                    NewEnumReservation.fromString("En attente")
-                );
-                reservationDao.addReservation(reservation);
-                
-
+                onConfirmed.run();
                 Thread.sleep(2500);
 
                 return null;
@@ -414,13 +342,10 @@ public class UserDestinationDetails extends JDialog{
         protected void done() {
             try {
                 get(); 
-                bookingBtn.setText("Réservé");
-                bookingBtn.setBackground(new Color(208, 255, 207)); 
-                bookingBtn.setEnabled(false); 
-            } catch (Exception ex) {
-                bookingBtn.setText("Error – Try again");
-                bookingBtn.setBackground(new Color(220, 50, 50)); 
-                bookingBtn.setEnabled(true); 
+                dialog.dispose();
+                dispose();
+            } 
+            catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                     null,
                     "Échec de la réservation : " + ex.getMessage(),
@@ -430,7 +355,51 @@ public class UserDestinationDetails extends JDialog{
             }
         }
     }.execute();
-}
+        });
+
+        // Hover effects
+        cancelBtn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { cancelBtn.setBackground(new Color(200, 200, 210)); }
+            public void mouseExited(MouseEvent e)  { cancelBtn.setBackground(new Color(220, 220, 230)); }
+        });
+        
+        deleteBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){ deleteBtn.setBackground(new Color(255, 50, 50));  }    
+            @Override
+            public void mouseExited(MouseEvent e){ deleteBtn.setBackground(new Color(255, 100, 100)); }
+        });
+
+        
+
+        buttonsPanel.add(cancelBtn);
+        buttonsPanel.add(deleteBtn);
+
+        // Assemble layout
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 16));
+        centerPanel.setOpaque(false);
+        centerPanel.add(warningIcon, BorderLayout.NORTH);
+        centerPanel.add(questionLabel, BorderLayout.CENTER);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+
+        // Apply rounded shape to the window itself (all four corners)
+        SwingUtilities.invokeLater(() -> {
+            int w = dialog.getWidth();
+            int h = dialog.getHeight();
+            if (w > 0 && h > 0) {
+                dialog.setShape(new RoundRectangle2D.Double(0, 0, w, h, 20, 20));
+            }
+        });
+
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+    }
     
     private void applyRoundedShape() {
         SwingUtilities.invokeLater(() -> {
@@ -443,7 +412,7 @@ public class UserDestinationDetails extends JDialog{
     }
     
     public void addBookingButtonListener(ActionListener listener){
-        bookingBtn.addActionListener(listener);
+        deleteDestBtn.addActionListener(listener);
     }
     
 

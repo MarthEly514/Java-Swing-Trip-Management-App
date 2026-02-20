@@ -43,6 +43,15 @@ public class DestinationModel{
     }
     
     //loading into db constructor
+    public DestinationModel(String ville, String pays, String description, float note,  int imageId){
+        this.ville = ville;
+        this.pays = pays;
+        this.description = description;
+        this.note = note;
+        this.imageId = imageId;
+
+    }
+    
     public DestinationModel(int destinationId, String ville, String pays, String description, float note,  byte imageByte){
         this.destinationId = destinationId;
         this.ville = ville;

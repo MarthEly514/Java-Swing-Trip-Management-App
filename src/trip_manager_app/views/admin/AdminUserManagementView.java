@@ -7,6 +7,7 @@ package trip_manager_app.views.admin;
 import trip_manager_app.ui_components.renderers.ReservationCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ public class AdminUserManagementView extends JPanel{
     private JPanel row1;
     private JFrame parentFrame;
     private ClientDAO clientDao;
+    private UIButton destinationButton;
+    private SearchField searchBar;
     
     public AdminUserManagementView(){
         clientDao = new ClientDAO();
@@ -89,6 +92,16 @@ public class AdminUserManagementView extends JPanel{
                 new Color(108, 99, 255)
                 
         );
+        
+        //destination button 
+        destinationButton = new UIButton(
+                " Destinations",
+                "/trip_manager_app/ressources/icons/travel.svg", 
+                new Color(0, 0, 0, 0), 
+                new Color(108, 99, 255)
+                
+                
+        );
                 
         //destination button 
         clientsButton = new UIButton(
@@ -105,10 +118,11 @@ public class AdminUserManagementView extends JPanel{
                 "/trip_manager_app/ressources/icons/date_range.svg", 
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
- 
+                
         );
          
         navigationPanel.add(homeButton);
+        navigationPanel.add(destinationButton);
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
         
@@ -125,8 +139,7 @@ public class AdminUserManagementView extends JPanel{
                 new Color(255, 100, 100), 
                 Color.white
                 
-        ); 
-        
+        );        
         profileButtonContainer.add(logoutButton);
         
         
@@ -153,6 +166,18 @@ public class AdminUserManagementView extends JPanel{
             @Override
             public void mouseExited(MouseEvent e){
                 clientsButton.setBackground(new Color(108, 99, 255));            
+            }
+        });
+        
+        destinationButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                destinationButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                destinationButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
 
@@ -185,7 +210,7 @@ public class AdminUserManagementView extends JPanel{
         panel.add(Box.createVerticalStrut(100));
         panel.add(navigationPanel);
         panel.add(Box.createVerticalGlue());
-        panel.add(profileButtonContainer);    
+        panel.add(profileButtonContainer);
 
         return panel;
     }
@@ -209,14 +234,16 @@ public class AdminUserManagementView extends JPanel{
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
         JPanel searchBarContainer = new JPanel();
+        searchBarContainer.setBackground(Color.red);
         searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
         searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
         searchBarContainer.setOpaque(false); 
         
-//        SearchField searchBar = new SearchField();
-//        searchBar.setBorderColor(new Color(161, 117, 255, 30));
-//        
-//        searchBarContainer.add(searchBar);
+        searchBar = new SearchField(e-> searchClient(searchBar.getSearchQuery()));
+        searchBar.setBorderColor(new Color(161, 117, 255, 30));
+        
+        searchBarContainer.add(searchBar);
+
 
         JLabel title = new JLabel("Gestion des clients");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
@@ -306,6 +333,10 @@ public class AdminUserManagementView extends JPanel{
         logoutButton.addActionListener(listener);
     }
     
+    public void addDestinationsButtonListener(ActionListener listener){
+        destinationButton.addActionListener(listener);
+    }
+    
     public void showDetails(String content){
 //        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content, 400, "hello");   
 //        dialog.showDialog();
@@ -319,7 +350,6 @@ public class AdminUserManagementView extends JPanel{
             new ClientsCellRenderer(),
             client -> {
                 showClientDetails(client);
-                System.out.println("Clicked client #" + client.getIdClient());
             }
         );
         
@@ -355,17 +385,123 @@ public class AdminUserManagementView extends JPanel{
             
         }  
     }
+    
+    private void searchClient(String searchText){
+        SwingUtilities.invokeLater(()->{
+            List<ClientModel> clients;
+            if(searchText.trim().equals("")){
+                clients = clientDao.getAllClients();
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching all..."+searchText);
+                showUsersTable(clients); 
 
-      private void showClientDetails(ClientModel client) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Client ID: " + client.getIdClient() + "\n" +
-            "Nom: " + client.getNom()+ "\n" +
-            "Prenom: " + client.getPrenom()+ "\n" +
-            "E-mail: " + client.getEmail(),
-            "Détails Client",
-            JOptionPane.INFORMATION_MESSAGE
+            } else {
+                clients = clientDao.getMatchingClients(searchText);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching..."+searchText);
+                showUsersTable(clients); 
+            }
+        });
+    }
+
+    private void showClientDetails(ClientModel client) {
+        // Create undecorated dialog
+        JDialog dialog = new JDialog(parentFrame, true);
+        dialog.setUndecorated(true);           // Remove title bar & borders
+        dialog.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
+
+        // Main panel with rounded corners & shadow-like effect
+        PanelRound mainPanel = new PanelRound();
+        mainPanel.setBackground(new Color(245, 245, 255));
+        mainPanel.rounded(24);
+        mainPanel.setOpaque(false);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
+        mainPanel.setLayout(new BorderLayout(0, 16));
+
+        JLabel titleLabel = new JLabel("Détails du Client");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(new Color(60, 60, 80));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setOpaque(false);
+        contentPanel.setLayout(new GridLayout(0, 2, 12, 14));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 16, 0));
+
+        String[][] data = {
+            {"Client ID",     String.valueOf(client.getIdClient())},
+            {"Nom",           client.getNom()},
+            {"Prénom",        client.getPrenom()},
+            {"E-mail",        client.getEmail()},
+            {"Téléphone",     client.getTelephone()}
+        };
+
+        Font labelFont = new Font("Segoe UI", Font.PLAIN, 15);
+        Font valueFont = new Font("Segoe UI", Font.BOLD, 15);
+
+        for (String[] pair : data) {
+            JLabel lblKey = new JLabel(pair[0] + " :");
+            lblKey.setFont(labelFont);
+            lblKey.setForeground(new Color(100, 100, 120));
+            lblKey.setHorizontalAlignment(SwingConstants.RIGHT);
+
+            JLabel lblValue = new JLabel(pair[1]);
+            lblValue.setFont(valueFont);
+            lblValue.setForeground(new Color(40, 40, 70));
+
+            contentPanel.add(lblKey);
+            contentPanel.add(lblValue);
+        }
+
+        UIButton closeBtn = new UIButton(
+                " Fermer",
+                "/trip_manager_app/ressources/icons/croix_light.svg", 
+                new Color(108, 99, 255),     
+                Color.white 
         );
-      }
+        closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        closeBtn.setPreferredSize(new Dimension(140, 42));
+        closeBtn.setRadius(42);
+        closeBtn.setHorizontalAlignment(SwingConstants.CENTER);
+
+        closeBtn.addActionListener(e -> dialog.dispose());
+
+        closeBtn.addMouseListener(new MouseAdapter() {
+            @Override public void mouseEntered(MouseEvent e) {
+                closeBtn.setBackground(new Color(88, 79, 235));
+            }
+            @Override public void mouseExited(MouseEvent e) {
+                closeBtn.setBackground(new Color(108, 99, 255));
+            }
+        });
+
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(closeBtn);
+
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        SwingUtilities.invokeLater(() -> {
+            int w = dialog.getWidth();
+            int h = dialog.getHeight();
+            if (w > 0 && h > 0) {
+                dialog.setShape(new RoundRectangle2D.Double(0, 0, w, h, 24, 24));
+            }
+        });
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);   // center on parent component
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        dialog.setVisible(true);
+    }
       
 }

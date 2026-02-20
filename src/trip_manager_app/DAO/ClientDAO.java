@@ -198,6 +198,43 @@ public class ClientDAO {
         return client;
     }
     
+    public List<ClientModel> getMatchingClients(String keyword){
+        List<ClientModel> clients = new ArrayList<>();
+        String sql = "SELECT * FROM clients ";
+        if (!keyword.trim().equals("")) {
+            sql += "WHERE nom LIKE ? OR prenom LIKE ? OR e_mail LIKE ? ORDER BY id_client DESC LIMIT 15";
+        }
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            
+             if (!keyword.trim().equals("")) {
+                ps.setString(1, "%"+keyword);
+                ps.setString(2, "%"+keyword);
+                ps.setString(3, "%"+keyword);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ClientModel destination = new ClientModel(
+                        rs.getInt("id_client"),
+                        rs.getString("nom"),
+                        rs.getString("prenom"),
+                        rs.getString("e_mail"),
+                        rs.getString("telephone"),
+                        rs.getString("mot_de_passe")
+                    );
+                    clients.add(destination);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return clients;
+    }
+    
 
     // UPDATE
     public void updateClient(ClientModel client) {

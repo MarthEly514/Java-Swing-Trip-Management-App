@@ -106,8 +106,8 @@ import java.awt.*;
  */
 public class ClientsCellRenderer extends JPanel implements ListCellRenderer<ClientModel> {
 
-    private static final int ARC = 30;           // ← corner radius (adjust this value)
-    private static final int INSET = 8;          // inner margin around content
+    private static final int ARC = 30;           
+    private static final int INSET = 8;        
 
     private JLabel firstNameLabel;
     private JLabel lastNameLabel;
@@ -116,7 +116,7 @@ public class ClientsCellRenderer extends JPanel implements ListCellRenderer<Clie
 
     public ClientsCellRenderer() {
         setLayout(new BorderLayout(15, 0));
-        setOpaque(false);                        // ← very important!
+        setOpaque(false);                       
         setBorder(BorderFactory.createEmptyBorder(INSET, INSET + 10, INSET, INSET + 10));
 
         // Left side
@@ -146,7 +146,7 @@ public class ClientsCellRenderer extends JPanel implements ListCellRenderer<Clie
 
         phoneLabel = new JLabel();
         phoneLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        phoneLabel.setForeground(new Color(255, 193, 7));
+        phoneLabel.setForeground(new Color(108, 99, 255));
 
         rightPanel.add(phoneLabel);
 
@@ -187,14 +187,14 @@ public class ClientsCellRenderer extends JPanel implements ListCellRenderer<Clie
         firstNameLabel.setText(value.getPrenom());
         lastNameLabel.setText(value.getNom());
         eMailLabel.setText(value.getEmail());
-        phoneLabel.setText("★ " + value.getTelephone());
+        phoneLabel.setText(value.getTelephone());
 
         if (isSelected) {
-            setBackground(new Color(101, 93, 235, 80));     // stronger selection color
+            setBackground(new Color(101, 93, 235, 20));    
         } else {
-//            setBackground(index % 2 == 0 
-//                ? new Color(250, 250, 255) 
-//                : new Color(245, 245, 250));
+            setBackground(index % 2 == 0 
+                ? new Color(250, 250, 255) 
+                : new Color(245, 245, 250));
             setBackground(new Color(0, 0, 0, 0));
 
         }

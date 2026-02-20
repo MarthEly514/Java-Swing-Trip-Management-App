@@ -10,11 +10,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,27 +22,22 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.MoyenTransportDAO;
 import trip_manager_app.DAO.ReservationDAO;
 import trip_manager_app.DAO.VoyageDAO;
 import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.MoyenTransportModel;
 import trip_manager_app.models.ReservationModel;
 import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.NavBarHorizontal;
 import trip_manager_app.ui_components.ListElementRow;
 import trip_manager_app.ui_components.ScrollWrapper;
-import trip_manager_app.ui_components.SearchField;
 import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.views.LoginView;
-import trip_manager_app.views.user.UserReservationDetailDialog;
 
 /**
  *
@@ -64,11 +55,14 @@ public class AdminReservationsManagementView extends JPanel{
     private ReservationDAO resDao;
     private VoyageDAO voyageDao;
     private DestinationDAO destDao;
+    private UIButton destinationButton;
+    private MoyenTransportDAO transportDao;
     
     public AdminReservationsManagementView(){
         resDao = new ReservationDAO();
         voyageDao = new VoyageDAO();
         destDao = new DestinationDAO();
+        transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -124,6 +118,15 @@ public class AdminReservationsManagementView extends JPanel{
                 new Color(108, 99, 255)
                 
         );
+        
+        //destination button 
+        destinationButton = new UIButton(
+                " Destinations",
+                "/trip_manager_app/ressources/icons/travel.svg", 
+                new Color(0, 0, 0, 0), 
+                new Color(108, 99, 255)
+                
+        );
                 
         //destination button 
         clientsButton = new UIButton(
@@ -140,10 +143,11 @@ public class AdminReservationsManagementView extends JPanel{
                 "/trip_manager_app/ressources/icons/date_range_light.svg", 
                 new Color(108, 99, 255), 
                 Color.white
- 
+                
         );
          
         navigationPanel.add(homeButton);
+        navigationPanel.add(destinationButton);
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
         
@@ -160,8 +164,7 @@ public class AdminReservationsManagementView extends JPanel{
                 new Color(255, 100, 100), 
                 Color.white
                 
-        ); 
-        
+        );        
         profileButtonContainer.add(logoutButton);
         
         
@@ -188,6 +191,18 @@ public class AdminReservationsManagementView extends JPanel{
             @Override
             public void mouseExited(MouseEvent e){
                 clientsButton.setBackground(new Color(0, 0, 0, 0));            
+            }
+        });
+        
+        destinationButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                destinationButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                destinationButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
 
@@ -220,7 +235,7 @@ public class AdminReservationsManagementView extends JPanel{
         panel.add(Box.createVerticalStrut(100));
         panel.add(navigationPanel);
         panel.add(Box.createVerticalGlue());
-        panel.add(profileButtonContainer);    
+        panel.add(profileButtonContainer);
 
         return panel;
     }
@@ -242,16 +257,6 @@ public class AdminReservationsManagementView extends JPanel{
         topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
-        JPanel searchBarContainer = new JPanel();
-        searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
-        searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
-        searchBarContainer.setOpaque(false); 
-        
-//        SearchField searchBar = new SearchField();
-//        searchBar.setBorderColor(new Color(161, 117, 255, 30));
-//        
-//        searchBarContainer.add(searchBar);
 
         JLabel title = new JLabel("Gestion des réservations");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
@@ -270,8 +275,7 @@ public class AdminReservationsManagementView extends JPanel{
         
         NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadReservations(optionName));
         
-        topWrapper.add(searchBarContainer);
-//        topWrapper.add(Box.createVerticalGlue());     
+        topWrapper.add(Box.createVerticalGlue());     
         topWrapper.add(title);
         topWrapper.add(Box.createVerticalStrut(10));
         topWrapper.add(navBar);
@@ -357,9 +361,18 @@ public class AdminReservationsManagementView extends JPanel{
         logoutButton.addActionListener(listener);
     }
     
+    public void addDestinationsButtonListener(ActionListener listener){
+        destinationButton.addActionListener(listener);
+    }
+    
     public void showDetails(String content){
 //        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content, 400, "hello");   
 //        dialog.showDialog();
+    }
+    public void showDetails(ReservationModel reservation, VoyageModel voyage, DestinationModel destination){
+        MoyenTransportModel transport = transportDao.findByNo(voyage.getNoVehicule());
+        AdminReservationDetailDialog dialog = new AdminReservationDetailDialog(parentFrame, reservation, voyage, destination, voyage.getPrix(), transport);
+        dialog.showDialog();
     }
 
     private void showReservationRows(List<ReservationModel> reservations) {
@@ -370,7 +383,11 @@ public class AdminReservationsManagementView extends JPanel{
                 VoyageModel voyage = voyageDao.getVoyageById(reservation.getIdVoyage());
                 DestinationModel destination = destDao.getMatchingDestinations(voyage.getVilleDestination()).get(0);
 
-                ListElementRow resRow = new ListElementRow( voyage.getVilleDestination(), "Départ le :"+voyage.getDateDepart(), reservation.getStatut().getLibelle(), e ->{});
+                ListElementRow resRow = new ListElementRow( voyage.getVilleDestination(), "Départ le :"+voyage.getDateDepart(), reservation.getStatut().getLibelle(), e ->{
+                    showDetails(reservation, voyage, destination);
+                    }
+                );
+                    
                     row1.add(resRow);
                     row1.add(Box.createVerticalStrut(20));  
                 }

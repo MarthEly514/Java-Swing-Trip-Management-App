@@ -153,7 +153,7 @@ public class DestinationDAO {
         List<DestinationModel> destinations = new ArrayList<>();
         String sql = "SELECT * FROM destinations ";
         if (!keyword.trim().equals("")) {
-            sql += "WHERE ville = ? OR pays = ? ORDER BY id_destination DESC LIMIT 15";
+            sql += "WHERE ville LIKE ? OR pays LIKE ? ORDER BY id_destination DESC LIMIT 15";
         }
 
         try (   
@@ -162,8 +162,8 @@ public class DestinationDAO {
             ) {
             
              if (!keyword.trim().equals("")) {
-                ps.setString(1, keyword);
-                ps.setString(2, keyword);
+                ps.setString(1, "%"+keyword);
+                ps.setString(2, "%"+keyword);
             }
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -218,5 +218,20 @@ public class DestinationDAO {
             e.printStackTrace();
         }
         return destinations;
+    }
+    
+    // DELETE
+    public void deleteDestination(int id) {
+        String sql = "DELETE FROM destinations WHERE id_destination=?";
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

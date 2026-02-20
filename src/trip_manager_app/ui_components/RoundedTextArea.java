@@ -12,18 +12,17 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.geom.AffineTransform;
 import javax.swing.BorderFactory;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
 /**
  *
  * @author ely
  */
-public class RoundedTextField extends JTextField{
+public class RoundedTextArea extends JTextArea{
     
-
-
     private static class NoBackgroundTextFieldUI extends BasicTextFieldUI {
         @Override
         protected void paintBackground(Graphics g) {
@@ -141,26 +140,25 @@ public class RoundedTextField extends JTextField{
     private Color focusedBorderColor = Color.BLUE;
     private Color placeholderColor;
     
-    public RoundedTextField(){
-        this("", 0);
+    public RoundedTextArea(){
+        this("");
     }
     
     /**
      *
      * @param placeholder
-     * @param columns
      */
     
-    public RoundedTextField(String placeholder, int columns)
+    public RoundedTextArea(String placeholder)
     {
-        super(columns);
         this.placeholder = placeholder;
         
         setUI(new NoBackgroundTextFieldUI());
         setOpaque(false);
-        setBorder(BorderFactory.createEmptyBorder(8, 25, 8, 12));
+        setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         setBackground(Color.WHITE);
         setForeground(Color.BLACK);
+        setCaretPosition(0);
         
         //change border color on focus
         addFocusListener(new FocusAdapter(){
@@ -187,49 +185,54 @@ public class RoundedTextField extends JTextField{
     }
     
     @Override
-    protected void paintComponent(Graphics g)
-    {
-        Graphics2D g2 = (Graphics2D) g.create();
-        
-        try{
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();  // fresh copy for our custom painting
+
+        try {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
+
             int w = getWidth();
             int h = getHeight();
-            
+
+            // 1. Draw rounded background
             g2.setColor(getBackground());
             g2.fillRoundRect(0, 0, w, h, radius, radius);
-            
+
+            // 2. Draw border
             float thickness = borderWidth;
             float offset = thickness / 2f;
             g2.setStroke(new BasicStroke(thickness));
-            g2.setColor(isFocusOwner()? focusedBorderColor : borderColor);
+            g2.setColor(isFocusOwner() ? focusedBorderColor : borderColor);
             g2.drawRoundRect(
-                    (int) Math.ceil(offset), 
-                    (int) Math.ceil(offset), 
-                    w - (int) Math.ceil(thickness) - 1, 
-                    h - (int) Math.ceil(thickness) - 1, 
-                    radius, 
-                    radius
+                Math.round(offset),
+                Math.round(offset),
+                w - Math.round(thickness) - 1,
+                h - Math.round(thickness) - 1,
+                radius,
+                radius
             );
-            
-            super.paintComponent(g2);
-            
-            //placeholder drawing
-            if(getText().isEmpty())
-            {
-                g2.setColor(getPlaceholderColor());
-                //g2.setFont(getFont().deriveFont(Font.ITALIC));
-                
-                FontMetrics fm = g2.getFontMetrics();
-                int x = getInsets().left;
-                int y = (h + fm.getAscent() - fm.getDescent()) / 2;
-                
-                g2.drawString(placeholder, x, y);
+
+            // IMPORTANT: Now paint the ACTUAL TEXT using ORIGINAL graphics
+            // We do NOT use g2 here — we pass the unmodified g from the method parameter
+            super.paintComponent(g);
+
+            // 3. Draw placeholder if needed (also on original g2, but with correct insets)
+            if (getText().isEmpty() && placeholder != null && !placeholder.isEmpty()) {
+                // Use a safe color fallback
+                Color phColor = (placeholderColor != null) ? placeholderColor : getForeground().darker();
+                g2.setColor(phColor);
+
+                FontMetrics fm = g2.getFontMetrics(getFont());
+                int textX = getInsets().left;
+                // Align placeholder to top-left like real text (not centered vertically)
+                int textY = getInsets().top + fm.getAscent();
+
+                g2.drawString(placeholder, textX, textY);
             }
-        }finally{
+
+        } finally {
             g2.dispose();
         }
-    
     }
+    
 }

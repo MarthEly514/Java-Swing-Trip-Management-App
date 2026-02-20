@@ -2,23 +2,30 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package trip_manager_app.views.user;
+package trip_manager_app.views.admin;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
-import javax.swing.*;
-import trip_manager_app.DAO.MoyenTransportDAO;
-import trip_manager_app.DAO.ReservationDAO;
-import trip_manager_app.DAO.VoyageDAO;
-import trip_manager_app.models.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import trip_manager_app.DAO.ClientDAO;
+import trip_manager_app.models.ClientModel;
+import trip_manager_app.models.DestinationModel;
+import trip_manager_app.models.MoyenTransportModel;
+import trip_manager_app.models.ReservationModel;
+import trip_manager_app.models.VoyageModel;
 import trip_manager_app.ui_components.PanelRound;
-import trip_manager_app.ui_components.RoundedButton;
-import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.utils.CachedImageLoader;
 import trip_manager_app.utils.SvgUtils;
 
@@ -26,31 +33,29 @@ import trip_manager_app.utils.SvgUtils;
  *
  * @author ely
  */
-public class UserReservationDetailDialog extends JDialog{
+public class AdminReservationDetailDialog extends JDialog{
     private final JFrame parentFrame;
     private PanelRound mainPanel;
     private int cornerRadius = 40;  
     private DestinationModel destination;
     private VoyageModel voyage;
+    private ClientModel client;
     private ReservationModel reservation;
-    private ReservationDAO reservationDao;
+    private ClientDAO clientDao;
     private CachedImageLoader cachedImageLoader;
     private BufferedImage backgroundImage;    
     private float note;  
-    private UIButton confirmButton;
-    private UIButton cancelButton;
     private BigDecimal total;
     private MoyenTransportModel transport;
-    private final VoyageDAO voyageDao;
     
     
-    public UserReservationDetailDialog(JFrame parentFrame, ReservationModel reservation, VoyageModel voyage, DestinationModel destination, BigDecimal total, MoyenTransportModel transport){
+    public AdminReservationDetailDialog(JFrame parentFrame, ReservationModel reservation, VoyageModel voyage, DestinationModel destination, BigDecimal total, MoyenTransportModel transport){
         super(parentFrame, "Reservations details", true); 
         this.parentFrame = parentFrame;
         this.reservation = reservation;
-        this.reservationDao = new ReservationDAO();
+        this.clientDao = new ClientDAO();
+        this.client = clientDao.getClientById(reservation.getIdClient());
         this.voyage = voyage;
-        this.voyageDao = new VoyageDAO();
         this.transport = transport;
         this.destination = destination;
         this.cachedImageLoader = CachedImageLoader.getInstance();
@@ -78,12 +83,6 @@ public class UserReservationDetailDialog extends JDialog{
     }
     
     private PanelRound createPanel(){
-        
-//        if(!"".equals(imagePath.trim())){
-//            mainPanel = new PanelRound("/home/ely/Downloads/_ - 2026-01-27T002355.176.jpeg");
-//        }else{
-//            mainPanel = new PanelRound();
-//        }
 
         mainPanel = new PanelRound(backgroundImage);
         mainPanel.setLayout(new BorderLayout());
@@ -151,86 +150,23 @@ public class UserReservationDetailDialog extends JDialog{
         
         JLabel informations = new JLabel(
                 "<html><p style='font-size: 12px; margin-top: 20px; margin-left: 20px;'>"
+                        + "Informations du client: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+client.getFullName()+"</span><br/>"
                         + "Lieu de départ: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+voyage.getVilleDepart()+"</span><br/>"
                         + "Lieu d'arrivée: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+voyage.getVilleDestination()+"</span><br/>"
                         + "Date de départ: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+voyage.getDateDepart()+"</span><br/>"
                         + "Date de retour: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+voyage.getDateRetour()+"</span><br/>"
                         + "Moyen de transport: <span style='font-weight: 400'>&nbsp;&nbsp;&nbsp;"+transport.getDescriptionVehicule()+"</span><br/>"
                 + "</p><br/>"
-                        + "<p style='font-size: 20px;margin-left: 20px;'>Total: <span style='font-size:28px;font-weight: 600;'>"+total+"</span> XOF</p>"
+                        + "<p style='font-size: 20px;margin-left: 20px;'>Statut: <span style='font-size:28px;font-weight: 600;'>"+reservation.getStatut().getLibelle()+"</span><br/>"
+                        + "Total: <span style='font-size:28px;font-weight: 600;'>"+total+"</span> XOF</p>"
                 + "</html>"
         );
         informations.setForeground(new Color(255, 255, 255, 50));
         
-        informationsPanel.add(informations);
-        
-        JPanel actionsPanel = new JPanel();
-        actionsPanel.setLayout(new BorderLayout());
-        actionsPanel.setOpaque(false);
-        confirmButton = new UIButton(
-                "Confirmer",
-                " ", 
-                new Color(108, 99, 255, 200), 
-                Color.white
-        );
-        cancelButton = new UIButton(
-                "Annuler",
-                " ", 
-                new Color(255, 255, 255, 200),
-                new Color(101, 93, 235) 
-        );
-        confirmButton.setHorizontalAlignment(SwingConstants.CENTER);
-        if(reservation.getStatut().getLibelle().equals("Validé")){
-            System.out.println(reservation.getStatut().getLibelle());
-            confirmButton.setEnabled(false);
-        }
-        
-        confirmButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e){
-                if(confirmButton.isEnabled() == true){
-                    confirmButton.setBackground(new Color(101, 93, 235));
-                }
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e){
-                if(confirmButton.isEnabled() == true){
-                    confirmButton.setBackground(new Color(101, 93, 235, 200)); 
-                }
-            }
-        });
-        
-        confirmButton.addActionListener(e->confirmReservation());
-        
-        
-        cancelButton.setHorizontalAlignment(SwingConstants.CENTER);
-        cancelButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e){
-                if(cancelButton.isEnabled() == true){
-                    cancelButton.setBackground(new Color(255, 255, 255));    
-                }
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e){
-                if(cancelButton.isEnabled() == true){
-                    cancelButton.setBackground(new Color(255, 255, 255, 200));   
-                }
-            }
-        });
-
-        cancelButton.addActionListener(e->cancelReservation());
-        
-        
-        actionsPanel.add(confirmButton, BorderLayout.WEST);
-        actionsPanel.add(cancelButton, BorderLayout.EAST);
-        
+        informationsPanel.add(informations);       
         
         bottomPanel.add(destinationPanel, BorderLayout.NORTH);
         bottomPanel.add(informationsPanel, BorderLayout.CENTER);
-        bottomPanel.add(actionsPanel, BorderLayout.SOUTH);
         
         return mainPanel;
     }
@@ -256,30 +192,6 @@ public class UserReservationDetailDialog extends JDialog{
                 setShape(new RoundRectangle2D.Double(0, 0, w, h, cornerRadius, cornerRadius));
             }
         });
-    }
-    
-    private void confirmReservation(){
-        reservationDao.updateReservationStatus(reservation.getIdReservation(), "Validé");
-        confirmButton.setText("Confirmé");
-        confirmButton.setBackground(new Color(255, 255, 255, 200));
-        confirmButton.setEnabled(false);
-        cancelButton.setEnabled(false);
-    }
-    
-    private void cancelReservation(){
-        reservationDao.updateReservationStatus(reservation.getIdReservation(), "Annulé");
-        reservationDao.deleteReservation(reservation.getIdReservation());
-        voyageDao.deleteVoyage(reservation.getIdVoyage());
-        confirmButton.setEnabled(false);
-        cancelButton.setEnabled(false);
-    }
-    
-    public void addConfirmButtonListener(ActionListener listener){
-        confirmButton.addActionListener(listener);
-    }
-    
-    public void addCancelButtonListener(ActionListener listener){
-        cancelButton.addActionListener(listener);
     }
 
     private void setBackgroundImage(BufferedImage image) {

@@ -14,7 +14,7 @@ import trip_manager_app.views.admin.*;
  */
 public class AdminController  {
     private MainFrame frame;
-    public AdminController(MainFrame frame, LoginView loginView, AdminHomepageView adminHomepageView ,AdminReservationsManagementView adminReservationsManagementView ,AdminUserManagementView adminUserManagementView )
+    public AdminController(MainFrame frame, LoginView loginView, AdminHomepageView adminHomepageView ,AdminReservationsManagementView adminReservationsManagementView ,AdminUserManagementView adminUserManagementView, AdminDestinationsView adminDestinationsView )
     {
         
         this.frame = frame;
@@ -22,27 +22,31 @@ public class AdminController  {
         frame.addView(adminHomepageView, "adminHomepageView");
         frame.addView(adminReservationsManagementView, "adminReservationsManagementView");
         frame.addView(adminUserManagementView, "adminUserManagementView");
+        frame.addView(adminDestinationsView, "adminDestinationsView");
         
         //dashboard navigation
         adminHomepageView.addClientManagementButtonListener(e -> frame.showView("adminUserManagementView"));
         adminHomepageView.addReservationsManagementButtonListener(e -> frame.showView("adminReservationsManagementView"));
+        adminHomepageView.addDestinationsButtonListener(e -> frame.showView("adminDestinationsView"));
         adminHomepageView.addLogoutButtonListener(e -> frame.showView("loginView"));
         
         //user management page navigation
         adminUserManagementView.addHomeButtonListener(e -> frame.showView("adminHomepageView"));
         adminUserManagementView.addReservationsManagementButtonListener(e -> frame.showView("adminReservationsManagementView"));
+        adminUserManagementView.addDestinationsButtonListener(e -> frame.showView("adminDestinationsView"));
         adminUserManagementView.addLogoutButtonListener(e -> frame.showView("loginView"));
-//        
+        
 //        //reservation management page navigation
         adminReservationsManagementView.addHomeButtonListener(e -> frame.showView("adminHomepageView"));
         adminReservationsManagementView.addUserManagementButtonListener(e -> frame.showView("adminUserManagementView"));
+        adminReservationsManagementView.addDestinationsButtonListener(e -> frame.showView("adminDestinationsView"));
         adminReservationsManagementView.addLogoutButtonListener(e -> frame.showView("loginView"));
-//        
-//        //user profile page navigation
-//        userProfileView.addHomeButtonListener(e -> frame.showView("userHomepageView"));
-//        userProfileView.addDestinationButtonListener(e -> frame.showView("userDestinationsView"));
-//        userProfileView.addReservationButtonListener(e -> frame.showView("userReservationsView"));
-//        userProfileView.addlogoutButtonListener(e -> frame.showView("loginView"));
+        
+//        //destinations page navigation
+        adminDestinationsView.addHomeButtonListener(e -> frame.showView("adminHomepageView"));
+        adminDestinationsView.addUserManagementButtonListener(e -> frame.showView("adminUserManagementView"));
+        adminDestinationsView.addReservationButtonListener(e -> frame.showView("adminReservationsManagementView"));
+        adminDestinationsView.addLogoutButtonListener(e -> frame.showView("loginView"));
 
     }
 }
