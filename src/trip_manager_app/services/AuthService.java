@@ -39,6 +39,7 @@ public class AuthService {
     private UserDestinationsView userDestinationsView;
     private UserReservationsView userReservationsView;
     private UserProfileView userProfileView;
+    private AdminTransportManagementView adminTransportManagementView;
     
     public AuthService (MainFrame frame, LoginView loginView, SignupView signupView)
     {
@@ -89,8 +90,9 @@ public class AuthService {
         adminReservationsManagementView = new AdminReservationsManagementView();
         adminUserManagementView = new AdminUserManagementView();
         adminDestinationsView = new AdminDestinationsView(frame);
+        adminTransportManagementView = new AdminTransportManagementView(frame);
         
-        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView);
+        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView, adminTransportManagementView);
 
         //END OF TESTING BLOCK
         
@@ -105,6 +107,7 @@ public class AuthService {
 //        adminReservationsManagementView = null;
 //        adminUserManagementView = null;
 //        adminDestinationsView = null;
+//        adminTransportManagementView = null;
 
         //controllers
 
@@ -258,9 +261,10 @@ public class AuthService {
                 adminReservationsManagementView = new AdminReservationsManagementView();
                 adminUserManagementView = new AdminUserManagementView();
                 adminDestinationsView = new AdminDestinationsView(frame);
+                adminTransportManagementView = new AdminTransportManagementView(frame);
                 
                 //controller
-                new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView);
+                new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView, adminTransportManagementView);
                 
                 //views
                 frame.addView(adminHomepageView, "adminHomepageView");

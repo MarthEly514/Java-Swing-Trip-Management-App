@@ -23,7 +23,7 @@ public class VoyageDAO {
             ps.setDate(3, Date.valueOf(v.getDateDepart()));
             ps.setDate(4, Date.valueOf(v.getDateRetour()));
             ps.setBigDecimal(5, v.getPrix());
-            ps.setDouble(6, v.getNoVehicule());
+            ps.setString(6, v.getNoVehicule());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class VoyageDAO {
                     rs.getDate("date_depart").toLocalDate(),
                     rs.getDate("date_retour").toLocalDate(),
                     rs.getBigDecimal("prix"),
-                    rs.getInt("no_vehicule")
+                    rs.getString("no_vehicule")
                 );
                 voyages.add(v);
             }
@@ -79,7 +79,7 @@ public class VoyageDAO {
                     rs.getDate("date_depart").toLocalDate(),
                     rs.getDate("date_retour").toLocalDate(),
                     rs.getBigDecimal("prix"),
-                    rs.getInt("no_vehicule")
+                    rs.getString("no_vehicule")
                 );
             }
         } catch (SQLException e) {
@@ -107,7 +107,7 @@ public class VoyageDAO {
                     rs.getDate("date_depart").toLocalDate(),
                     rs.getDate("date_retour").toLocalDate(),
                     rs.getBigDecimal("prix"),
-                    rs.getInt("no_vehicule")
+                    rs.getString("no_vehicule")
                 );
             }
         }
@@ -161,7 +161,7 @@ public class VoyageDAO {
                     rs.getDate("date_depart").toLocalDate(),
                     rs.getDate("date_retour").toLocalDate(),
                     rs.getBigDecimal("prix"),
-                    rs.getInt("no_vehicule")
+                    rs.getString("no_vehicule")
                 );
             }
         }

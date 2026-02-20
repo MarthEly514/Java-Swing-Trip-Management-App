@@ -57,6 +57,7 @@ public class AdminDestinationsView extends JPanel{
     private UIButton clientsButton;
     private UIButton logoutButton;
     private UIButton addDestinationsButton;
+    private UIButton transportButton;
     
     public AdminDestinationsView(){
         setLayout(new BorderLayout());
@@ -126,7 +127,7 @@ public class AdminDestinationsView extends JPanel{
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel_light.svg", 
+                "/trip_manager_app/ressources/icons/public_light.svg", 
                 new Color(108, 99, 255), 
                 Color.white
                 
@@ -150,10 +151,20 @@ public class AdminDestinationsView extends JPanel{
                 
         );
          
+        //transports button
+        transportButton = new UIButton(
+                " Moyens de transport",
+                "/trip_manager_app/ressources/icons/car.svg", 
+                new Color(0, 0, 0, 0),
+                new Color(108, 99, 255)
+                
+        );
+         
         navigationPanel.add(homeButton);
         navigationPanel.add(destinationButton);
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
+        navigationPanel.add(transportButton);
         
         
         JPanel profileButtonContainer = new JPanel();
@@ -222,6 +233,18 @@ public class AdminDestinationsView extends JPanel{
             }
         });
         
+        transportButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                transportButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                transportButton.setBackground(new Color(0, 0, 0, 0));            
+            }
+        });
+        
         logoutButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
@@ -274,7 +297,7 @@ public class AdminDestinationsView extends JPanel{
         );
         
         addDestinationsButton.addActionListener(e->{
-            showDetails();
+            showAddDetails();
             reloadValues();
         });
         
@@ -453,7 +476,7 @@ public class AdminDestinationsView extends JPanel{
         });
     }
     
-    public void showDetails(){
+    public void showAddDetails(){
         AddDestinationDialog dialog = new AddDestinationDialog(parentFrame);   
         dialog.showDialog();
     }
@@ -490,7 +513,7 @@ public class AdminDestinationsView extends JPanel{
         homeButton.addActionListener(listener);
     }
     
-    public void addReservationButtonListener(ActionListener listener){
+    public void addReservationsManagementButtonListener(ActionListener listener){
         reservationButton.addActionListener(listener);
     }
     
@@ -498,9 +521,15 @@ public class AdminDestinationsView extends JPanel{
         clientsButton.addActionListener(listener);
     }
     
+    public void addTransportsManagementButtonListener(ActionListener listener){
+        transportButton.addActionListener(listener);
+    }
+    
     public void addLogoutButtonListener(ActionListener listener){
         logoutButton.addActionListener(listener);
     }
+    
+    
 
     
 }

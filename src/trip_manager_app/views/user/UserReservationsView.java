@@ -117,7 +117,7 @@ public class UserReservationsView extends JPanel{
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel.svg", 
+                "/trip_manager_app/ressources/icons/public.svg", 
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
                 

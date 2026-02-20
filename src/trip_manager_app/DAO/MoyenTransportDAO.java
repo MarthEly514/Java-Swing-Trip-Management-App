@@ -20,7 +20,7 @@ public class MoyenTransportDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, transport.getNoVehicule());
+            ps.setString(1, transport.getNoVehicule());
             ps.setString(2, transport.getTypeVehicule());
             ps.setString(3, transport.getDescriptionVehicule());
             ps.setInt(4, transport.getNombrePlaces());
@@ -32,19 +32,19 @@ public class MoyenTransportDAO {
     }
 
     // READ by id
-    public MoyenTransportModel findByNo(int noVehicule) {
+    public MoyenTransportModel findByNo(String noVehicule) {
         String sql = "SELECT * FROM moyens_transport WHERE no_vehicule = ?";
         MoyenTransportModel transport = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, noVehicule);
+            ps.setString(1, noVehicule);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 transport = new MoyenTransportModel(
-                        rs.getInt("no_vehicule"),
+                        rs.getString("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -68,7 +68,7 @@ public class MoyenTransportDAO {
 
             while (rs.next()) {
                 MoyenTransportModel transport = new MoyenTransportModel(
-                        rs.getInt("no_vehicule"),
+                        rs.getString("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -94,7 +94,7 @@ public class MoyenTransportDAO {
 
             while (rs.next()) {
                 MoyenTransportModel transport = new MoyenTransportModel(
-                        rs.getInt("no_vehicule"),
+                        rs.getString("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -118,7 +118,7 @@ public class MoyenTransportDAO {
             ps.setString(1, transport.getTypeVehicule());
             ps.setString(2, transport.getDescriptionVehicule());
             ps.setInt(3, transport.getNombrePlaces());
-            ps.setInt(4, transport.getNoVehicule());
+            ps.setString(4, transport.getNoVehicule());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -139,5 +139,80 @@ public class MoyenTransportDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<MoyenTransportModel> getNTransports(int n) {
+        List<MoyenTransportModel> liste = new ArrayList<>();
+        String sql = "SELECT * FROM moyens_transport LIMIT ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, n);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                MoyenTransportModel transport = new MoyenTransportModel(
+                        rs.getString("no_vehicule"),
+                        rs.getString("type_transport"),
+                        rs.getString("description"),
+                        rs.getInt("nombre_places")
+                );
+                liste.add(transport);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
+
+    public List<MoyenTransportModel> getMatchingTransports(String searchText) {
+        List<MoyenTransportModel> liste = new ArrayList<>();
+        String sql = "SELECT * FROM moyens_transport ";
+        if (!searchText.trim().equals("")) {
+            sql += "WHERE no_vehicule LIKE ? OR description LIKE ? LIMIT 15";
+        }
+
+        try (   
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+            ) {
+            
+             if (!searchText.trim().equals("")) {
+                ps.setString(1, "%"+searchText);
+                ps.setString(2, "%"+searchText);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MoyenTransportModel transport = new MoyenTransportModel(
+                            rs.getString("no_vehicule"),
+                            rs.getString("type_transport"),
+                            rs.getString("description"),
+                            rs.getInt("nombre_places")
+                    );
+                    liste.add(transport);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return liste;
+    }
+
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM moyens_transport";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+             
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

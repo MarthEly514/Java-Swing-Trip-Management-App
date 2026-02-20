@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import trip_manager_app.DAO.ClientDAO;
 import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.MoyenTransportDAO;
 import trip_manager_app.DAO.ReservationDAO;
 import trip_manager_app.models.DestinationModel;
 import trip_manager_app.ui_components.*;
@@ -39,15 +40,20 @@ public class AdminHomepageView extends JPanel{
     private long usersCount;
     private long destinationsCount;
     private long reservationsCount;
+    private long transportsCount;
     private JLabel usersCountLabel;
     private JLabel destinationsCountLabel;
     private JLabel reservationsCountLabel;
     private UIButton destinationButton;
+    private UIButton transportButton;
+    private MoyenTransportDAO transportDao;
+    private JLabel transportsCountLabel;
 
     public AdminHomepageView(){    
         this.clientDao = new ClientDAO();
         this.destinationDao = new DestinationDAO();
         this.reservationDao = new ReservationDAO();
+        this.transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -59,6 +65,7 @@ public class AdminHomepageView extends JPanel{
         this.clientDao = new ClientDAO();
         this.destinationDao = new DestinationDAO();
         this.reservationDao = new ReservationDAO();
+        this.transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -112,7 +119,7 @@ public class AdminHomepageView extends JPanel{
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel.svg", 
+                "/trip_manager_app/ressources/icons/public.svg", 
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
                 
@@ -136,10 +143,20 @@ public class AdminHomepageView extends JPanel{
                 
         );
          
+        //transports button
+        transportButton = new UIButton(
+                " Moyens de transport",
+                "/trip_manager_app/ressources/icons/car.svg", 
+                new Color(0, 0, 0, 0),
+                new Color(108, 99, 255)
+                
+        );
+         
         navigationPanel.add(homeButton);
         navigationPanel.add(destinationButton);
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
+        navigationPanel.add(transportButton);
         
         
         JPanel profileButtonContainer = new JPanel();
@@ -205,6 +222,18 @@ public class AdminHomepageView extends JPanel{
             @Override
             public void mouseExited(MouseEvent e){
                 reservationButton.setBackground(new Color(0, 0, 0, 0));            
+            }
+        });
+        
+        transportButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                transportButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                transportButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
         
@@ -309,9 +338,9 @@ public class AdminHomepageView extends JPanel{
         row1 = new JPanel();
         row1.setOpaque(false);
         row1.setLayout(new BorderLayout());
-        row1.setPreferredSize(new Dimension(0, 250));
-        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
-        row1.setMinimumSize(new Dimension(1, 250));
+        row1.setPreferredSize(new Dimension(0, 300));
+        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+        row1.setMinimumSize(new Dimension(1, 300));
         row1.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 0));
                 
         SubtitleLabel subtitle1 = new SubtitleLabel("   Statistiques generales");
@@ -320,14 +349,17 @@ public class AdminHomepageView extends JPanel{
         usersCount = clientDao.count();
         destinationsCount = destinationDao.count();
         reservationsCount = reservationDao.count();
+        transportsCount = transportDao.count();
         
-        long users = clientDao.count();
-        long destinations = destinationDao.count();
-        long reservations = reservationDao.count();
+//        long users = clientDao.count();
+//        long destinations = destinationDao.count();
+//        long reservations = reservationDao.count();
+//        long transports = transportDao.count();
         
-        usersCountLabel = new JLabel(formatCount(users, "Clients"));
-        destinationsCountLabel = new JLabel(formatCount(destinations, "Destinations disponibles"));
-        reservationsCountLabel = new JLabel(formatCount(reservations, "Reservations faites"));
+        usersCountLabel = new JLabel(formatCount(usersCount, "Clients"));
+        destinationsCountLabel = new JLabel(formatCount(destinationsCount, "Destinations disponibles"));
+        reservationsCountLabel = new JLabel(formatCount(reservationsCount, "Reservations faites"));
+        transportsCountLabel = new JLabel(formatCount(transportsCount, "Moyens de transport disponibles"));
         
         JPanel statsContainer = new JPanel();
         statsContainer.setLayout(new BoxLayout(statsContainer, BoxLayout.Y_AXIS));
@@ -337,6 +369,7 @@ public class AdminHomepageView extends JPanel{
         statsContainer.add(usersCountLabel);
         statsContainer.add(destinationsCountLabel);
         statsContainer.add(reservationsCountLabel);
+        statsContainer.add(transportsCountLabel);
         
         row1.add(statsContainer);
         
@@ -543,6 +576,10 @@ public class AdminHomepageView extends JPanel{
     
     public void addDestinationsButtonListener(ActionListener listener){
         destinationButton.addActionListener(listener);
+    }
+    
+    public void addTransportsManagementButtonListener(ActionListener listener){
+        transportButton.addActionListener(listener);
     }
     
 

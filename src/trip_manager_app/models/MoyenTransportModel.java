@@ -10,7 +10,7 @@ package trip_manager_app.models;
  */
 public class MoyenTransportModel {
 
-    private int noVehicule;
+    private String noVehicule;
     private String typeVehicule;
     private String descriptionVehicule;
     private int nombrePlaces;
@@ -23,14 +23,14 @@ public class MoyenTransportModel {
         this.nombrePlaces = nombrePlaces;
     }
 
-    public MoyenTransportModel(int noVehicule, String typeVehicule, String descriptionVehicule, int nombrePlaces) {
+    public MoyenTransportModel(String noVehicule, String typeVehicule, String descriptionVehicule, int nombrePlaces) {
         this.noVehicule = noVehicule;
         this.typeVehicule = typeVehicule;
         this.descriptionVehicule = descriptionVehicule;
         this.nombrePlaces = nombrePlaces;
     }
     
-    public int getNoVehicule(){
+    public String getNoVehicule(){
         return noVehicule;
     }
     public String getTypeVehicule(){
@@ -40,7 +40,7 @@ public class MoyenTransportModel {
         return nombrePlaces;
     }
     
-    public void setNoVehicule(int noVehicule){
+    public void setNoVehicule(String noVehicule){
         this.noVehicule= noVehicule;
     }
     

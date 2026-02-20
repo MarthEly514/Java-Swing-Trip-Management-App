@@ -106,7 +106,7 @@ public class UserDestinationsView extends JPanel{
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel_light.svg", 
+                "/trip_manager_app/ressources/icons/public_light.svg", 
                 new Color(108, 99, 255), 
                 Color.white
                 

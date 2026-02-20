@@ -17,14 +17,14 @@ public class VoyageModel {
     private LocalDate dateDepart;
     private LocalDate dateRetour;
     private BigDecimal prix; 
-    private int noVehicule;
+    private String noVehicule;
     
     
     
      public VoyageModel() {
     }
     
-    public VoyageModel(String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, int noVehicule) {
+    public VoyageModel(String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, String noVehicule) {
         this();
         this.villeDepart = villeDepart;
         this.villeDestination = villeDestination;
@@ -34,7 +34,7 @@ public class VoyageModel {
         this.noVehicule = noVehicule;
     }
     
-    public VoyageModel(int idVoyage, String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, int noVehicule) {
+    public VoyageModel(int idVoyage, String villeDepart, String villeDestination, LocalDate dateDepart, LocalDate dateRetour, BigDecimal prix, String noVehicule) {
         this();
         this.idVoyage = idVoyage;
         this.villeDepart = villeDepart;
@@ -68,7 +68,7 @@ public class VoyageModel {
         return prix;
     }
     
-    public int getNoVehicule() {
+    public String getNoVehicule() {
         return noVehicule; 
     }
     
@@ -96,7 +96,7 @@ public class VoyageModel {
         this.prix = prix; 
     }
     
-     public void setNoVehicule(int noVehicule) {
+     public void setNoVehicule(String noVehicule) {
          this.noVehicule = noVehicule; 
      }
      

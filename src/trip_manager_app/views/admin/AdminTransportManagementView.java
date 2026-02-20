@@ -4,28 +4,47 @@
  */
 package trip_manager_app.views.admin;
 
-import trip_manager_app.ui_components.renderers.ReservationCellRenderer;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import trip_manager_app.DAO.ClientDAO;
-import trip_manager_app.models.ClientModel;
-import trip_manager_app.ui_components.*;
-import trip_manager_app.ui_components.renderers.ClientsCellRenderer;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import trip_manager_app.DAO.DestinationDAO;
+import trip_manager_app.DAO.MoyenTransportDAO;
+import trip_manager_app.DAO.ReservationDAO;
+import trip_manager_app.DAO.VoyageDAO;
+import trip_manager_app.models.MoyenTransportModel;
+import trip_manager_app.ui_components.ListElementRow;
+import trip_manager_app.ui_components.NavBarHorizontal;
+import trip_manager_app.ui_components.ScrollWrapper;
+import trip_manager_app.ui_components.SearchField;
+import trip_manager_app.ui_components.UIButton;
 import trip_manager_app.views.LoginView;
 
 /**
  *
  * @author ely
  */
-public class AdminUserManagementView extends JPanel{
+public class AdminTransportManagementView extends JPanel{
     private UIButton homeButton;
     private UIButton clientsButton;
     private UIButton reservationButton;
@@ -33,20 +52,31 @@ public class AdminUserManagementView extends JPanel{
     private List<String> options;
     private JPanel row1;
     private JFrame parentFrame;
-    private ClientDAO clientDao;
+    private String currentTab;
+    private ReservationDAO resDao;
+    private VoyageDAO voyageDao;
+    private DestinationDAO destDao;
     private UIButton destinationButton;
-    private SearchField searchBar;
+    private MoyenTransportDAO transportDao;
     private UIButton transportButton;
+    private SearchField searchBar;
+    private UIButton addTransportButton;
     
-    public AdminUserManagementView(){
-        clientDao = new ClientDAO();
+    public AdminTransportManagementView(){
+        resDao = new ReservationDAO();
+        voyageDao = new VoyageDAO();
+        destDao = new DestinationDAO();
+        transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
     }
-    public AdminUserManagementView(JFrame parentFrame){
+    public AdminTransportManagementView(JFrame parentFrame){
         this.parentFrame = parentFrame;
-        clientDao = new ClientDAO();
+        resDao = new ReservationDAO();
+        voyageDao = new VoyageDAO();
+        destDao = new DestinationDAO();
+        transportDao = new MoyenTransportDAO();
         setLayout(new BorderLayout());
         add(createLeftPanel(), BorderLayout.WEST);
         add(createRightPanel(), BorderLayout.CENTER);
@@ -101,15 +131,14 @@ public class AdminUserManagementView extends JPanel{
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
                 
-                
         );
                 
         //destination button 
         clientsButton = new UIButton(
                 " Gestion des clients",
-                "/trip_manager_app/ressources/icons/users_light.svg", 
-                new Color(108, 99, 255), 
-                Color.white
+                "/trip_manager_app/ressources/icons/users.svg", 
+                new Color(0, 0, 0, 0), 
+                new Color(108, 99, 255)
                 
         );
         
@@ -117,17 +146,16 @@ public class AdminUserManagementView extends JPanel{
         reservationButton = new UIButton(
                 " Réservations",
                 "/trip_manager_app/ressources/icons/date_range.svg", 
-                new Color(0, 0, 0, 0), 
-                new Color(108, 99, 255)
+                new Color(0, 0, 0, 0),
+                new Color(108, 99, 255) 
                 
         );
-        
         //transports button
         transportButton = new UIButton(
                 " Moyens de transport",
-                "/trip_manager_app/ressources/icons/car.svg", 
-                new Color(0, 0, 0, 0),
-                new Color(108, 99, 255)
+                "/trip_manager_app/ressources/icons/car_light.svg", 
+                new Color(108, 99, 255), 
+                Color.white
                 
         );
          
@@ -136,7 +164,6 @@ public class AdminUserManagementView extends JPanel{
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
         navigationPanel.add(transportButton);
-
         
         
         JPanel profileButtonContainer = new JPanel();
@@ -172,12 +199,12 @@ public class AdminUserManagementView extends JPanel{
         clientsButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                clientsButton.setBackground(new Color(101, 93, 235));            
+                clientsButton.setBackground(new Color(101, 93, 235, 20));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                clientsButton.setBackground(new Color(108, 99, 255));            
+                clientsButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
         
@@ -201,19 +228,18 @@ public class AdminUserManagementView extends JPanel{
             
             @Override
             public void mouseExited(MouseEvent e){
-                reservationButton.setBackground(new Color(0, 0, 0, 0));            
+                reservationButton.setBackground(new Color(0, 0 ,0 ,0));            
             }
         });
-        
         transportButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                transportButton.setBackground(new Color(101, 93, 235, 20));            
+                transportButton.setBackground(new Color(101, 93, 235));            
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                transportButton.setBackground(new Color(0, 0, 0, 0));            
+                transportButton.setBackground(new Color(108, 99, 255));            
             }
         });
         
@@ -256,48 +282,91 @@ public class AdminUserManagementView extends JPanel{
         topWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         topWrapper.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         topWrapper.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
-        JPanel searchBarContainer = new JPanel();
-        searchBarContainer.setBackground(Color.red);
-        searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
-        searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
-        searchBarContainer.setOpaque(false); 
-        
-        searchBar = new SearchField(e-> searchClient(searchBar.getSearchQuery()));
-        searchBar.setBorderColor(new Color(161, 117, 255, 30));
-        
-        searchBarContainer.add(searchBar);
 
-
-        JLabel title = new JLabel("Gestion des clients");
+        JLabel title = new JLabel("Destinations");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
         title.setForeground(new Color(50, 50, 50));
         title.setPreferredSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         title.setMinimumSize(new Dimension(Integer.MAX_VALUE, 0));
         
-        options = new ArrayList<>();
-        options.add("Tous");
-        options.add("Nouveaux");
+        addTransportButton = new UIButton(
+            "  Ajouter",
+            "/trip_manager_app/ressources/icons/plus.svg", 
+            new Color(101, 93, 235, 20), 
+            new Color(108, 99, 255)      
+        );
         
+        addTransportButton.addActionListener(e->{
+            showAddDetails();
+            reloadValues();
+        });
         
+        addTransportButton.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        // button color change on hover
+        
+        addTransportButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                addTransportButton.setBackground(new Color(101, 93, 235, 40));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                addTransportButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+        });
 
         
-        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadClients(optionName));
+        JPanel titleCtnr = new JPanel();
+        titleCtnr.setOpaque(false);
+        titleCtnr.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        titleCtnr.setLayout(new BorderLayout());
+        titleCtnr.setPreferredSize(new Dimension(0, 50));
+        titleCtnr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         
-        topWrapper.add(searchBarContainer);
-//        topWrapper.add(Box.createVerticalGlue());     
-        topWrapper.add(title);
-        topWrapper.add(Box.createVerticalStrut(10));
-        topWrapper.add(navBar);
+        titleCtnr.add(title, BorderLayout.WEST);
+        titleCtnr.add(addTransportButton, BorderLayout.EAST);
         
+        
+        JPanel searchBarContainer = new JPanel();
+        searchBarContainer.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 20));
+        searchBarContainer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 50));
+        searchBarContainer.setOpaque(false); 
+        
+        searchBar = new SearchField(e-> searchTransport(searchBar.getSearchQuery()));
+        searchBar.setBorderColor(new Color(161, 117, 255, 30));
+                
+        
+        searchBarContainer.add(searchBar);
         
         JPanel bottomWrapper = new JPanel();
         bottomWrapper.setBackground(Color.white);
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 600));
+        bottomWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        
+        
+        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
+        
+        options = new ArrayList<>();
+        options.add("Tous");
+        options.add("Vehicules");
+        options.add("Bus");
+        options.add("Avions");
+        options.add("Bateaux");
 
+        
+        NavBarHorizontal navBar = new NavBarHorizontal(options, optionName-> loadTransports(optionName));
+        
+        topWrapper.add(searchBarContainer);         
+//        topWrapper.add(Box.createVerticalGlue());     
+        topWrapper.add(titleCtnr);
+        topWrapper.add(Box.createVerticalStrut(5));
+        topWrapper.add(navBar);
+        
+        
         row1 = new JPanel();
         row1.setOpaque(false);
         row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -305,12 +374,11 @@ public class AdminUserManagementView extends JPanel{
         row1.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
         row1.setLayout(new BoxLayout(row1, BoxLayout.Y_AXIS));
         
-        loadClients("*"); 
+
+        loadTransports("*");
         
         bottomWrapper.add(row1);
-        
-        ScrollWrapper scrollWrapper = new ScrollWrapper(bottomWrapper);
-
+ 
         wrapper.add(topWrapper);
         wrapper.add(Box.createVerticalStrut(20));
         wrapper.add(scrollWrapper);
@@ -319,29 +387,61 @@ public class AdminUserManagementView extends JPanel{
         return wrapper;
     }
     
-    public void loadClients(String labelName){
-        java.util.List<ClientModel> clients;
+   public void loadTransports(String labelName){
+        List<MoyenTransportModel> transports;
+
+        
         if(labelName.equals("*")){
-            clients = clientDao.getAllClients();
+            transports = transportDao.getAll();
             row1.removeAll();       // removes every child component
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showUsersTable(clients); 
+            showTransportRows(transports); 
         }
-        else 
-        if(labelName.equals(options.get(0))){  
-            clients = clientDao.getAllClients();
-            row1.removeAll();       
-            row1.revalidate();      
+        else if(labelName.equals(options.get(0))){  
+            transports = transportDao.getAll();
+            row1.removeAll();       // removes every child component
+            row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showUsersTable(clients); 
+            showTransportRows(transports); 
+            currentTab = options.get(0);
+            System.out.println(currentTab);
         }
-        else if(labelName.equals(options.get(1))){
-            clients = clientDao.getNewClients();
-            row1.removeAll();       
-            row1.revalidate();      
+        else if(labelName.equals(options.get(1))){  
+            transports = transportDao.getAllByType("Vehicule");
+            row1.removeAll();       // removes every child component
+            row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
-            showUsersTable(clients); 
+            showTransportRows(transports); 
+            currentTab = options.get(1);
+            System.out.println(currentTab);
+        }
+        else if(labelName.equals(options.get(2))){
+            transports = transportDao.getAllByType("Bus");
+            row1.removeAll();       
+            row1.revalidate();
+            row1.repaint();
+            showTransportRows(transports); 
+            currentTab = options.get(2);
+            System.out.println(currentTab);
+        }
+        else if(labelName.equals(options.get(3))){
+            transports = transportDao.getAllByType("Avion");
+            row1.removeAll();       
+            row1.revalidate();
+            row1.repaint();
+            showTransportRows(transports); 
+            currentTab = options.get(3);
+            System.out.println(currentTab);
+        }
+        else if(labelName.equals(options.get(4))){
+            transports = transportDao.getAllByType("Bateau");
+            row1.removeAll();       
+            row1.revalidate();
+            row1.repaint();
+            showTransportRows(transports); 
+            currentTab = options.get(4);
+            System.out.println(currentTab);
         }
     }
     
@@ -349,8 +449,8 @@ public class AdminUserManagementView extends JPanel{
         homeButton.addActionListener(listener);
     }
     
-    public void addReservationsManagementButtonListener(ActionListener listener){
-        reservationButton.addActionListener(listener);
+    public void addUserManagementButtonListener(ActionListener listener){
+        clientsButton.addActionListener(listener);
     }
     
     public void addLogoutButtonListener(ActionListener listener){
@@ -360,33 +460,81 @@ public class AdminUserManagementView extends JPanel{
     public void addDestinationsButtonListener(ActionListener listener){
         destinationButton.addActionListener(listener);
     }
-    
-    public void addTransportsManagementButtonListener(ActionListener listener){
-        transportButton.addActionListener(listener);
-    }
-    
-    public void showDetails(String content){
-//        UserReservationDetailDialog dialog = new UserReservationDetailDialog(parentFrame, content, 400, "hello");   
-//        dialog.showDialog();
+
+    public void addReservationsManagementButtonListener(ActionListener listener){
+        reservationButton.addActionListener(listener);
     }
 
-    private void showUsersTable(java.util.List<ClientModel> clients) {
-        
-        if(!clients.isEmpty()){
-        // Create the list
-        CustomList<ClientModel> clientList = new CustomList<>(
-            new ClientsCellRenderer(),
-            client -> {
-                showClientDetails(client);
+    public void showAddDetails(){
+        AddTransportDialog dialog = new AddTransportDialog(parentFrame);   
+        dialog.showDialog();
+    }
+    
+    public void showDetails(MoyenTransportModel transport){
+//        AdminTransportDetails dialog = new AdminTransportDetails(parentFrame, transport);   
+//        dialog.showDialog();
+    }
+    
+    private void searchTransport(String searchText){
+        SwingUtilities.invokeLater(()->{
+            List<MoyenTransportModel> transports;
+            if(searchText.trim().equals("")){
+                transports = transportDao.getNTransports(5);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching all..."+searchText);
+                showTransportRows(transports); 
+
+            } else {
+                transports = transportDao.getMatchingTransports(searchText);
+                row1.removeAll();       // removes every child component
+                row1.revalidate();      // tells the layout manager to recalculate layout
+                row1.repaint();
+                System.out.println("Searching..."+searchText);
+                showTransportRows(transports); 
+
             }
-        );
-        
-        for (ClientModel client: clients) {
-            clientList.addItem(client);
-           
-        }
-        row1.add(clientList);
+        });
+    }
+    
+    public void reloadValues() {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get(); 
+                    loadTransports("*");
+
+
+                } catch (Exception ex) {
+                    System.err.println("Error refreshing counts: " + ex.getMessage());
+                }
+            }
+        };
+
+        worker.execute();
+    }
+
+    private void showTransportRows(List<MoyenTransportModel> transports) {
+        if(!transports.isEmpty()){
+            for(MoyenTransportModel transport : transports){
+                
+                ListElementRow resRow = new ListElementRow( transport.getDescriptionVehicule(), transport.getTypeVehicule(), transport.getNoVehicule(), e ->{
+                    showDetails(transport);
+                    }
+                );
+                    
+                    row1.add(resRow);
+                    row1.add(Box.createVerticalStrut(20));  
+                }
         }else{
+            // Center the empty state vertically and horizontally
             row1.add(Box.createVerticalGlue()); // Push content to center
 
             JPanel noResPanel = new JPanel();
@@ -399,7 +547,7 @@ public class AdminUserManagementView extends JPanel{
             noResMessage1.setForeground(new Color(180, 180, 180));
             noResMessage1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            JLabel noResMessage2 = new JLabel("Aucun client pour le moment");
+            JLabel noResMessage2 = new JLabel("Aucune réservation pour le moment");
             noResMessage2.setFont(new Font("SansSerif", Font.PLAIN, 16));
             noResMessage2.setForeground(new Color(120, 120, 120));
             noResMessage2.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -413,123 +561,4 @@ public class AdminUserManagementView extends JPanel{
             
         }  
     }
-    
-    private void searchClient(String searchText){
-        SwingUtilities.invokeLater(()->{
-            List<ClientModel> clients;
-            if(searchText.trim().equals("")){
-                clients = clientDao.getAllClients();
-                row1.removeAll();       // removes every child component
-                row1.revalidate();      // tells the layout manager to recalculate layout
-                row1.repaint();
-                System.out.println("Searching all..."+searchText);
-                showUsersTable(clients); 
-
-            } else {
-                clients = clientDao.getMatchingClients(searchText);
-                row1.removeAll();       // removes every child component
-                row1.revalidate();      // tells the layout manager to recalculate layout
-                row1.repaint();
-                System.out.println("Searching..."+searchText);
-                showUsersTable(clients); 
-            }
-        });
-    }
-
-    private void showClientDetails(ClientModel client) {
-        // Create undecorated dialog
-        JDialog dialog = new JDialog(parentFrame, true);
-        dialog.setUndecorated(true);           // Remove title bar & borders
-        dialog.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
-
-        // Main panel with rounded corners & shadow-like effect
-        PanelRound mainPanel = new PanelRound();
-        mainPanel.setBackground(new Color(245, 245, 255));
-        mainPanel.rounded(24);
-        mainPanel.setOpaque(false);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
-        mainPanel.setLayout(new BorderLayout(0, 16));
-
-        JLabel titleLabel = new JLabel("Détails du Client");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titleLabel.setForeground(new Color(60, 60, 80));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JPanel contentPanel = new JPanel();
-        contentPanel.setOpaque(false);
-        contentPanel.setLayout(new GridLayout(0, 2, 12, 14));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 16, 0));
-
-        String[][] data = {
-            {"Client ID",     String.valueOf(client.getIdClient())},
-            {"Nom",           client.getNom()},
-            {"Prénom",        client.getPrenom()},
-            {"E-mail",        client.getEmail()},
-            {"Téléphone",     client.getTelephone()}
-        };
-
-        Font labelFont = new Font("Segoe UI", Font.PLAIN, 15);
-        Font valueFont = new Font("Segoe UI", Font.BOLD, 15);
-
-        for (String[] pair : data) {
-            JLabel lblKey = new JLabel(pair[0] + " :");
-            lblKey.setFont(labelFont);
-            lblKey.setForeground(new Color(100, 100, 120));
-            lblKey.setHorizontalAlignment(SwingConstants.RIGHT);
-
-            JLabel lblValue = new JLabel(pair[1]);
-            lblValue.setFont(valueFont);
-            lblValue.setForeground(new Color(40, 40, 70));
-
-            contentPanel.add(lblKey);
-            contentPanel.add(lblValue);
-        }
-
-        UIButton closeBtn = new UIButton(
-                " Fermer",
-                "/trip_manager_app/ressources/icons/croix_light.svg", 
-                new Color(108, 99, 255),     
-                Color.white 
-        );
-        closeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        closeBtn.setPreferredSize(new Dimension(140, 42));
-        closeBtn.setRadius(42);
-        closeBtn.setHorizontalAlignment(SwingConstants.CENTER);
-
-        closeBtn.addActionListener(e -> dialog.dispose());
-
-        closeBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                closeBtn.setBackground(new Color(88, 79, 235));
-            }
-            @Override public void mouseExited(MouseEvent e) {
-                closeBtn.setBackground(new Color(108, 99, 255));
-            }
-        });
-
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setOpaque(false);
-        buttonPanel.add(closeBtn);
-
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        
-        SwingUtilities.invokeLater(() -> {
-            int w = dialog.getWidth();
-            int h = dialog.getHeight();
-            if (w > 0 && h > 0) {
-                dialog.setShape(new RoundRectangle2D.Double(0, 0, w, h, 24, 24));
-            }
-        });
-
-        dialog.setContentPane(mainPanel);
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);   // center on parent component
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        dialog.setVisible(true);
-    }
-      
 }

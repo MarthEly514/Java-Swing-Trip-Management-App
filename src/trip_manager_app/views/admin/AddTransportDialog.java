@@ -4,66 +4,74 @@
  */
 package trip_manager_app.views.admin;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.io.File;
-import java.math.BigDecimal;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import trip_manager_app.DAO.*;
-import trip_manager_app.models.DestinationModel;
-import trip_manager_app.models.VoyageModel;
-import trip_manager_app.ui_components.*;
-import trip_manager_app.utils.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import trip_manager_app.DAO.MoyenTransportDAO;
+import trip_manager_app.ui_components.LabeledTextField;
+import trip_manager_app.ui_components.PanelRound;
+import trip_manager_app.ui_components.ScrollWrapper;
+import trip_manager_app.ui_components.SubtitleLabel;
+import trip_manager_app.ui_components.UIButton;
+import trip_manager_app.utils.SvgUtils;
 
 /**
  *
  * @author ely
  */
-public class AddDestinationDialog extends JDialog {
+public class AddTransportDialog extends JDialog {
 
     private final JFrame parentFrame;
 //    private final DestinationModel destination;
-    private final DestinationDAO destinationDao;
-    private final ImageDAO imageDao;
+    private final MoyenTransportDAO transportDao;
     private int cornerRadius = 30;
     private LabeledTextField villeField;
     private LabeledTextField paysField;
     private LabeledTextField noteField;
     private LabeledTextField imageField;
-    private JTextArea descriptionField;
     private UIButton addDestinationButton;
-    private PanelRound descriptionPanel;
-    private JFileChooser fileChooser;
-    private AdminHomepageView parentView;
+    private AdminTransportManagementView parentView;
     
     
-    public AddDestinationDialog(JFrame parentFrame){
-        super(parentFrame, "Destination details", true); 
+    public AddTransportDialog(JFrame parentFrame){
+        super(parentFrame, "Transports details", true); 
         this.parentFrame = parentFrame;
-        this.destinationDao = new DestinationDAO();
-        this.imageDao = new ImageDAO();        
+        this.transportDao = new MoyenTransportDAO();
         initDialog();
     }
 
-    public AddDestinationDialog(JFrame parentFrame, AdminHomepageView parentView) {
-        super(parentFrame, "Destination details", true); 
+    public AddTransportDialog(JFrame parentFrame, AdminTransportManagementView parentView) {
+        super(parentFrame, "Transports details", true); 
         this.parentFrame = parentFrame;
         this.parentView = parentView;
-        this.destinationDao = new DestinationDAO();
-        this.imageDao = new ImageDAO();        
+        this.transportDao = new MoyenTransportDAO();
         initDialog();
     }
     
     private void initDialog(){
         setUndecorated(true);
         setLayout(new BorderLayout());
-        setSize(1080, 720);
+        setSize(720, 620);
         setLocationRelativeTo(parentFrame);
         applyRoundedShape();
         setBackground(Color.white);
@@ -73,7 +81,7 @@ public class AddDestinationDialog extends JDialog {
         top.setLayout(new BorderLayout());
         top.setBackground(Color.white);
         
-        JLabel title = new JLabel("Ajouter une destination");
+        JLabel title = new JLabel("Ajouter un moyen de transport");
         title.setFont(new Font("SansSerif", Font.BOLD, 34));
         title.setForeground(new Color(50, 50, 50));
         
@@ -107,10 +115,10 @@ public class AddDestinationDialog extends JDialog {
         
         
         JPanel informationsPanel = new JPanel();
-        informationsPanel.setLayout(new GridLayout(2, 2, 20, 20));
-        informationsPanel.setPreferredSize(new Dimension(0, 180));
-        informationsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 180));
-        informationsPanel.setMinimumSize(new Dimension(0, 180));
+        informationsPanel.setLayout(new GridLayout(4, 0, 10, 0));
+        informationsPanel.setPreferredSize(new Dimension(0, 320));
+        informationsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 320));
+        informationsPanel.setMinimumSize(new Dimension(0, 320));
         informationsPanel.setOpaque(false);
         
         //ville field
@@ -124,18 +132,8 @@ public class AddDestinationDialog extends JDialog {
 
         //image field
         
-        imageField = new LabeledTextField("Image", "Choisissez votre image", "Choisir", true);
+        imageField = new LabeledTextField("Image", "Choisissez votre image", "Choisir", false);
         imageField.setIsEditable(false);
-        imageField.addChoiceButtonListener(e->{
-            fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif"));
-            int result = fileChooser.showOpenDialog(parentFrame);
-            if(result == JFileChooser.APPROVE_OPTION){
-                File file = fileChooser.getSelectedFile();
-                imageField.setText(file.getAbsolutePath());
-                
-            }
-        });
         
         
         informationsPanel.add(villeField);
@@ -157,32 +155,6 @@ public class AddDestinationDialog extends JDialog {
         scrollWrapper.setBackground(Color.white);
         scrollWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        SubtitleLabel subtitle2 = new SubtitleLabel("Description: ");
-        subtitle1.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 10));
-        
-        descriptionPanel = new PanelRound();
-        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
-        descriptionPanel.setPreferredSize(new Dimension(0, 0));
-        descriptionPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
-        descriptionPanel.setMinimumSize(new Dimension(200, 40));
-        descriptionPanel.setBackground(new Color(20, 20, 20, 5));
-        descriptionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20 ,20));
-        descriptionPanel.rounded(30);
-        
-        
-        descriptionField = new JTextArea();
-        descriptionField.setOpaque(false);
-        descriptionField.setLineWrap(true);
-        descriptionField.setWrapStyleWord(true);
-        descriptionField.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        descriptionField.setBackground(Color.WHITE);
-        descriptionField.setForeground(Color.BLACK);
-        descriptionField.setCaretPosition(0);
-//        descriptionField.setPlaceholderColor(new Color(20, 20, 20, 70));
-
-        descriptionPanel.add(descriptionField);
-
-        
         JPanel buttonContainer = new JPanel();
         buttonContainer.setLayout(new BorderLayout());
         buttonContainer.setPreferredSize(new Dimension(600, 70));
@@ -192,7 +164,7 @@ public class AddDestinationDialog extends JDialog {
         
         
         addDestinationButton = new UIButton(
-            "Ajouter la destination",
+            "Ajouter",
             "", 
             new Color(101, 93, 235, 190), 
             new Color(255, 255, 255)      
@@ -217,23 +189,23 @@ public class AddDestinationDialog extends JDialog {
         activateFinishButton();
         
         //detects if the user is entering anything in the field
-        descriptionField.getDocument().addDocumentListener(new DocumentListener(){
-            @Override
-            public void insertUpdate(DocumentEvent de) {
-                activateFinishButton();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent de) {
-                activateFinishButton();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent de) {
-                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-            }
-            
-        });
+//        descriptionField.getDocument().addDocumentListener(new DocumentListener(){
+//            @Override
+//            public void insertUpdate(DocumentEvent de) {
+//                activateFinishButton();
+//            }
+//
+//            @Override
+//            public void removeUpdate(DocumentEvent de) {
+//                activateFinishButton();
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent de) {
+//                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//            }
+//            
+//        });
         
         // listener to add the reservation on click
         addDestinationButton.addActionListener((e)->{
@@ -243,21 +215,15 @@ public class AddDestinationDialog extends JDialog {
         
         buttonContainer.add(addDestinationButton, BorderLayout.EAST);
         subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
-        subtitle2.setAlignmentX(Component.LEFT_ALIGNMENT);
-        descriptionField.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         
 //        
         bottom.add(subtitle1);
         bottom.add(Box.createVerticalStrut(10));
         bottom.add(informationsPanel);
-        bottom.add(Box.createVerticalStrut(10));
-        bottom.add(subtitle2);
-        bottom.add(Box.createVerticalStrut(10));
-        bottom.add(descriptionPanel);
-        bottom.add(Box.createVerticalStrut(10));
+        bottom.add(Box.createVerticalStrut(30));
         bottom.add(buttonContainer);
-        bottom.add(Box.createVerticalStrut(20));
+        bottom.add(Box.createVerticalStrut(10));
 
         add(top, BorderLayout.NORTH);
         add(scrollWrapper, BorderLayout.CENTER);
@@ -271,13 +237,13 @@ public class AddDestinationDialog extends JDialog {
     }
     
     private void activateFinishButton(){
-        // disables the button when some informations are not entered
-        if(descriptionField.getText().isEmpty()){
-            addDestinationButton.setBackground(new Color(20, 20, 20, 20));
-        }else{
-            addDestinationButton.setBackground(new Color(101, 93, 235, 190)); 
-        }
-        addDestinationButton.setEnabled(!descriptionField.getText().isEmpty()); 
+//        // disables the button when some informations are not entered
+//        if(descriptionField.getText().isEmpty()){
+//            addDestinationButton.setBackground(new Color(20, 20, 20, 20));
+//        }else{
+//            addDestinationButton.setBackground(new Color(101, 93, 235, 190)); 
+//        }
+//        addDestinationButton.setEnabled(!descriptionField.getText().isEmpty()); 
     }
     
     private void applyRoundedShape() {
@@ -298,12 +264,8 @@ public class AddDestinationDialog extends JDialog {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                ImageClass image = new ImageClass(fileChooser.getSelectedFile());
-                imageDao.addImage(image);
-                int imageUsedId = imageDao.getLastImageId();
-                DestinationModel destination = new DestinationModel(villeField.getText(), paysField.getText(), descriptionField.getText(),Float.parseFloat(noteField.getText()), imageUsedId );
-                destinationDao.addDestination(destination);
-                
+//                MoyenTransportModel transport = new MoyenTransportModel(villeField.getText(), paysField.getText(), descriptionField.getText(),Float.parseFloat(noteField.getText()), imageUsedId );
+//                transportDao.addMoyenTransport(transport);
 
                 Thread.sleep(2500);
 

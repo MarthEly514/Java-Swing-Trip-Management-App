@@ -121,7 +121,7 @@ public class AdminReservationDetailDialog extends JDialog{
         bottomPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 400));
         bottomPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
         bottomPanel.setMinimumSize(new Dimension(Integer.MAX_VALUE, 400));
-        bottomPanel.setBackground(new Color(20, 20, 20, 80));
+        bottomPanel.setBackground(new Color(20, 20, 20, 140));
         bottomPanel.setRoundBottomLeft(cornerRadius);
         bottomPanel.setRoundBottomRight(cornerRadius);
 //        bottomPanel.setRoundTopLeft(radius);

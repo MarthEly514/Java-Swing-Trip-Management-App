@@ -57,6 +57,7 @@ public class AdminReservationsManagementView extends JPanel{
     private DestinationDAO destDao;
     private UIButton destinationButton;
     private MoyenTransportDAO transportDao;
+    private UIButton transportButton;
     
     public AdminReservationsManagementView(){
         resDao = new ReservationDAO();
@@ -122,7 +123,7 @@ public class AdminReservationsManagementView extends JPanel{
         //destination button 
         destinationButton = new UIButton(
                 " Destinations",
-                "/trip_manager_app/ressources/icons/travel.svg", 
+                "/trip_manager_app/ressources/icons/public.svg", 
                 new Color(0, 0, 0, 0), 
                 new Color(108, 99, 255)
                 
@@ -146,10 +147,20 @@ public class AdminReservationsManagementView extends JPanel{
                 
         );
          
+        //transports button
+        transportButton = new UIButton(
+                " Moyens de transport",
+                "/trip_manager_app/ressources/icons/car.svg", 
+                new Color(0, 0, 0, 0),
+                new Color(108, 99, 255)
+                
+        );
+         
         navigationPanel.add(homeButton);
         navigationPanel.add(destinationButton);
         navigationPanel.add(clientsButton);
         navigationPanel.add(reservationButton);
+        navigationPanel.add(transportButton);
         
         
         JPanel profileButtonContainer = new JPanel();
@@ -215,6 +226,18 @@ public class AdminReservationsManagementView extends JPanel{
             @Override
             public void mouseExited(MouseEvent e){
                 reservationButton.setBackground(new Color(108, 99, 255));            
+            }
+        });
+        
+        transportButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e){
+                transportButton.setBackground(new Color(101, 93, 235, 20));            
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                transportButton.setBackground(new Color(0, 0, 0, 0));            
             }
         });
         
@@ -335,7 +358,7 @@ public class AdminReservationsManagementView extends JPanel{
             row1.revalidate();      // tells the layout manager to recalculate layout
             row1.repaint();
             showReservationRows(reservations); 
-            currentTab = options.get(2);
+            currentTab = options.get(1);
             System.out.println(currentTab);
         }
         else if(labelName.equals(options.get(2))){
@@ -363,6 +386,10 @@ public class AdminReservationsManagementView extends JPanel{
     
     public void addDestinationsButtonListener(ActionListener listener){
         destinationButton.addActionListener(listener);
+    }
+    
+    public void addTransportsManagementButtonListener(ActionListener listener){
+        transportButton.addActionListener(listener);
     }
     
     public void showDetails(String content){
