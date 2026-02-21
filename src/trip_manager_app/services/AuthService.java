@@ -78,36 +78,36 @@ public class AuthService {
 //
 //        //END OF TESTING BLOCK
 
-        // START OF ADMIN TESTING BLOCK
-        
-        AdminModel defaultAdmin = new AdminModel(
-                5,
-                "eaven@admin.com",
-                "#senArin"    
-        );
-
-        adminHomepageView = new AdminHomepageView(frame);
-        adminReservationsManagementView = new AdminReservationsManagementView();
-        adminUserManagementView = new AdminUserManagementView();
-        adminDestinationsView = new AdminDestinationsView(frame);
-        adminTransportManagementView = new AdminTransportManagementView(frame);
-        
-        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView, adminTransportManagementView);
-
-        //END OF TESTING BLOCK
-        
-//        //User views
-//        userHomepageView = null;
-//        userDestinationsView = null;
-//        userReservationsView = null;
-//        userProfileView = null;
+//        // START OF ADMIN TESTING BLOCK
+//        
+//        AdminModel defaultAdmin = new AdminModel(
+//                5,
+//                "eaven@admin.com",
+//                "#senArin"    
+//        );
 //
-//        //Admin views
-//        adminHomepageView = null;
-//        adminReservationsManagementView = null;
-//        adminUserManagementView = null;
-//        adminDestinationsView = null;
-//        adminTransportManagementView = null;
+//        adminHomepageView = new AdminHomepageView(frame);
+//        adminReservationsManagementView = new AdminReservationsManagementView();
+//        adminUserManagementView = new AdminUserManagementView();
+//        adminDestinationsView = new AdminDestinationsView(frame);
+//        adminTransportManagementView = new AdminTransportManagementView(frame);
+//        
+//        new AdminController(frame, loginView, adminHomepageView, adminReservationsManagementView, adminUserManagementView, adminDestinationsView, adminTransportManagementView);
+//
+//        //END OF TESTING BLOCK
+        
+        //User views
+        userHomepageView = null;
+        userDestinationsView = null;
+        userReservationsView = null;
+        userProfileView = null;
+
+        //Admin views
+        adminHomepageView = null;
+        adminReservationsManagementView = null;
+        adminUserManagementView = null;
+        adminDestinationsView = null;
+        adminTransportManagementView = null;
 
         //controllers
 
@@ -129,10 +129,10 @@ public class AuthService {
 //        }); destroyZalem
 
         // default view frame.showView("Login");
-//        frame.addView(loginView, "loginView");
-//        frame.showView("loginView");
-        frame.addView(adminHomepageView, "adminHomepageView");
-        frame.showView("adminHomepageView");
+        frame.addView(loginView, "loginView");
+        frame.showView("loginView");
+//        frame.addView(adminHomepageView, "adminHomepageView");
+//        frame.showView("adminHomepageView");
     }
     
     private void saveUser(){
