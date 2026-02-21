@@ -342,6 +342,7 @@ public class UserDestinationDetails extends JDialog{
             option.setOpaque(false);
             radioGroup.add(option);
             optionsPanel.add(option);
+            radioButtons.add(option);
             
         }
         optionsPanel.revalidate();
@@ -349,13 +350,17 @@ public class UserDestinationDetails extends JDialog{
     }
     
     public MoyenTransportModel getSelectedTransportModel(List<MoyenTransportModel> transports) {
-    for (int i = 0; i < radioButtons.size(); i++) {
-        if (radioButtons.get(i).isSelected()) {
-            return transports.get(i);
+
+        for (int i = 0; i < radioButtons.size(); i++) {
+            if (radioButtons.get(i).isSelected()) {
+                MoyenTransportModel selected = transports.get(i);
+                
+                return selected;
+            }
         }
+
+        return null;
     }
-    return null;
-}
     
     private void loadAndSetImage(int imageId){
         BufferedImage image = cachedImageLoader.loadImage(imageId);
@@ -376,6 +381,26 @@ public class UserDestinationDetails extends JDialog{
         bookingBtn.setEnabled(!departureField.getText().isEmpty()); 
     }
     
+    private BigDecimal calculatePrice(String typeVhc){
+        BigDecimal price = new BigDecimal("0");
+        
+        if(typeVhc.toLowerCase().equals("véhicule")){
+            price = new BigDecimal("1000");
+        }
+        else if(typeVhc.toLowerCase().equals("bateau")){
+            price = new BigDecimal("1800");
+            
+        } else if(typeVhc.toLowerCase().equals("bus")){
+            price = new BigDecimal("1500");
+     
+        } else if(typeVhc.toLowerCase().equals("avion")){
+            price = new BigDecimal("300000");
+            
+        }
+    
+        return price;
+    }
+    
     private void createAndSaveReservation() {
         bookingBtn.setText("Chargement...");
         bookingBtn.setBackground(new Color(20, 20, 20, 20));
@@ -389,10 +414,13 @@ public class UserDestinationDetails extends JDialog{
                     villeArrivee, 
                     departureDatePicker.getLocalDate(), 
                     returnDatePicker.getLocalDate(), 
-                    new BigDecimal("500.34"), 
+                    new BigDecimal("1500"),
+//                    calculatePrice(getSelectedTransportModel(transports).getTypeVehicule()),
                     getSelectedTransportModel(transports).getNoVehicule()
                     
                 );
+                
+                System.out.println(getSelectedTransportModel(transports).getNoVehicule());
                 voyageDao.addVoyage(voyageSaved);
 
                 VoyageModel voyageUsed = voyageDao.getLastVoyage();

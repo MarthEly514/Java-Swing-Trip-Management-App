@@ -133,6 +133,8 @@ public class AuthService {
         frame.showView("loginView");
 //        frame.addView(adminHomepageView, "adminHomepageView");
 //        frame.showView("adminHomepageView");
+//        frame.addView(userHomepageView, "userHomepageView");
+//        frame.showView("userHomepageView");
     }
     
     private void saveUser(){

@@ -201,7 +201,13 @@ public class UserReservationDetailDialog extends JDialog{
             }
         });
         
-        confirmButton.addActionListener(e->confirmReservation());
+        if(reservation.getStatut().getLibelle().equals("Validé")){
+            confirmButton.addActionListener(e->DownloadTicket());
+        }
+        else{
+            confirmButton.addActionListener(e->confirmReservation());
+        }
+        
         
         
         cancelButton.setHorizontalAlignment(SwingConstants.CENTER);
@@ -260,10 +266,13 @@ public class UserReservationDetailDialog extends JDialog{
     
     private void confirmReservation(){
         reservationDao.updateReservationStatus(reservation.getIdReservation(), "Validé");
-        confirmButton.setText("Confirmé");
+        confirmButton.setText("Télécharger ticket");
         confirmButton.setBackground(new Color(255, 255, 255, 200));
-        confirmButton.setEnabled(false);
         cancelButton.setEnabled(false);
+    }
+    
+    private void downloadTicket(){
+        System.out.println("Download...");
     }
     
     private void cancelReservation(){
@@ -278,11 +287,19 @@ public class UserReservationDetailDialog extends JDialog{
         confirmButton.addActionListener(listener);
     }
     
+    public void addDownloadTicketButtonListener(ActionListener listener){
+        confirmButton.addActionListener(listener);
+    }
+    
     public void addCancelButtonListener(ActionListener listener){
         cancelButton.addActionListener(listener);
     }
 
     private void setBackgroundImage(BufferedImage image) {
         this.backgroundImage = image;
+    }
+
+    private void DownloadTicket() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
