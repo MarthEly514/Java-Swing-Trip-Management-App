@@ -471,8 +471,8 @@ public class AdminTransportManagementView extends JPanel{
     }
     
     public void showDetails(MoyenTransportModel transport){
-//        AdminTransportDetails dialog = new AdminTransportDetails(parentFrame, transport);   
-//        dialog.showDialog();
+        AdminTransportDetails dialog = new AdminTransportDetails(parentFrame, transport);   
+        dialog.showDialog();
     }
     
     private void searchTransport(String searchText){
@@ -525,12 +525,12 @@ public class AdminTransportManagementView extends JPanel{
         if(!transports.isEmpty()){
             for(MoyenTransportModel transport : transports){
                 
-                ListElementRow resRow = new ListElementRow( transport.getDescriptionVehicule(), transport.getTypeVehicule(), transport.getNoVehicule(), e ->{
+                ListElementRow transportRow = new ListElementRow(transport.getDescriptionVehicule(),"" , " "+transport.getTypeVehicule(), e ->{
                     showDetails(transport);
                     }
                 );
                     
-                    row1.add(resRow);
+                    row1.add(transportRow);
                     row1.add(Box.createVerticalStrut(20));  
                 }
         }else{

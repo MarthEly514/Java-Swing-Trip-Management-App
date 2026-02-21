@@ -124,7 +124,7 @@ public class AddDestinationDialog extends JDialog {
 
         //image field
         
-        imageField = new LabeledTextField("Image", "Choisissez votre image", "Choisir", true);
+        imageField = new LabeledTextField("Image", "*Obligatoire-Choisissez votre image", "Choisir", true);
         imageField.setIsEditable(false);
         imageField.addChoiceButtonListener(e->{
             fileChooser = new JFileChooser();

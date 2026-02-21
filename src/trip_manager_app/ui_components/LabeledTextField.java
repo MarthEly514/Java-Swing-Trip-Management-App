@@ -85,7 +85,7 @@ public class LabeledTextField extends JPanel {
     }
     
     public String getText(){
-        return inputField.getText();
+        return getInputField().getText();
     }
 
     private void initLabel(String label, String placeholder, String buttonText) {
@@ -104,14 +104,14 @@ public class LabeledTextField extends JPanel {
         
         //ville field
         inputField = new RoundedTextField();
-        inputField.setPlaceholder(placeholder);
-        inputField.setBorderWidth(2);
-        inputField.setBorderColor(new Color(20, 20, 20, 30));
-        inputField.setPlaceholderColor(new Color(20, 20, 20, 70));
-        inputField.setFocusedBorderColor(new Color(108, 99, 255));
+        getInputField().setPlaceholder(placeholder);
+        getInputField().setBorderWidth(2);
+        getInputField().setBorderColor(new Color(20, 20, 20, 30));
+        getInputField().setPlaceholderColor(new Color(20, 20, 20, 70));
+        getInputField().setFocusedBorderColor(new Color(108, 99, 255));
         
         
-        fieldPanel.add(inputField);
+        fieldPanel.add(getInputField());
 
         this.add(title);
         this.add(Box.createVerticalStrut(5));
@@ -119,7 +119,7 @@ public class LabeledTextField extends JPanel {
     }
     
     public void setIsEditable(boolean editable){
-        inputField.setEditable(editable);
+        getInputField().setEditable(editable);
     }
     
     public void addChoiceButtonListener(ActionListener listener){
@@ -127,7 +127,14 @@ public class LabeledTextField extends JPanel {
     }
 
     public void setText(String text) {
-        inputField.setText(text);
+        getInputField().setText(text);
+    }
+
+    /**
+     * @return the inputField
+     */
+    public RoundedTextField getInputField() {
+        return inputField;
     }
     
     

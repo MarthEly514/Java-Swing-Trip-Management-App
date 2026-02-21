@@ -15,12 +15,12 @@ public class MoyenTransportDAO {
 
     // CREATE
     public void addMoyenTransport(MoyenTransportModel transport) {
-        String sql = "INSERT INTO moyens_transport (noVehicule, typeVehicule, descriptionVehicule, nombrePlaces) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO moyens_transport (no_vehicule, type_transport, description, nombre_places) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, transport.getNoVehicule());
+            ps.setInt(1, transport.getNoVehicule());
             ps.setString(2, transport.getTypeVehicule());
             ps.setString(3, transport.getDescriptionVehicule());
             ps.setInt(4, transport.getNombrePlaces());
@@ -32,19 +32,19 @@ public class MoyenTransportDAO {
     }
 
     // READ by id
-    public MoyenTransportModel findByNo(String noVehicule) {
+    public MoyenTransportModel findByNo(int noVehicule) {
         String sql = "SELECT * FROM moyens_transport WHERE no_vehicule = ?";
         MoyenTransportModel transport = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, noVehicule);
+            ps.setInt(1, noVehicule);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 transport = new MoyenTransportModel(
-                        rs.getString("no_vehicule"),
+                        rs.getInt("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -68,7 +68,7 @@ public class MoyenTransportDAO {
 
             while (rs.next()) {
                 MoyenTransportModel transport = new MoyenTransportModel(
-                        rs.getString("no_vehicule"),
+                        rs.getInt("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -94,7 +94,7 @@ public class MoyenTransportDAO {
 
             while (rs.next()) {
                 MoyenTransportModel transport = new MoyenTransportModel(
-                        rs.getString("no_vehicule"),
+                        rs.getInt("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -118,7 +118,7 @@ public class MoyenTransportDAO {
             ps.setString(1, transport.getTypeVehicule());
             ps.setString(2, transport.getDescriptionVehicule());
             ps.setInt(3, transport.getNombrePlaces());
-            ps.setString(4, transport.getNoVehicule());
+            ps.setInt(4, transport.getNoVehicule());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -153,7 +153,7 @@ public class MoyenTransportDAO {
 
             while (rs.next()) {
                 MoyenTransportModel transport = new MoyenTransportModel(
-                        rs.getString("no_vehicule"),
+                        rs.getInt("no_vehicule"),
                         rs.getString("type_transport"),
                         rs.getString("description"),
                         rs.getInt("nombre_places")
@@ -187,7 +187,7 @@ public class MoyenTransportDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     MoyenTransportModel transport = new MoyenTransportModel(
-                            rs.getString("no_vehicule"),
+                            rs.getInt("no_vehicule"),
                             rs.getString("type_transport"),
                             rs.getString("description"),
                             rs.getInt("nombre_places")

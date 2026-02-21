@@ -27,7 +27,12 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import trip_manager_app.DAO.MoyenTransportDAO;
+import trip_manager_app.models.MoyenTransportModel;
+import trip_manager_app.ui_components.CustomPicker;
+import trip_manager_app.ui_components.LabeledComboBox;
 import trip_manager_app.ui_components.LabeledTextField;
 import trip_manager_app.ui_components.PanelRound;
 import trip_manager_app.ui_components.ScrollWrapper;
@@ -45,12 +50,12 @@ public class AddTransportDialog extends JDialog {
 //    private final DestinationModel destination;
     private final MoyenTransportDAO transportDao;
     private int cornerRadius = 30;
-    private LabeledTextField villeField;
-    private LabeledTextField paysField;
-    private LabeledTextField noteField;
-    private LabeledTextField imageField;
-    private UIButton addDestinationButton;
     private AdminTransportManagementView parentView;
+    private LabeledTextField descriptionField;
+    private LabeledTextField noVehicleField;
+    private LabeledComboBox typeCombo;
+    private CustomPicker placesPicker;
+    private UIButton addTransportButton;
     
     
     public AddTransportDialog(JFrame parentFrame){
@@ -116,31 +121,38 @@ public class AddTransportDialog extends JDialog {
         
         JPanel informationsPanel = new JPanel();
         informationsPanel.setLayout(new GridLayout(4, 0, 10, 0));
-        informationsPanel.setPreferredSize(new Dimension(0, 320));
-        informationsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 320));
-        informationsPanel.setMinimumSize(new Dimension(0, 320));
+        informationsPanel.setPreferredSize(new Dimension(0, 350));
+        informationsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 350));
+        informationsPanel.setMinimumSize(new Dimension(0, 350));
         informationsPanel.setOpaque(false);
         
-        //ville field
-        villeField = new LabeledTextField("Ville", "Ville", "", false);
+        //type field
+        typeCombo = new LabeledComboBox(
+                "Type de véhicule",
+                new String[]{"Avion", "Véhicule", "Bateau", "Bus"},
+                "Avion"
+        );
 
-        //pays field
-        paysField = new LabeledTextField("Pays", "Pays", "", false);
+        //description field
+        descriptionField = new LabeledTextField("Description", "(Acura NSX 2018)", "", false);
 
-        //note field
-        noteField = new LabeledTextField("Note sur 5", "note", "", false);
+        //no places field
+        placesPicker = new CustomPicker(
+            "Nombre de places",
+            12,           
+            1,            
+            200,          
+            1             
+        );
 
-        //image field
+        //no vehicle field
         
-        imageField = new LabeledTextField("Image", "Choisissez votre image", "Choisir", false);
-        imageField.setIsEditable(false);
+        noVehicleField = new LabeledTextField("Numero du vehicule", "N045AZ","", false);
         
         
-        informationsPanel.add(villeField);
-        informationsPanel.add(paysField);
-        informationsPanel.add(noteField);
-        informationsPanel.add(imageField);
-        
+        informationsPanel.add(typeCombo);
+        informationsPanel.add(descriptionField);
+        informationsPanel.add(placesPicker);        
         
 //        
         JPanel bottom = new JPanel();
@@ -163,25 +175,25 @@ public class AddTransportDialog extends JDialog {
         buttonContainer.setOpaque(false);
         
         
-        addDestinationButton = new UIButton(
+        addTransportButton = new UIButton(
             "Ajouter",
             "", 
             new Color(101, 93, 235, 190), 
             new Color(255, 255, 255)      
         );
-        addDestinationButton.setHorizontalAlignment(SwingConstants.CENTER);
-        addDestinationButton.addMouseListener(new MouseAdapter() {
+        addTransportButton.setHorizontalAlignment(SwingConstants.CENTER);
+        addTransportButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e){
-                if(addDestinationButton.isEnabled() == true){
-                    addDestinationButton.setBackground(new Color(101, 93, 235, 250));            
+                if(addTransportButton.isEnabled() == true){
+                    addTransportButton.setBackground(new Color(101, 93, 235, 250));            
                 }
             }
             
             @Override
             public void mouseExited(MouseEvent e){
-                if(addDestinationButton.isEnabled() == true){
-                    addDestinationButton.setBackground(new Color(101, 93, 235, 190));            
+                if(addTransportButton.isEnabled() == true){
+                    addTransportButton.setBackground(new Color(101, 93, 235, 190));            
                 }
             }
         });
@@ -189,31 +201,31 @@ public class AddTransportDialog extends JDialog {
         activateFinishButton();
         
         //detects if the user is entering anything in the field
-//        descriptionField.getDocument().addDocumentListener(new DocumentListener(){
-//            @Override
-//            public void insertUpdate(DocumentEvent de) {
-//                activateFinishButton();
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent de) {
-//                activateFinishButton();
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent de) {
-//                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-//            }
-//            
-//        });
+        descriptionField.getInputField().getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                activateFinishButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                activateFinishButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+            
+        });
         
         // listener to add the reservation on click
-        addDestinationButton.addActionListener((e)->{
-            createAndSaveDestination(); 
+        addTransportButton.addActionListener((e)->{
+            createAndSaveTransport(); 
         });
 
         
-        buttonContainer.add(addDestinationButton, BorderLayout.EAST);
+        buttonContainer.add(addTransportButton, BorderLayout.EAST);
         subtitle1.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -221,9 +233,8 @@ public class AddTransportDialog extends JDialog {
         bottom.add(subtitle1);
         bottom.add(Box.createVerticalStrut(10));
         bottom.add(informationsPanel);
-        bottom.add(Box.createVerticalStrut(30));
-        bottom.add(buttonContainer);
         bottom.add(Box.createVerticalStrut(10));
+        bottom.add(buttonContainer);
 
         add(top, BorderLayout.NORTH);
         add(scrollWrapper, BorderLayout.CENTER);
@@ -237,13 +248,13 @@ public class AddTransportDialog extends JDialog {
     }
     
     private void activateFinishButton(){
-//        // disables the button when some informations are not entered
-//        if(descriptionField.getText().isEmpty()){
-//            addDestinationButton.setBackground(new Color(20, 20, 20, 20));
-//        }else{
-//            addDestinationButton.setBackground(new Color(101, 93, 235, 190)); 
-//        }
-//        addDestinationButton.setEnabled(!descriptionField.getText().isEmpty()); 
+        // disables the button when some informations are not entered
+        if(descriptionField.getText().isEmpty()){
+            addTransportButton.setBackground(new Color(20, 20, 20, 20));
+        }else{
+            addTransportButton.setBackground(new Color(101, 93, 235, 190)); 
+        }
+        addTransportButton.setEnabled(!descriptionField.getText().isEmpty()); 
     }
     
     private void applyRoundedShape() {
@@ -256,16 +267,16 @@ public class AddTransportDialog extends JDialog {
         });
     }
 
-    private void createAndSaveDestination() {
-        addDestinationButton.setText("Chargement...");
-        addDestinationButton.setBackground(new Color(20, 20, 20, 20));
-        addDestinationButton.setEnabled(false);
+    private void createAndSaveTransport() {
+        addTransportButton.setText("Chargement...");
+        addTransportButton.setBackground(new Color(20, 20, 20, 20));
+        addTransportButton.setEnabled(false);
 
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-//                MoyenTransportModel transport = new MoyenTransportModel(villeField.getText(), paysField.getText(), descriptionField.getText(),Float.parseFloat(noteField.getText()), imageUsedId );
-//                transportDao.addMoyenTransport(transport);
+                MoyenTransportModel transport = new MoyenTransportModel(typeCombo.getSelectedValue(),  descriptionField.getText(),  placesPicker.getValue());
+                transportDao.addMoyenTransport(transport);
 
                 Thread.sleep(2500);
 
@@ -276,14 +287,14 @@ public class AddTransportDialog extends JDialog {
         protected void done() {
             try {
                 get(); 
-                addDestinationButton.setText("Ajouté");
-                addDestinationButton.setBackground(new Color(101, 93, 235, 90)); 
-                addDestinationButton.setEnabled(false); 
+                addTransportButton.setText("Ajouté");
+                addTransportButton.setBackground(new Color(101, 93, 235, 90)); 
+                addTransportButton.setEnabled(false); 
                 dispose();
             } catch (Exception ex) {
-                addDestinationButton.setText("Error – Try again");
-                addDestinationButton.setBackground(new Color(220, 50, 50)); // red
-                addDestinationButton.setEnabled(true); // allow retry
+                addTransportButton.setText("Error – Try again");
+                addTransportButton.setBackground(new Color(220, 50, 50)); // red
+                addTransportButton.setEnabled(true); // allow retry
                 JOptionPane.showMessageDialog(
                     null,
                     "Échec de l'ajout : " + ex.getMessage(),
